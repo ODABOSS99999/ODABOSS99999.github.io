@@ -1,5 +1,7 @@
 # Free-only deployment preparation
 
+**Test release, October 15, 2026:** The owner requested publication of a free test. GitHub Pages now hosts the verified static snapshot at https://odaboss99999.github.io/. See [TEST-DEPLOYMENT.md](TEST-DEPLOYMENT.md). The Azure and custom-domain steps below remain an unexecuted production option.
+
 The site is prepared locally for Azure Static Web Apps **Free**, with GitHub deployment and Name.com DNS. It has not been published. The owner must approve the public revision before any upload, repository publication, or domain change. Login, MFA, benefit redemption, account consent, and secret entry remain with the owner. Never paste credentials into chat or commit them.
 
 ## Verified service boundaries (October 15, 2026)
