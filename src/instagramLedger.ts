@@ -1,6 +1,14 @@
 import type {InstagramPost} from './instagram';
 import {partnershipReviews} from './instagramPartnershipReviews';
 export type LedgerPoint={date:string;count:number};
+export function monthlyPosts(posts:Pick<InstagramPost,'id'|'timestamp'>[],through:string):LedgerPoint[]{
+ const totals=new Map<string,number>(),seen=new Set<string>();
+ for(const p of posts){if(seen.has(p.id)||!Number.isFinite(Date.parse(p.timestamp)))continue;seen.add(p.id);const month=p.timestamp.slice(0,7);totals.set(month,(totals.get(month)||0)+1);}
+ const first=[...totals.keys()].sort()[0];if(!first)return [];
+ const cursor=new Date(first+'-01T12:00:00Z'),end=through.slice(0,7),points:LedgerPoint[]=[];
+ while(cursor.toISOString().slice(0,7)<=end){const month=cursor.toISOString().slice(0,7);points.push({date:month+'-01',count:totals.get(month)||0});cursor.setUTCMonth(cursor.getUTCMonth()+1);}
+ return points;
+}
 export function classifyPartnership(post:Pick<InstagramPost,'caption'> & {id?:string}):{kind:'partnership'|'personal'|'unreviewed';reason:string}{
  if(post.id&&partnershipReviews[post.id])return {...partnershipReviews[post.id],reason:'AI-reviewed: '+partnershipReviews[post.id].reason};
  const c=post.caption.toLowerCase();

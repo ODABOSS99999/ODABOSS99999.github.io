@@ -16,21 +16,36 @@ export function createRoomObjects(scene:T.Scene,resources:Resources){
  const v=(x:number,y:number,z:number)=>new T.Vector3(x,y,z);
  function group(id:string,x:number,y:number,z:number){const g=new T.Group();g.userData.id=id;g.position.set(x,y,z);scene.add(g);items.set(id,g);return g;}
  function rounded(g:T.Object3D,x:number,y:number,z:number,w:number,h:number,d:number,m:T.Material,r=.055){const s=new T.Shape();s.moveTo(-w/2+r,-h/2);s.lineTo(w/2-r,-h/2);s.quadraticCurveTo(w/2,-h/2,w/2,-h/2+r);s.lineTo(w/2,h/2-r);s.quadraticCurveTo(w/2,h/2,w/2-r,h/2);s.lineTo(-w/2+r,h/2);s.quadraticCurveTo(-w/2,h/2,-w/2,h/2-r);s.lineTo(-w/2,-h/2+r);s.quadraticCurveTo(-w/2,-h/2,-w/2+r,-h/2);return mesh(g,new T.ExtrudeGeometry(s,{depth:d,bevelEnabled:true,bevelSegments:2,steps:1,bevelSize:.015,bevelThickness:.015,curveSegments:5}),m,x,y,z-d/2);}
- function frame(g:T.Object3D,x:number,y:number,w:number,h:number,angle:number){const f=new T.Group();f.position.set(x,y,.22);f.rotation.z=angle;g.add(f);
-  box(f,0,0,-.065,w+.13,h+.13,.1,walnut);
-  for(const side of [-1,1]){box(f,side*(w/2+.035),0,.025,.07,h+.14,.12,walnut);box(f,0,side*(h/2+.035),.025,w,.07,.12,walnut);box(f,side*(w/2+.008),0,.078,.016,h,.012,brass);box(f,0,side*(h/2+.008),.078,w,.016,.012,brass);}
-  rod(f,v(0,-h/2,-.08),v(0,-h/2-.08,-.32),.025,walnut);
+ function frame(g:T.Object3D,x:number,bottom:number,w:number,h:number,yaw:number){
+  // Bottom edge sits on the furniture; the top leans back on a hinged easel.
+  const pivot=new T.Group();pivot.position.set(x,bottom,.12);pivot.rotation.y=yaw;g.add(pivot);
+  const f=new T.Group();f.rotation.x=-.16;pivot.add(f);f.position.y=(h+.14)/2;
+  box(f,0,0,-.045,w+.14,h+.14,.09,walnut);
+  for(const side of [-1,1]){box(f,side*(w/2+.035),0,.025,.07,h+.14,.12,brass);box(f,0,side*(h/2+.035),.025,w,.07,.12,brass);box(f,side*(w/2+.003),0,.089,.012,h,.012,ivory);box(f,0,side*(h/2+.003),.089,w,.012,.012,ivory);}
+  const hinge=v(0,h*.25,-.08),foot=v(0,-(h+.14)/2,-.36);
+  const support=box(f,0,0,0,w*.32,hinge.distanceTo(foot),.035,walnut);
+  support.position.copy(hinge).add(foot).multiplyScalar(.5);support.quaternion.setFromUnitVectors(v(0,1,0),hinge.clone().sub(foot).normalize());
+  rod(f,v(-.09,h*.25,-.085),v(.09,h*.25,-.085),.02,brass);
+  rod(f,v(0,-h*.3,-.08),v(0,-h*.3,-.28),.012,black);
+  const mounts=(g.userData.photoMounts??=[]) as T.Group[];mounts.push(f);
  }
- const camera=group('photography',-5.02,4.21,-3.98);
- rounded(camera,0,-.1,0,1.38,.78,.43,dark);box(camera,0,.31,0,.52,.18,.36,silver);box(camera,0,-.45,.03,1.45,.07,.46,walnut);
+ const camera=group('photography',-5.02,4.108,-4.22);
+ rounded(camera,0,-.1,0,1.38,.78,.43,dark);rounded(camera,.49,-.1,.055,.3,.77,.49,black,.08);
+ box(camera,0,.31,0,.52,.18,.36,silver);box(camera,0,-.45,.03,1.45,.07,.46,black);
  for(const x of [-.51,.51])box(camera,x,-.08,.231,.19,.57,.018,black);
- const lens=cyl(camera,0,-.08,.4,.3,.32,.43,black);lens.rotation.x=Math.PI/2;
- for(const z of [.27,.46,.61]){const ring=cyl(camera,0,-.08,z,.325,.325,.035,brass,40);ring.rotation.x=Math.PI/2;}
- const optic=cyl(camera,0,-.08,.638,.255,.255,.012,glass,40);optic.rotation.x=Math.PI/2;ball(camera,-.1,.03,.65,.04,silver);
+ const lens=cyl(camera,0,-.08,.4,.3,.32,.43,black,48);lens.rotation.x=Math.PI/2;
+ for(const z of [.27,.46,.61]){const ring=cyl(camera,0,-.08,z,.325,.325,.035,silver,48);ring.rotation.x=Math.PI/2;}
+ for(let i=0;i<40;i++){const a=i*Math.PI/20;const grip=box(camera,Math.sin(a)*.316,-.08+Math.cos(a)*.316,.4,.014,.014,.14,dark);grip.rotation.z=-a;}
+ const optic=cyl(camera,0,-.08,.638,.255,.255,.012,glass,48);optic.rotation.x=Math.PI/2;
+ const inner=cyl(camera,0,-.08,.648,.16,.16,.012,black,48);inner.rotation.x=Math.PI/2;
+ const reflection=ball(camera,-.08,.015,.661,.035,silver);reflection.scale.set(.6,1,.15);
  cyl(camera,.46,.34,0,.13,.13,.09,brass);cyl(camera,-.46,.34,0,.11,.11,.08,silver);box(camera,0,.34,.2,.19,.09,.025,glass);
- const books=group('about',-2.6,4.21,-3.98);
- frame(books,0,-.05,.93,.93,-Math.PI/45);
- const favorites=group('favorites',-.17,4.21,-3.98);frame(favorites,-.386,-.006,.601,.7,Math.PI/45);frame(favorites,.4,-.177,.538,.49,-Math.PI/45);
+ box(camera,.51,.404,.02,.085,.022,.07,silver);ball(camera,.36,.1,.234,.025,red);
+ for(const x of [-.7,.7]){const lug=mesh(camera,new T.TorusGeometry(.045,.012,8,16),silver,x,.15,0);lug.rotation.y=Math.PI/2;}
+ const books=group('about',-2.6,3.655,-4.1);
+ frame(books,0,0,.93,.93,-.07);
+ const favorites=group('favorites',-.17,2.055,-4.1);
+ frame(favorites,-.4,0,.601,.7,.09);frame(favorites,.4,0,.538,.49,-.12);
  const news=group('published',-5.02,2.61,-3.98);news.rotation.x=-.1;box(news,0,-.07,0,1.53,1.12,.055,paper);box(news,0,-.07,.032,.017,1.1,.008,ivory);box(news,0,.36,.035,1.3,.035,.01,dark);box(news,0,.22,.035,1.3,.015,.01,dark);box(news,-.37,-.04,.035,.49,.31,.012,green);
  for(let col=0;col<3;col++)for(let row=0;row<10;row++)box(news,-.48+col*.48,-.47+row*.052,.037,.35-(row%3)*.025,.009,.008,dark);
  const engineering=group('engineering',-2.6,2.61,-3.98),rocket=new T.Group();engineering.add(rocket);rocket.position.set(-.5,-.03,0);
