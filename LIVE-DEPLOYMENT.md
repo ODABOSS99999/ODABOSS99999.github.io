@@ -34,3 +34,9 @@ After this release, all six HTTPS section URLs returned HTTP 200 and matched the
 ## Recent-post portfolio â€” October 16, 2026
 
 The owner replaced collection-membership gating with a recent-post portfolio. The portfolio displays the newest 30 synced Instagram posts automatically; verified favorites remain available separately. The desktop portfolio/pin checker was removed because it is no longer required. GitHub daily refresh remains active and independent of a signed-in desktop browser.
+
+## Collection and portfolio release — October 16, 2026
+
+Owner requested publication of the latest improved website. Combined the latest remote Instagram/Darkroom release with the local collection dialogs, direct Instagram photo links, resume-backed biography/projects/publications, engineering team mentions, and room EXIT placement. Fixed visible keyboard focus for room objects and collection scroll restoration through Back/Forward.
+
+Pre-release verification: 81 application tests and 19 pipeline tests passed; production build passed with the existing optional room chunk size advisory. Chromium checks passed all six routes at 1440px and 390px, modal EXIT/Escape, direct photo links, reduced motion, keyboard focus, dialog history scroll restoration and six recent Darkroom posts, with zero page errors. Desktop/mobile screenshots were inspected. Publication result is tracked in GitHub Actions for this source revision.
