@@ -297,14 +297,16 @@ export function instagramPostPhoto(post: InstagramPost): Photo {
   };
 }
 
-/** Keep the verified portfolio order; enrich matching covers using actual API metadata. */
+/** Recent portfolio follows the feed; verified favorites retain their original selection. */
 export function selectInstagramPhotos(
   posts: InstagramPost[],
   mode: 'latest' | 'portfolio' | 'favorites',
   choices: InstagramSelection = instagramSelection,
   curated: Photo[] = [...curatedInstagramPhotos, ...pinnedInstagramPhotos],
 ): Photo[] {
-  if (mode === 'latest') return selectInstagramPosts(posts, mode, choices).map(instagramPostPhoto);
+  if (mode === 'latest' || (mode === 'portfolio' && choices.portfolioMode === 'recent')) {
+    return selectInstagramPosts(posts, mode, choices).map(instagramPostPhoto);
+  }
   const favoriteKeys = new Set([...choices.favoriteIds, ...choices.pinnedIds]);
   const portfolioKeys = new Set([...choices.portfolioIds, ...favoriteKeys]);
   const matches = (photo: Photo, keys: Set<string>) => keys.has(photo.sourceUrl!) || keys.has(postCode(photo.sourceUrl!)) || keys.has(photo.id.replace(/^ig-/, ''));
