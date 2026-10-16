@@ -43,3 +43,9 @@ Pre-release verification: 81 application tests and 19 pipeline tests passed; pro
 
 Published source revision: `137978ac38dcdb181a1c584913826ca41344aca3`. Release workflow succeeded: https://github.com/ODABOSS99999/ODABOSS99999.github.io/actions/runs/38939294363. GitHub Pages deployment succeeded: https://github.com/ODABOSS99999/ODABOSS99999.github.io/actions/runs/38939372253. Live HTTPS entry matched the validated JavaScript `index-ndhW7nbZ.js` and stylesheet `index-B2LJz13P.css`.
 Live production recheck passed all six routes at both desktop and mobile sizes, collection EXIT/Escape, direct photo links, visible keyboard focus, history scroll restoration, and Darkroom data; zero browser page errors.
+
+## October 16 latest feature release
+
+Published source `08f9e32906560f71493a0be12d373924b8e0fd08`. Release workflow https://github.com/ODABOSS99999/ODABOSS99999.github.io/actions/runs/38964173441 and Pages deployment https://github.com/ODABOSS99999/ODABOSS99999.github.io/actions/runs/38964245463 both succeeded. Live HTTPS serves `index-ChKjeJzM.js`; stats version 2 retains two verified follower snapshots, latest total 4,642.
+
+Validation: 86 application tests and 20 pipeline tests passed; production build passed with the existing large room chunk warning. Public desktop (1440px) and mobile (390px) browser checks passed portfolio images/source links, collection EXIT, ledger opening/Escape, and no horizontal overflow or page errors. Local remaining collection routes, reduced motion, keyboard EXIT and ladder activation passed. Initial visits intentionally return to the library; preferences reset per visit. Portfolio covers link directly to Instagram. No paid resources enabled.
