@@ -94,11 +94,17 @@ export async function syncInstagram({ input, output = resolve('public/instagram'
       posts.push({ ...post, image: { src: `/instagram/media/${row.id}.webp`, width: info.width, height: info.height } });
     }
     const mediaDir = join(output, 'media');
-    const merged = new Map((previous?.posts ?? []).map(post => [post.id, post]));
+    const merged = new Map((previous?.posts ?? []).map(post => [post.id, {
+      id: post.id, caption: post.caption, permalink: post.permalink,
+      timestamp: post.timestamp, mediaType: post.mediaType,
+      image: { src: post.image.src, width: post.image.width, height: post.image.height },
+    }]));
     for (const post of posts) merged.set(post.id, post);
     if (merged.size > 1000) throw new Error('Archive post limit exceeded; owner review required');
     const feed = { version: 1, account: ACCOUNT, fetchedAt: now.toISOString(), posts: [...merged.values()].sort((a, b) => b.timestamp.localeCompare(a.timestamp) || b.id.localeCompare(a.id)) };
-    let archiveBytes = totalBytes + Buffer.byteLength(JSON.stringify(feed));
+    const serializedFeed = `${JSON.stringify(feed, null, 2)}\n`;
+    let archiveBytes = totalBytes + Buffer.byteLength(serializedFeed);
+    try { archiveBytes += (await stat(join(output, 'selection.json'))).size; } catch (error) { if (error.code !== 'ENOENT') throw error; }
     let existing = [];
     try { existing = await readdir(mediaDir); } catch (error) { if (error.code !== 'ENOENT') throw error; }
     const replacements = new Set(posts.map(post => `${post.id}.webp`));
@@ -114,7 +120,7 @@ export async function syncInstagram({ input, output = resolve('public/instagram'
       await copyFile(join(staging, `${post.id}.webp`), `${destination}.tmp`);
       await rename(`${destination}.tmp`, destination);
     }
-    await writeFile(join(output, 'feed.json.tmp'), `${JSON.stringify(feed, null, 2)}\n`);
+    await writeFile(join(output, 'feed.json.tmp'), serializedFeed);
     await rename(join(output, 'feed.json.tmp'), join(output, 'feed.json'));
     return { posts: feed.posts.length, bytes: archiveBytes };
   } finally {
@@ -128,9 +134,11 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
     if (args.length && (args.length !== 2 || args[0] !== '--input')) throw new Error('Invalid arguments');
     const result = await syncInstagram({ input: args[1] });
     console.log(`Instagram snapshot updated: ${result.posts} posts, ${result.bytes} image bytes.`);
-  } catch {
+  } catch (error) {
     // Do not print exceptions: fetch errors can contain the API key in a URL.
-    console.error('Instagram sync failed. Previous feed retained; check connection, source completeness, and credentials privately.');
+    const safeReasons = new Set(['Archive post limit exceeded; owner review required', 'Archive byte limit exceeded; owner review required', 'Recent posts unexpectedly missing', 'Missing Windsor credential', 'Incomplete Windsor response', 'Post limit exceeded']);
+    const reason = safeReasons.has(error.message) ? ` ${error.message}.` : ' Check connection, source completeness, and credentials privately.';
+    console.error(`Instagram sync failed; previous feed retained.${reason}`);
     process.exitCode = 1;
   }
 }

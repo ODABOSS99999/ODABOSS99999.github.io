@@ -1,0 +1,32 @@
+name: Publish approved GitHub Pages release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: production-static-site
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: vars.SITE_PUBLIC_RELEASE_APPROVED == 'true' && !github.event.repository.private
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci
+      - run: npm test
+      - run: node --test scripts/instagram-sync.test.mjs scripts/publish-pages.test.mjs
+      - run: npm run build
+      - run: node scripts/prepare-pages.mjs
+      - run: node scripts/publish-pages.mjs
+        env:
+          SITE_PUBLIC_RELEASE_APPROVED: ${{ vars.SITE_PUBLIC_RELEASE_APPROVED }}
+          GITHUB_TOKEN: ${{ github.token }}

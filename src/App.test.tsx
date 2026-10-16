@@ -91,8 +91,7 @@ describe('room preferences', () => {
     const user = userEvent.setup();
     const visibility = vi.spyOn(document, 'hidden', 'get').mockReturnValue(false);
     render(<App/>);
-    await user.click(screen.getAllByRole('button', { name: 'Play room ambience' })[0]);
-    expect(audio.start).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(audio.start).toHaveBeenCalledTimes(1));
     visibility.mockReturnValue(true);
     act(() => { document.dispatchEvent(new Event('visibilitychange')); });
     expect(audio.pause).toHaveBeenCalledTimes(1);
@@ -121,18 +120,28 @@ describe('room preferences', () => {
     await user.click(screen.getByRole('button', { name: 'Lamp switch: toggle Lamplight and Darkroom' }));
     expect(next.container.firstElementChild?.getAttribute('data-lighting')).toBe('lamplight');
   });
-  it('never autoplays even with previously unmuted preferences and only starts after a gesture', async () => {
-    localStorage.setItem('mcgowen-library', JSON.stringify({ muted: false, volume: .5 }));
+  it('defaults sound on and retries browser-blocked autoplay on the first interaction', async () => {
+    audio.start.mockRejectedValueOnce(new DOMException('Gesture required', 'NotAllowedError'));
+    const user = userEvent.setup();
+    render(<App/>);
+    await waitFor(() => expect(audio.start).toHaveBeenCalledTimes(1));
+    expect(screen.getAllByRole('button', { name: 'Mute room ambience' })[0].getAttribute('aria-pressed')).toBe('true');
+    await user.click(screen.getByRole('button', { name: /Index/ }));
+    await waitFor(() => expect(audio.start).toHaveBeenCalledTimes(2));
+    expect(screen.queryByText('Room audio is unavailable in this browser.')).toBeNull();
+    await user.click(screen.getAllByRole('button', { name: 'Mute room ambience' })[0]);
+    expect(JSON.parse(localStorage.getItem('mcgowen-library')!).muted).toBe(true);
+  });
+  it('keeps an explicit mute across reloads and starts when enabled again', async () => {
+    localStorage.setItem('mcgowen-library', JSON.stringify({ muted: true, volume: .5, soundDefaultVersion: 2 }));
     const user = userEvent.setup();
     render(<App/>);
     expect(audio.start).not.toHaveBeenCalled();
-    const play = screen.getAllByRole('button', { name: 'Play room ambience' })[0];
-    expect(play.getAttribute('aria-pressed')).toBe('false');
-    await user.click(play);
-    expect(audio.start).toHaveBeenCalledWith(.5);
-    await user.click(screen.getAllByRole('button', { name: 'Mute room ambience' })[0]);
-    expect(audio.pause).toHaveBeenCalled();
-    expect(JSON.parse(localStorage.getItem('mcgowen-library')!).muted).toBe(true);
+    await user.click(screen.getByRole('button', { name: /Index/ }));
+    expect(audio.start).not.toHaveBeenCalled();
+    await user.click(screen.getAllByRole('button', { name: 'Play room ambience' })[0]);
+    await waitFor(() => expect(audio.start).toHaveBeenCalledWith(.5));
+    expect(JSON.parse(localStorage.getItem('mcgowen-library')!).muted).toBe(false);
   });
   it('closes settings and index with Escape and keeps their panels mutually exclusive', async () => {
     const user = userEvent.setup();

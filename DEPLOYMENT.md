@@ -42,3 +42,18 @@ Wait for DNS propagation, Azure validation, and the managed HTTPS certificate. C
 Keep the local site complete and leave Azure publication pending. A free static alternative to evaluate with the owner is **Cloudflare Pages Free**: it advertises unlimited static requests/bandwidth; its Free limits include 500 builds/month, 20,000 files, and 25 MiB per asset. Its product page addresses product teams and production applications without Azure's personal-project positioning; this is a promising alternative, not an independently confirmed legal entitlement for this account. Use static-only Direct Upload of `dist` after approval, without Functions, Workers Paid, R2, or other metered products. The `pages.dev` hostname avoids domain renewal costs. This is an alternative, not an account or deployment already created. [Pages offering](https://www.cloudflare.com/developer-platform/products/pages/), [limits](https://developers.cloudflare.com/pages/platform/limits/).
 
 Cloudflare does not read Azure's configuration; before switching, translate headers/cache settings and verify SPA fallback, custom-domain requirements, current free terms, and HTTPS in that environment. No hosting provider can make a purchased custom domain free to renew indefinitely.
+
+## Existing GitHub Pages test host and Name.com
+
+The parallel deployment chat created a separate, older test snapshot at https://odaboss99999.github.io/ from the public ODABOSS99999/ODABOSS99999.github.io repository. This is not evidence that the latest local illustrated room and Instagram additions are published. See TEST-DEPLOYMENT.md for the fixed release it verified.
+
+The prepared Instagram refresh now supports that existing Pages host without an Azure resource: INSTAGRAM_DEPLOY_TARGET defaults to github-pages; setting it to azure selects the original Azure path. Both need the explicit SITE_PUBLIC_RELEASE_APPROVED flag before publishing future snapshots. Neither was enabled here. See INSTAGRAM.md for private credential setup and the once-daily schedule.
+
+After approving the actual current site and choosing Pages for this personal portfolio, connect mcgowen.works in this order:
+
+1. Sign into Name.com yourself. Verify the domain is owned, active, and its renewal/auto-renew terms are acceptable; the Student offer does not mean free renewal. No purchases are authorized.
+2. Verify ownership in GitHub Pages using GitHub's generated TXT value. Add mcgowen.works in the repository's Pages Custom domain setting before changing destination DNS. Preserve the generated CNAME on gh-pages.
+3. At Name.com, point apex A records to GitHub's documented addresses: 185.199.108.153, 185.199.109.153, 185.199.110.153, 185.199.111.153. Point www CNAME directly to odaboss99999.github.io. Inspect existing records before changing anything; preserve unrelated mail/TXT records.
+4. Verify propagation with Resolve-DnsName, wait for certificate availability, then enable Enforce HTTPS. Check both apex and www plus direct section URLs. No DNS or custom-domain TLS verification has been performed for this revision.
+
+[Official custom-domain setup](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site), [Pages limits and use restrictions](https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits). Pages is suitable for the personal test described here; it is not a blanket authorization to run a commercial transaction service. The existing Azure Free/personal-project boundary above also remains relevant. Neither hosting path requires paid overage or temporary credits for this static site.

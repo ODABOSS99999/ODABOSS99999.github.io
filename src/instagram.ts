@@ -13,7 +13,7 @@ export function validateSnapshot(value: unknown): InstagramSnapshot {
   if(!data||data.version!==1||data.account!=='mcgowen_media'||!Number.isFinite(Date.parse(data.fetchedAt))||!Array.isArray(data.posts))throw new Error('Instagram snapshot is invalid');
   const ids=new Set<string>();
   for(const p of data.posts){
-    if(!p||typeof p.id!=='string'||!/^\d+$/.test(p.id)||ids.has(p.id)||typeof p.caption!=='string'||!Number.isFinite(Date.parse(p.timestamp))||!['IMAGE','CAROUSEL_ALBUM','VIDEO','REEL'].includes(p.mediaType)||!p.image||!/^\/instagram\/media\/[\w.-]+\.webp$/.test(p.image.src)||!Number.isFinite(p.image.width)||p.image.width<=0||!Number.isFinite(p.image.height)||p.image.height<=0||!/^https:\/\/www\.instagram\.com\/(p|reel)\/[A-Za-z0-9_-]+\/$/.test(p.permalink))throw new Error('Instagram post is invalid');
+    if(!p||typeof p.id!=='string'||!/^\d+$/.test(p.id)||ids.has(p.id)||typeof p.caption!=='string'||!Number.isFinite(Date.parse(p.timestamp))||!['IMAGE','CAROUSEL_ALBUM','VIDEO','REEL'].includes(p.mediaType)||!p.image||!/^\/instagram\/media\/[\w.-]+\.webp$/.test(p.image.src)||!Number.isFinite(p.image.width)||p.image.width<=0||!Number.isFinite(p.image.height)||p.image.height<=0||!/^https:\/\/www\.instagram\.com\/(p|reel|tv)\/[A-Za-z0-9_-]+\/$/.test(p.permalink))throw new Error('Instagram post is invalid');
     ids.add(p.id);
   }
   return data;

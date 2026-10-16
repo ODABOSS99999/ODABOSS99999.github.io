@@ -1,8 +1,48 @@
 {
   "version": 1,
   "portfolioMode": "selected",
-  "portfolioIds": [],
-  "favoriteIds": [],
-  "pinnedIds": [],
+  "portfolioIds": [
+    "DZnJr_wDie2",
+    "DZGeb-jNb_s",
+    "DcjrZUghzi2",
+    "DaX1fHWjro4",
+    "DalBI6toBeB",
+    "DbqQ2Xfjqk6",
+    "DZNQmcrOpbo",
+    "Da2lioyFhny",
+    "Da0fd4yIKAN",
+    "Db3O_0sFqva",
+    "DeejqdEGoqc",
+    "Dd6fcFGGzNO",
+    "DdjYy9rG20T",
+    "Dbs7gDmjn0z",
+    "DeaaKFkvdH7",
+    "DabQAs3GonM",
+    "Db0u1DyFhFi",
+    "DcdpZCimxx3",
+    "DdMOTFzDSmc",
+    "DcWHW8rluJ-",
+    "Dbve2g1OZzQ",
+    "Dc1yk3otjpF",
+    "DbyBnTVDrhx",
+    "DdrQGPZm6du",
+    "DVvxzPWDThf",
+    "DbvrBR1IA7R",
+    "DbCwPkxjTL0",
+    "DY8YYQjjYy0",
+    "DX5Ub9wDT0H"
+  ],
+  "favoriteIds": [
+    "DVvxzPWDThf",
+    "DbvrBR1IA7R",
+    "DbCwPkxjTL0",
+    "DY8YYQjjYy0",
+    "DX5Ub9wDT0H"
+  ],
+  "pinnedIds": [
+    "DdEZg_gjT1T",
+    "DeejqdEGoqc",
+    "DVvxzPWDThf"
+  ],
   "portfolioUrl": "https://www.instagram.com/mcgowen_media/portfolio/BAY0n_qsH5/"
 }

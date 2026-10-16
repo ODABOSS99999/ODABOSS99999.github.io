@@ -11,6 +11,24 @@ const items: Photo[] = [
 ];
 
 describe('photograph viewer', () => {
+  it('keeps the source link reachable inside the focus loop for a single photograph', async () => {
+    const user = userEvent.setup();
+    const photo = { ...items[0], sourceUrl: 'https://www.instagram.com/p/test_source/', sourceLabel: 'View post on Instagram' };
+    render(<Gallery items={[photo]}/>);
+    await user.click(screen.getByRole('button', { name: `View ${photo.alt}` }));
+    const viewer = screen.getByRole('dialog');
+    const close = within(viewer).getByRole('button', { name: 'Close photograph viewer' });
+    const source = within(viewer).getByRole('link', { name: /View post on Instagram/ });
+    expect(source.getAttribute('href')).toBe(photo.sourceUrl);
+    expect(source.getAttribute('target')).toBe('_blank');
+    close.focus();
+    await user.tab({ shift: true });
+    expect(document.activeElement).toBe(source);
+    await user.tab();
+    expect(document.activeElement).toBe(close);
+    await user.tab();
+    expect(document.activeElement).toBe(source);
+  });
   it('changes photos on a horizontal swipe while leaving vertical scrolling gestures alone', async () => {
     const user = userEvent.setup();
     render(<Gallery items={items}/>);

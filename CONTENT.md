@@ -1,5 +1,7 @@
 # Adding your work
 
+The real Instagram snapshot lives in `public/instagram/feed.json` with local previews in `public/instagram/media/`. Use `public/instagram/selection.json` to curate it: portfolio IDs identify the supplied collection's verified members; favorite IDs plus pinned IDs form the favorites subsection and are also included in the portfolio. IDs, canonical post links, and shortcodes are accepted. Empty selections mean unknown/unpublished membership, not permission to use every post. See [Instagram setup](INSTAGRAM.md). Latest post independently uses the newest real timestamp.
+
 Edit `src/content.ts`; its exported TypeScript types define the supported fields. Empty collections are intentional unpublished states. Add only your actual photographs, biography, credits, and projects. Examples below describe structure, not personal facts to publish.
 
 Keep originals outside `public/` and preserve them. Export web copies to `public/images/` (create the folder), ideally JPEG, WebP, or AVIF in sRGB, with sensible dimensions and file sizes. A file at `public/images/example.webp` is addressed as `/images/example.webp`. Anything under `public/` ships publicly. Do not put private files, RAW originals, credentials, or unpublished source material there.

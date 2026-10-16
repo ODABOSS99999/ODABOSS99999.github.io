@@ -1,0 +1,27 @@
+# Verification record — October 15, 2026
+
+Checks actually run against the shared checkout are recorded below. Other chats may continue editing; recheck changed behavior before release. Current production entry is main-illustrated.tsx/App2D and the seated illustrated room.
+
+| Check | Actual result |
+| --- | --- |
+| npm run build | TypeScript and Vite production build succeeded. Optional paper-room chunk is about 750 kB before compression; Vite reports a size warning. |
+| npm test | 60 tests passed in seven files: preferences, navigation/history, focus, galleries/swipes, explicit favorite/pinned selections, and recovery. |
+| node --test scripts/instagram-sync.test.mjs | 11 passed: bounded downloads, canonical URLs, exact captions, local dimensions, carousel/video covers, archive merging, failure retention. |
+| node --test scripts/publish-pages.test.mjs | Isolated staging passed: preserve CNAME/.git, replace old build, reject private material before modification. Authenticated remote publishing not executed. |
+| npm audit --omit=dev | Zero reported runtime dependency vulnerabilities. |
+| Production browser matrix | Chromium, 360/390/768/1440/1920 pixels, three lighting modes. No horizontal overflow in 15 combinations; desktop and phone screenshots inspected. |
+| Production routes | All six destinations opened through Index and returned to room. App tests also exercise Back/Forward, scroll, and focus restoration. |
+| Real Instagram preview | Latest post DehAOwevgm4 selected by timestamp; local image loaded, source link matched, modal Tab loop and Escape passed. |
+| Native viewer fixture | Portrait proportions, arrow keys, missing image, Escape, focus restoration, scroll lock, repeated Tab traversal passed. Synthetic fixtures excluded from production. |
+| Real browser audio | No context before Play; context running after Play, suspended after Mute. Three cycles used one context. Volume zero during QA; audible quality not assessed. |
+| WebGL unavailable | Forced WebGL absence showed usable object-list fallback. Contact opened; return restored focus. Context loss after rendering not separately simulated. |
+| Motion / zoom | Earlier CSS-room browser checks and current unit/scene tests cover reduced motion. 720px reflow equivalent checked; actual browser-menu 200% zoom and physical phones unverified. |
+
+Current browser scripts: scripts/final-browser-qa.cjs, scripts/audio-browser-qa.cjs, scripts/fallback-browser-qa.cjs. Use Playwright CLI run-code --filename with production preview on port 5174. Gallery fixture needs development server on 5173. Screenshots remain in ignored output/playwright; current-preview.png shows Photography with the latest Instagram post. The seated room stays full screen; the latest feed lives inside Photography.
+
+Static build was approximately 8.7 MB before Pages route copies. Public feed contains no API keys or signed CDN URLs. Release workflows enforce a conservative 240 MB ceiling and static-only output.
+
+Not proven: full portfolio/pinned membership; scheduled-refresh activation or authenticated run; newest revision publicly deployed; Name.com account state; mcgowen.works DNS and TLS; production traffic performance; hardware-wide accessibility. Missing biography, publications, and projects have intentional empty states. Earlier CSS bookshelf screenshots describe that earlier design only.
+
+Final integration recheck: the other design chat removed the home feed to preserve the full-screen room. The initial repeat timed out because the selector expected a home feed. Latest Instagram was moved into Photography; build and all 60 application tests passed again.
+The adjusted production browser check passed: five widths times three lighting modes, all six routes, real latest photo/source, gallery focus loop and Escape, zero page errors.

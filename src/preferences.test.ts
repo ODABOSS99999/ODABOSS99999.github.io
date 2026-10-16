@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { defaultPreferences, readPreferences, routeFromPath, savePreferences } from './preferences';
 
 describe('preferences', () => {
-  it('starts muted and uses defaults when storage is missing or malformed', () => {
+  it('defaults sound on and uses defaults when storage is missing or malformed', () => {
     expect(readPreferences()).toEqual(defaultPreferences);
     localStorage.setItem('mcgowen-library', '{invalid');
     expect(readPreferences()).toEqual(defaultPreferences);

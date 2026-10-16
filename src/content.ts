@@ -14,7 +14,10 @@ export const destinations: { id: SectionId; title: string; subtitle: string; num
 export const owner = {
   brand: 'McGowen Media', email: 'owenmmcgowan@gmail.com', phone: '+19366475140', phoneDisplay: '(936) 647–5140',
   social: [{ label: 'Instagram', handle: '@mcgowen_media', url: 'https://www.instagram.com/mcgowen_media/' }],
-  biography: [] as { heading?: string; text: string }[],
+  biography: [
+    { heading: 'Creative work', text: 'I’m Owen McGowan, a creative and commercial product photographer. My work includes drink, clothing, technology, accessories, and concert photography. I’m open to ads, paid campaigns, and brand collaborations.' },
+    { heading: 'Engineering and campus life', text: 'I study mechanical engineering at UT Dallas, class of 2030. I photograph for The Mercury and lead marketing for UTD’s rocketry club.' },
+  ] as { heading?: string; text: string }[],
 };
 export const photos: Photo[] = [];
 export const publications: Publication[] = [];

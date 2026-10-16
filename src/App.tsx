@@ -1,6 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import type { MouseEvent } from 'react';
 import Scene from './Scene';
+import InstagramFeed from './InstagramFeed';
 import { destinations } from './content';
 import type { SectionId } from './content';
 import { readPreferences, savePreferences, routeFromPath } from './preferences';
@@ -61,23 +62,20 @@ export default function App(){
   }
   return <div className={`app ${route==='library'?'is-library':'is-section'} ${prefs.motion?'':'motion-off'}`} data-lighting={prefs.lighting}>
     <a className="skip-link" href="#main">Skip to content</a>
-    <header className="site-header"><a href="/" onClick={e=>link(e,'library')} className="site-name" aria-label="McGowen Media — library home">McGowen Media</a>
-      <div className="header-center">THE PERSONAL COLLECTION</div><div className="header-controls">
+    <header className="site-header">{route!=='library'&&<a href="/" onClick={e=>link(e,'library')} className="site-name" aria-label="McGowen Media — library home">McGowen Media</a>}
+      <div className="header-controls">
       <button className="audio-shortcut" aria-label={playing?'Mute room ambience':'Play room ambience'} onClick={()=>void toggleAudio()} aria-pressed={playing}><span aria-hidden="true">{playing?'◖))':'◖×'}</span><span>{playing?'Sound on':'Sound off'}</span></button>
       <div className="control-wrap"><button ref={settingsTrigger} className={`settings-toggle ${settings?'active':''}`} aria-label="Room settings" aria-expanded={settings} aria-controls="room-settings" onClick={()=>{setSettings(!settings);setMenu(false);}}><span aria-hidden="true">☼</span><span>Room</span></button>
       {settings&&<div id="room-settings" className="settings-panel"><span className="eyebrow">SET THE ATMOSPHERE</span><fieldset><legend>Lighting</legend><div className="lighting-options">{(['daylight','lamplight','darkroom'] as Lighting[]).map(mode=><button key={mode} aria-pressed={prefs.lighting===mode} onClick={()=>lighting(mode)}><span className={`mode-dot ${mode}`}/>{mode[0].toUpperCase()+mode.slice(1)}</button>)}</div></fieldset><div className="setting-row"><label htmlFor="volume">Ambient volume</label><output htmlFor="volume">{Math.round(prefs.volume*100)}%</output></div><input id="volume" type="range" min="0" max="1" step=".01" value={prefs.volume} onChange={e=>setPrefs(p=>({...p,volume:Number(e.target.value)}))}/><button className="setting-action" onClick={()=>void toggleAudio()}>{playing?'Mute ambience':'Play ambience'} <span>{playing?'Ⅱ':'▷'}</span></button><label className="motion-setting"><input type="checkbox" checked={prefs.motion} onChange={e=>setPrefs(p=>({...p,motion:e.target.checked}))}/>Subtle room movement</label><p>Sound begins only when you press play.</p></div>}</div>
       <div className="control-wrap"><button ref={menuTrigger} className="menu-toggle" onClick={()=>{setMenu(!menu);setSettings(false);}} aria-expanded={menu} aria-controls="library-menu">Index <span aria-hidden="true">{menu?'−':'+'}</span></button>{menu&&<nav id="library-menu" className="menu-panel" aria-label="Library index"><a href="/" aria-current={route==='library'?'page':undefined} onClick={e=>link(e,'library')}><span>00</span>The library <span>↗</span></a>{destinations.map(d=><a href={`/${d.id}`} key={d.id} aria-current={route===d.id?'page':undefined} onClick={e=>link(e,d.id)}><span>{d.number}</span>{d.title}<span>↗</span></a>)}</nav>}</div>
     </div></header>
     <main id="main" tabIndex={-1}>{route==='library'?<>
-      <div className="library-intro"><div><p className="eyebrow"><span className="little-rule"/> WELCOME. TAKE YOUR TIME.</p><h1>The McGowen <em>Library.</em></h1><p className="intro-copy">A place for photographs, curious ideas,<br className="desktop-break"/> and things made with care.</p></div><div className="intro-aside"><p>A small world.<br/>A closer look.</p></div></div>
+      <h1 className="visually-hidden">The McGowen Library</h1>
       <Scene navigate={navigate} toggleLamp={()=>lighting(prefs.lighting==='darkroom'?'lamplight':'darkroom')} toggleAudio={()=>void toggleAudio()} playing={playing} motion={prefs.motion} lighting={prefs.lighting}/>
+      <InstagramFeed/>
     </>:known?<ContentBoundary key={route} onHome={()=>navigate('library')}><Suspense fallback={<div className="section-loading" role="status">Opening the collection…</div>}><SectionFocus onReady={restorePosition}/><Sections key={route} section={route as SectionId} navigate={navigate}/></Suspense></ContentBoundary>:<div className="not-found"><p className="eyebrow">AN UNMARKED SHELF</p><h1>A little lost?</h1><p>This page isn’t part of the collection.</p><button className="text-link" onClick={()=>navigate('library')}>Return to the library ↗</button></div>}</main>
     <footer className="site-footer"><span>McGowen Media</span><div>{route==='library'?<span className="library-status"><span/>YOU’RE IN THE LIBRARY</span>:<a className="exit-sign" href="/" onClick={e=>link(e,'library')} aria-label="Return to library">EXIT <span aria-hidden="true">↗</span></a>}</div><span className="lighting-status"><span className={`mode-dot ${prefs.lighting}`}/>{prefs.lighting[0].toUpperCase()+prefs.lighting.slice(1)}</span></footer>
     {audioError&&<p className="audio-error" role="status">{audioError}</p>}
   </div>;
 }
 function SectionFocus({onReady}:{onReady:()=>void}){useEffect(()=>{const frame=requestAnimationFrame(()=>{onReady();document.getElementById('section-title')?.focus({preventScroll:true});});return()=>cancelAnimationFrame(frame);},[onReady]);return null;}
-
-
-
-

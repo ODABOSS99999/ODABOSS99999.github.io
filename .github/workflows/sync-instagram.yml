@@ -7,9 +7,10 @@ on:
 
 permissions:
   contents: write
+  pages: write
 
 concurrency:
-  group: instagram-snapshot
+  group: production-static-site
   cancel-in-progress: false
 
 jobs:
@@ -26,17 +27,55 @@ jobs:
           node-version: '22'
       - run: npm ci
       - run: node --test scripts/instagram-sync.test.mjs
+      - run: node --test scripts/publish-pages.test.mjs
       - name: Refresh local static feed
         run: node scripts/instagram-sync.mjs
         env:
           WINDSOR_API_KEY: ${{ secrets.WINDSOR_API_KEY }}
+      - run: npm test
+      - run: npm run build
+      - name: Prepare GitHub Pages direct section URLs
+        if: vars.INSTAGRAM_DEPLOY_TARGET != 'azure'
+        run: node scripts/prepare-pages.mjs
+      - name: Check static release footprint
+        run: |
+          node --input-type=module <<'NODE'
+          import { readdir, stat, access } from 'node:fs/promises';
+          import { join } from 'node:path';
+          let bytes = 0, files = 0;
+          async function walk(dir) { for (const entry of await readdir(dir, { withFileTypes: true })) { const path = join(dir, entry.name); if (entry.isDirectory()) await walk(path); else { bytes += (await stat(path)).size; files++; } } }
+          await walk('dist');
+          await access('dist/staticwebapp.config.json');
+          if (bytes > 240000000 || files > 15000) throw new Error('Static release exceeds conservative Free limits');
+          for (const path of ['dist/api', 'dist/_worker.js']) if (await access(path).then(() => true, () => false)) throw new Error('Expected static-only release');
+          NODE
       - name: Commit changed snapshot only
+        env:
+          SOURCE_BRANCH: ${{ github.event.repository.default_branch }}
         run: |
           git add -- public/instagram
           if git diff --cached --quiet; then exit 0; fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git commit -m 'Refresh Instagram snapshot'
-          git push origin HEAD:${{ github.event.repository.default_branch }}
+          git push origin "HEAD:$SOURCE_BRANCH"
+      - name: Refresh existing GitHub Pages site after release approval
+        if: vars.SITE_PUBLIC_RELEASE_APPROVED == 'true' && vars.INSTAGRAM_DEPLOY_TARGET != 'azure'
+        run: node scripts/publish-pages.mjs
+        env:
+          SITE_PUBLIC_RELEASE_APPROVED: ${{ vars.SITE_PUBLIC_RELEASE_APPROVED }}
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Update Azure static site after release approval
+        if: vars.SITE_PUBLIC_RELEASE_APPROVED == 'true' && vars.INSTAGRAM_DEPLOY_TARGET == 'azure'
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          action: upload
+          app_location: dist
+          output_location: ''
+          api_location: ''
+          skip_app_build: true
+          skip_api_build: true
 
-# This workflow never deploys. Publishing remains a separately approved action.
+# Initial public release requires separate human approval. The owner can then
+# authorize automatic publication of future Instagram refreshes with the variable.
