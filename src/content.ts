@@ -16,15 +16,19 @@ export const owner = {
   brand: 'McGowen Media', email: 'owenmmcgowan@gmail.com', phone: '+19366475140', phoneDisplay: '(936) 647–5140',
   social: [{ label: 'LinkedIn', handle: 'Owen McGowan', url: 'https://www.linkedin.com/in/mcgowens/' }, { label: 'Instagram', handle: '@mcgowen_media', url: 'https://www.instagram.com/mcgowen_media/' }],
   biography: [
-    { heading: 'Creative work', text: 'I’m Owen McGowan, a creative and commercial product photographer. My work includes drink, clothing, technology, accessories, and concert photography. I’m open to ads, paid campaigns, and brand collaborations.' },
-    { heading: 'Engineering and campus life', text: 'I study mechanical engineering at UT Dallas, class of 2030. I photograph for The Mercury and lead marketing for UTD’s rocketry club.' },
-    { heading: 'Technical problem-solving', text: 'My work brings together CAD, 3D printing and tuning, hardware repair, Arduino, Raspberry Pi, Python, and software automation. I founded CPRINTABL3S and taught hands-on robotics at LearnToBot.' },
-    { heading: 'Building and leading', text: 'At Texas Torque, I designed and machined components for competitive robots. I later led the American Rocketry Challenge team at College Park and now contribute to Comet Rocketry at UT Dallas, including its L3 Rockets technical team.' },
+    { heading: 'A little about me', text: 'I’m Owen McGowan, a mechanical engineering student at UT Dallas, class of 2030. I’m from The Woodlands, Texas, and I’ve also lived in Malaysia. I like making things: robots, physical projects, 3D models, websites, and media.' },
+    { heading: 'Where it started', text: 'In high school at College Park, I worked on the yearbook, designed and machined robot components with Texas Torque, and led our American Rocketry Challenge team. I also started CPRINTABL3S, my own 3D-printing service, and taught hands-on robotics at LearnToBot.' },
+    { heading: 'Life at UTD', text: 'At college, I’m continuing that mix of engineering and creativity. I’m part of Comet Rocketry’s L3 Rockets technical team and lead the club’s marketing. I also photograph for The Mercury, UTD’s student newspaper.' },
+    { heading: 'Away from the projects', text: 'I like traveling, trying new technology, photographing wildlife, and spending time with friends. You can also find me playing Minecraft or Magic: The Gathering. Robotics and building things are a big part of my life, but so is having fun with the people around me.' },
   ] as { heading?: string; text: string }[],
 };
 export const photos: Photo[] = [];
-// Confirmed against Mercury article credits and the owner's Instagram tagged grid.
+// Mercury placements verified live; photo authorship includes direct owner confirmation.
 export const publications: Publication[] = [
+  { title: 'Students frustrated over dining hall swipe restrictions', publication: 'The UTD Mercury · Instagram', role: 'Photography · Owen McGowan', url: 'https://www.instagram.com/p/Dd4d-NoiT64/' },
+  { title: 'Screw calculus, study the blade', publication: 'The UTD Mercury · Instagram', date: 'September 16, 2026', role: 'Photography · Owen McGowan', url: 'https://www.instagram.com/p/DdW3SIPEbj9/' },
+  { title: 'Avride has arrived at UTD!', publication: 'The UTD Mercury · Instagram', date: 'August 18, 2026', role: 'Photography · Owen McGowan', url: 'https://www.instagram.com/p/DcMq3kukeql/' },
+  { title: 'Who is the Peanut Butter Guy? — interview photo feature', publication: 'The UTD Mercury · Instagram', date: 'September 12, 2026', role: 'Photography · accompanying the credited Mercury interview', url: 'https://www.instagram.com/p/DdMrTSckZCQ/' },
   { title: 'Mercury exclusive: The man underneath the peanut butter', publication: 'The UTD Mercury', date: 'September 12, 2026', role: 'Photography · Owen McGowan', url: 'https://utdmercury.com/35535/life-arts/the-man-underneath-the-peanut-butter/' },
   { title: 'Peanut Butter Guy — exclusive interview preview', publication: 'The UTD Mercury · Instagram', date: 'September 10, 2026', role: 'Photography · tagged @mcgowen_media', url: 'https://www.instagram.com/p/DdIJSDnRUbj/' },
 ];

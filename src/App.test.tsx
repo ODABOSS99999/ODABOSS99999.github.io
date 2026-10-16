@@ -57,10 +57,12 @@ describe('library navigation', () => {
     expect(location.pathname).toBe('/');
     await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('button', { name: destination.title })));
   });
-  it('loads direct URLs and follows back/forward popstate changes', async () => {
+  it('starts at the chair even from a previous section URL, then supports back/forward', async () => {
     const user = userEvent.setup();
     history.replaceState({}, '', '/contact');
     render(<App/>);
+    expect(location.pathname).toBe('/');
+    await user.click(screen.getByRole('button', { name: 'Contact' }));
     expect(await screen.findByRole('heading', { name: /^Contact\s*\.$/, level: 1 })).toBeTruthy();
     expect(screen.getByRole('link', { name: 'owenmmcgowan@gmail.com' }).getAttribute('href')).toBe('mailto:owenmmcgowan@gmail.com');
     const index = screen.getByRole('button', { name: /Index/ });
@@ -74,12 +76,11 @@ describe('library navigation', () => {
     expect(await screen.findByRole('heading', { name: /^Engineering Projects\s*\.$/, level: 1 })).toBeTruthy();
     expect(location.pathname).toBe('/engineering');
   });
-  it('provides index navigation and a return route for unknown URLs', async () => {
+  it('restarts unknown URLs at the chair and provides index navigation', async () => {
     const user = userEvent.setup();
     history.replaceState({}, '', '/unknown');
     render(<App/>);
-    expect(screen.getByRole('heading', { name: 'A little lost?' })).toBeTruthy();
-    await user.click(screen.getByRole('button', { name: /Return to the library/ }));
+    expect(location.pathname).toBe('/');
     await user.click(screen.getByRole('button', { name: /Index/ }));
     await user.click(screen.getByRole('link', { name: /About Me/ }));
     expect(await screen.findByRole('heading', { name: /^About Me\s*\.$/, level: 1 })).toBeTruthy();
@@ -103,7 +104,7 @@ describe('room preferences', () => {
     act(() => { document.dispatchEvent(new Event('visibilitychange')); });
     expect(audio.start).toHaveBeenCalledTimes(2);
   });
-  it('persists lighting, volume, and movement, and switches the physical lamp', async () => {
+  it('resets lighting, volume, and movement on reopening, and switches the physical lamp', async () => {
     const user = userEvent.setup();
     const { container, unmount } = render(<App/>);
     await user.click(screen.getByRole('button', { name: 'Room settings' }));
@@ -112,10 +113,10 @@ describe('room preferences', () => {
     await user.click(screen.getByRole('checkbox', { name: 'Subtle room movement' }));
     expect(container.firstElementChild?.getAttribute('data-lighting')).toBe('daylight');
     expect(container.firstElementChild?.classList.contains('motion-off')).toBe(true);
-    expect(JSON.parse(localStorage.getItem('mcgowen-library')!)).toMatchObject({ lighting: 'daylight', volume: .65, motion: false });
+    expect(localStorage.getItem('mcgowen-library')).toBeNull();
     unmount();
     const next = render(<App/>);
-    expect(next.container.firstElementChild?.getAttribute('data-lighting')).toBe('daylight');
+    expect(next.container.firstElementChild?.getAttribute('data-lighting')).toBe('lamplight');
     await user.click(screen.getByRole('button', { name: 'Lamp switch: toggle Lamplight and Darkroom' }));
     expect(next.container.firstElementChild?.getAttribute('data-lighting')).toBe('darkroom');
     await user.click(screen.getByRole('button', { name: 'Lamp switch: toggle Lamplight and Darkroom' }));
@@ -131,18 +132,16 @@ describe('room preferences', () => {
     await waitFor(() => expect(audio.start).toHaveBeenCalledTimes(2));
     expect(screen.queryByText('Room audio is unavailable in this browser.')).toBeNull();
     await user.click(screen.getAllByRole('button', { name: 'Mute room ambience' })[0]);
-    expect(JSON.parse(localStorage.getItem('mcgowen-library')!).muted).toBe(true);
+    expect(localStorage.getItem('mcgowen-library')).toBeNull();
   });
-  it('keeps an explicit mute across reloads and starts when enabled again', async () => {
+  it('starts a fresh audio session despite settings from an earlier visit', async () => {
     localStorage.setItem('mcgowen-library', JSON.stringify({ muted: true, volume: .5, soundDefaultVersion: 2 }));
     const user = userEvent.setup();
     render(<App/>);
-    expect(audio.start).not.toHaveBeenCalled();
+    await waitFor(() => expect(audio.start).toHaveBeenCalledWith(.3));
     await user.click(screen.getByRole('button', { name: /Index/ }));
-    expect(audio.start).not.toHaveBeenCalled();
-    await user.click(screen.getAllByRole('button', { name: 'Play room ambience' })[0]);
-    await waitFor(() => expect(audio.start).toHaveBeenCalledWith(.5));
-    expect(JSON.parse(localStorage.getItem('mcgowen-library')!).muted).toBe(false);
+    await user.click(screen.getAllByRole('button', { name: 'Mute room ambience' })[0]);
+    expect(localStorage.getItem('mcgowen-library')).not.toBeNull();
   });
   it('closes settings and index with Escape and keeps their panels mutually exclusive', async () => {
     const user = userEvent.setup();

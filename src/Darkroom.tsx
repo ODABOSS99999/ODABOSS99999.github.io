@@ -1,37 +1,25 @@
-import {useCallback,useEffect,useRef,useState} from 'react';
-import {loadInstagramSnapshot} from './instagramMedia';
-import {loadStats} from './InstagramStats';
-import type {Stats} from './InstagramStats';
-import type {InstagramSnapshot} from './instagram';
-import PhotoMetrics from './PhotoMetrics';
+import {useEffect,useRef,useState} from 'react';
+import {useInstagramSnapshot,instagramPhoto} from './instagramMedia';
+import ExitSign from './ExitSign';
 import './darkroom.css';
 
-export default function Darkroom(){
- const panel=useRef<HTMLElement>(null);
- useEffect(()=>{const frame=requestAnimationFrame(()=>panel.current?.scrollIntoView?.({block:'start',behavior:'instant'}));return()=>cancelAnimationFrame(frame);},[]);
- const [feed,setFeed]=useState<InstagramSnapshot|null>(null),[stats,setStats]=useState<Stats|null>(null);
- const [busy,setBusy]=useState(true),[error,setError]=useState(false);
- const active=useRef(false),pending=useRef(false);
- const refresh=useCallback(async()=>{
-  if(pending.current)return;pending.current=true;setBusy(true);
-  const [posts,analytics]=await Promise.allSettled([loadInstagramSnapshot(true),loadStats()]);
-  pending.current=false;if(!active.current)return;
-  if(posts.status==='fulfilled')setFeed(posts.value);
-  if(analytics.status==='fulfilled')setStats(analytics.value);
-  setError(posts.status==='rejected'||analytics.status==='rejected');setBusy(false);
- },[]);
- useEffect(()=>{active.current=true;void refresh();const timer=setInterval(()=>{if(!document.hidden)void refresh();},300000);const visible=()=>{if(!document.hidden)void refresh();};document.addEventListener('visibilitychange',visible);return()=>{active.current=false;clearInterval(timer);document.removeEventListener('visibilitychange',visible);};},[refresh]);
- const posts=[...(feed?.posts||[])].sort((a,b)=>Date.parse(b.timestamp)-Date.parse(a.timestamp)).slice(0,6);
- const max=Math.max(1,...(stats?.growth.map(p=>p.count??0)||[]));
- const stamp=(value:string)=>`${Date.now()-Date.parse(value)>86400000?'Older snapshot · ':''}${new Date(value).toLocaleString()}`;
- return <section ref={panel} className="darkroom-dashboard" aria-labelledby="darkroom-title">
-  <header><div><p className="eyebrow">THE DARKROOM / @MCGOWEN_MEDIA</p><h2 id="darkroom-title">Fresh off the roll.</h2></div><button onClick={()=>void refresh()} disabled={busy}>{busy?'Checking…':'Check for updates'}</button></header>
-  <p className="darkroom-freshness">Daily automatic source sync · this panel checks published updates every five minutes. Updates follow the source’s refresh schedule.</p>
-  {error&&<p role="status">Some updates are unavailable. Any previously loaded data stays visible.</p>}
-  {stats?<><dl className="darkroom-totals"><div><dt>Followers</dt><dd>{stats.followers.toLocaleString()}</dd></div><div><dt>Published posts</dt><dd>{stats.posts.toLocaleString()}</dd></div></dl><p className="darkroom-freshness">Profile source checked <time dateTime={stats.checkedAt}>{stamp(stats.checkedAt)}</time></p>
-  <details className="darkroom-growth"><summary>Daily new followers · {stats.growth.length} reported days</summary><p>New follows, excluding unfollows. Missing values are unavailable.</p><svg viewBox="0 0 600 100" role="img" aria-label="Daily new followers">{stats.growth.map((day,i)=><rect key={day.date} x={i*600/stats.growth.length} y={95-(day.count??0)/max*90} width={Math.max(1,600/stats.growth.length-4)} height={(day.count??0)/max*90} fill="currentColor"><title>{day.date}: {day.count??'unavailable'}</title></rect>)}</svg><table><thead><tr><th>Date</th><th>New followers</th></tr></thead><tbody>{stats.growth.map(day=><tr key={day.date}><td>{day.date}</td><td>{day.count??'Unavailable'}</td></tr>)}</tbody></table></details></>:<p role="status">{busy?'Loading account analytics…':'Account analytics unavailable.'}</p>}
-  <h3>Recent posts</h3>{feed&&<p className="darkroom-freshness">Feed synced <time dateTime={feed.fetchedAt}>{stamp(feed.fetchedAt)}</time>. Engagement counts show their source timestamps; unavailable counts are omitted.</p>}
-  <div className="darkroom-posts">{posts.map(post=><article key={post.id}><a href={post.permalink} target="_blank" rel="noreferrer"><img src={post.image.src} width={post.image.width} height={post.image.height} loading="lazy" alt={`Instagram ${post.mediaType==='VIDEO'||post.mediaType==='REEL'?'video cover':'post'} from ${new Date(post.timestamp).toLocaleDateString()}`}/><span>View {post.mediaType==='VIDEO'||post.mediaType==='REEL'?'reel':'post'} on Instagram ↗</span></a><time dateTime={post.timestamp}>{new Date(post.timestamp).toLocaleDateString()}</time><p>{post.caption}</p><PhotoMetrics metrics={post.metrics}/></article>)}</div>
-  {!posts.length&&<p role="status">{busy?'Developing the latest posts…':'Recent posts are unavailable.'} <a href="https://www.instagram.com/mcgowen_media/" target="_blank" rel="noreferrer">Visit @mcgowen_media ↗</a></p>}
- </section>;
+export default function Darkroom({onClose}:{onClose?:()=>void}){
+ const panel=useRef<HTMLDialogElement>(null),gesture=useRef<{x:number;y:number}|null>(null),suppressClickUntil=useRef(0);
+ const {snapshot,loading}=useInstagramSnapshot({refreshOnMount:true});
+ const [index,setIndex]=useState(0),[scan,setScan]=useState(0),[direction,setDirection]=useState(1);
+ const posts=[...(snapshot?.posts||[])].filter(post=>post.mediaType==='IMAGE'||post.mediaType==='CAROUSEL_ALBUM').sort((a,b)=>Date.parse(b.timestamp)-Date.parse(a.timestamp));
+ const current=Math.min(index,Math.max(0,posts.length-1)),post=posts[current];
+ const move=(direction:number)=>{setDirection(direction);setIndex(Math.max(0,Math.min(posts.length-1,current+direction)));setScan(value=>value+1);};
+ useEffect(()=>{const dialog=panel.current,previous=document.activeElement as HTMLElement|null;const overflow=document.body.style.overflow;document.body.style.overflow='hidden';if(dialog?.showModal)dialog.showModal();else dialog?.setAttribute('open','');dialog?.querySelector<HTMLButtonElement>('button')?.focus();return()=>{document.body.style.overflow=overflow;dialog?.close?.();previous?.focus({preventScroll:true});};},[]);
+ return <dialog ref={panel} onCancel={event=>{event.preventDefault();onClose?.();}} className="darkroom-dashboard film-scanner" aria-labelledby="darkroom-title">
+  <header><h2 id="darkroom-title">Fresh off the roll.</h2><div className="scanner-header-actions">{onClose&&<ExitSign onExit={onClose} label="Exit darkroom" className="darkroom-exit"/>}<a href="https://www.instagram.com/mcgowen_media/" target="_blank" rel="noreferrer" aria-label="Visit McGowen Media on Instagram">↗</a></div></header>
+  <div className="scanner-body" role="region" aria-roledescription="carousel" aria-label="Film scanner" tabIndex={0} onKeyDown={event=>{if(event.key==='ArrowLeft'||event.key==='ArrowRight'){event.preventDefault();move(event.key==='ArrowLeft'?-1:1);}}} onPointerDown={event=>{if((event.target as HTMLElement).closest('.scanner-controls,.scanner-caption'))return;gesture.current={x:event.clientX,y:event.clientY};}} onPointerMove={event=>{const start=gesture.current;if(start&&Math.abs(event.clientX-start.x)>45&&Math.abs(event.clientX-start.x)>Math.abs(event.clientY-start.y)){event.currentTarget.setPointerCapture?.(event.pointerId);suppressClickUntil.current=Date.now()+500;}}} onPointerUp={event=>{const start=gesture.current;gesture.current=null;if(start&&Math.abs(event.clientX-start.x)>45&&Math.abs(event.clientX-start.x)>Math.abs(event.clientY-start.y)){suppressClickUntil.current=Date.now()+500;move(event.clientX<start.x?1:-1);}if(event.currentTarget.hasPointerCapture?.(event.pointerId))event.currentTarget.releasePointerCapture(event.pointerId);}} onClickCapture={event=>{if(Date.now()<suppressClickUntil.current){event.preventDefault();event.stopPropagation();}}} onPointerCancel={()=>{gesture.current=null;}}>
+   <div className="scanner-viewport">
+    {post?<div key={post.id} className={`film-negative ${direction<0?'film-backward':''}`}><div className="film-edge" aria-hidden="true"><span>KODAK · 35 MM</span><span>{String(current+1).padStart(2,'0')} ▷</span></div><a draggable={false} onDragStart={event=>event.preventDefault()} className="scanned-photo" href={post.permalink} target="_blank" rel="noreferrer" aria-label={`View frame ${current+1} on Instagram`}><img src={post.image.src} width={post.image.width} height={post.image.height} alt={instagramPhoto(post).alt} draggable={false}/></a><div className="film-edge" aria-hidden="true"><span>MCGOWEN</span><span>{String(current+1).padStart(2,'0')} A</span></div></div>:<p role="status">{loading?'Loading film…':'Film unavailable.'}</p>}
+    {post&&<div key={scan} className="scanner-light" aria-hidden="true"/>}
+   </div>
+   <div className="scanner-controls"><button type="button" onClick={()=>move(-1)} disabled={!post||current===0} aria-label="Scan previous frame">←</button><span role="status" aria-live="polite" aria-atomic="true">{post?`${String(current+1).padStart(2,'0')} / ${String(posts.length).padStart(2,'0')}`:'—'}</span><button type="button" onClick={()=>move(1)} disabled={!post||current===posts.length-1} aria-label="Scan next frame">→</button></div>
+   {post&&<div key={post.id} className="scanner-caption"><time dateTime={post.timestamp}>{new Date(post.timestamp).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}</time><div className="scanner-caption-text" tabIndex={0} role="region" aria-label="Post caption">{post.caption?<p>{post.caption}</p>:<p className="caption-empty">No caption on this post.</p>}</div></div>}
+  </div>
+ </dialog>;
 }

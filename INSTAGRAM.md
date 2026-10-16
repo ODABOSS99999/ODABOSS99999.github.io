@@ -68,3 +68,6 @@ The framed ledger in the middle-right shelf bay opens follower and post totals p
 
 ## Darkroom dashboard (October 16, 2026)
 Darkroom lighting opens the six most recent archived Instagram posts, organic engagement counts, profile totals, and daily new-follower chart/table. It bypasses curated portfolio selection, checks published snapshots every five minutes and on tab return, and offers a manual check. Source synchronization remains daily; browser checks do not trigger Windsor refreshes. Each source timestamp remains visible and older snapshots are labeled. Failed refreshes retain loaded data. No credentials enter the browser.
+
+## Automatic refresh verified October 16, 2026
+Owner GitHub settings were checked live: WINDSOR_API_KEY already exists as an encrypted repository secret, INSTAGRAM_SYNC_ENABLED=true, and SITE_PUBLIC_RELEASE_APPROVED=true. Windsor reports FREE / is_paid=false; the repository is public. Existing scheduled run 38934660585 succeeded. A fresh manual run 38963266615 also succeeded, including all three import steps, tests/build, and GitHub Pages publication request. The live feed returned fetchedAt 2026-10-16T20:35:22.620Z with 50 posts. The secret was neither revealed nor replaced. The daily workflow is active; GitHub scheduling delays and Windsor cache freshness can affect when new posts appear.

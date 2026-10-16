@@ -2,23 +2,44 @@ import {fireEvent,render,screen,waitFor} from '@testing-library/react';
 import {afterEach,expect,it,vi} from 'vitest';
 import Darkroom from './Darkroom';
 import feed from '../public/instagram/feed.json';
-import stats from '../public/instagram/stats.json';
 
 afterEach(()=>vi.unstubAllGlobals());
-it('shows recent posts independently of curated selections and retains them when refresh fails',async()=>{
- let offline=false;
- vi.stubGlobal('fetch',vi.fn(async(url:string)=>{
-  if(offline)throw Error('Offline');
-  return {ok:true,json:async()=>url.includes('stats.json')?stats:url.includes('metrics.json')?{version:0}:feed};
- }));
- const {container}=render(<Darkroom/>);
- await screen.findByText(stats.followers.toLocaleString());
- expect(container.querySelectorAll('.darkroom-posts article')).toHaveLength(6);
- const newest=[...feed.posts].sort((a,b)=>Date.parse(b.timestamp)-Date.parse(a.timestamp))[0];
- expect(container.querySelector('.darkroom-posts a')?.getAttribute('href')).toBe(newest.permalink);
- offline=true;fireEvent.click(screen.getByRole('button',{name:'Check for updates'}));
- await screen.findByText('Some updates are unavailable. Any previously loaded data stays visible.');
- expect(container.querySelectorAll('.darkroom-posts article')).toHaveLength(6);
- expect(screen.getByText(stats.followers.toLocaleString())).toBeTruthy();
- await waitFor(()=>expect(screen.getByRole('button',{name:'Check for updates'}).hasAttribute('disabled')).toBe(false));
+it('excludes newest videos and reels while scanning photo posts with buttons and keyboard',async()=>{
+ const snapshot={...feed,posts:[
+  {...feed.posts[0],id:'99999999999999991',mediaType:'VIDEO',timestamp:'2099-01-02T00:00:00Z',permalink:'https://www.instagram.com/reel/newestVideo/'},
+  {...feed.posts[0],id:'99999999999999992',mediaType:'REEL',timestamp:'2099-01-01T00:00:00Z',permalink:'https://www.instagram.com/reel/newestReel/'},
+  ...feed.posts,
+ ]};
+ vi.stubGlobal('fetch',vi.fn(async()=>({ok:true,json:async()=>snapshot})));
+ const close=vi.fn();
+ const {container,unmount}=render(<Darkroom onClose={close}/>);
+ const posts=[...feed.posts].filter(post=>post.mediaType==='IMAGE'||post.mediaType==='CAROUSEL_ALBUM').sort((a,b)=>Date.parse(b.timestamp)-Date.parse(a.timestamp));
+ await screen.findByRole('link',{name:'View frame 1 on Instagram'});
+ expect(container.querySelector('.scanned-photo')?.getAttribute('href')).toBe(posts[0].permalink);
+ expect(screen.getByRole('region',{name:'Post caption'}).textContent).toBe(posts[0].caption||'No caption on this post.');
+ expect(container.querySelector('time')?.dateTime).toBe(posts[0].timestamp);
+ expect(screen.getByRole('button',{name:'Scan previous frame'}).hasAttribute('disabled')).toBe(true);
+ fireEvent.click(screen.getByRole('button',{name:'Scan next frame'}));
+ expect(screen.getByRole('link',{name:'View frame 2 on Instagram'}).getAttribute('href')).toBe(posts[1].permalink);
+ expect(screen.getByRole('region',{name:'Post caption'}).textContent).toBe(posts[1].caption||'No caption on this post.');
+ const scanner=screen.getByRole('region',{name:'Film scanner'});
+ fireEvent.keyDown(scanner,{key:'ArrowLeft'});
+ expect(screen.getByRole('link',{name:'View frame 1 on Instagram'})).toBeTruthy();
+ fireEvent.keyDown(scanner,{key:'ArrowRight'});
+ expect(screen.getByRole('link',{name:'View frame 2 on Instagram'})).toBeTruthy();
+ expect(screen.getByRole('button',{name:'Exit darkroom'}).textContent).toContain('EXIT');
+ expect(container.querySelector('dialog')?.hasAttribute('open')).toBe(true);
+ expect(screen.getByText(`02 / ${String(posts.length).padStart(2,'0')}`)).toBeTruthy();
+ fireEvent.click(screen.getByRole('button',{name:'Exit darkroom'}));
+ expect(close).toHaveBeenCalledOnce();
+ expect(screen.queryByText('Followers')).toBeNull();
+ expect(screen.queryByText('Check for updates')).toBeNull();
+ const feedRequests=()=>vi.mocked(fetch).mock.calls.filter(([url])=>url==='/instagram/feed.json');
+ expect(feedRequests()).toHaveLength(1);
+ expect(feedRequests()[0][1]).toMatchObject({cache:'no-store'});
+ unmount();
+ render(<Darkroom onClose={close}/>);
+ await screen.findByRole('link',{name:'View frame 1 on Instagram'});
+ await waitFor(()=>expect(feedRequests()).toHaveLength(2));
+ expect(feedRequests()[1][1]).toMatchObject({cache:'no-store'});
 });

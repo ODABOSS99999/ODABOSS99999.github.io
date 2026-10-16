@@ -27,3 +27,8 @@ Final integration recheck: the other design chat removed the home feed to preser
 The adjusted production browser check passed: five widths times three lighting modes, all six routes, real latest photo/source, gallery focus loop and Escape, zero page errors.
 
 Final integration audit: 78 application tests and 17 importer/metrics/staging tests passed. Real renderer context loss after initialization exposed fallback navigation and Contact opened; this is additional evidence beyond the earlier initial-WebGL-absence check. Retargetable 800 ms room/chandelier lighting passed three focused tests and the production build. Source revision and release outcome are recorded in LIVE-DEPLOYMENT.md. Actual browser zoom remains unverified: the browser tool accepted keyboard zoom requests without changing devicePixelRatio or viewport.
+
+
+## October 16 portfolio, biography, signs and ledger update
+
+Local browser checks at 1440px and 390px verified curated portfolio first (30 selected covers), one independent latest feature with no overlap in portfolio, personal About text without its former photo-led introduction, no horizontal overflow, and stationary illuminated EXIT hover/focus. The room no longer has an EXIT above the phone attendant. Reduced-motion and keyboard focus were checked. The ledger uses line charts and keyboard date scrubbing; archived cumulative posts span September 16–October 16 (50 posts). Partnership classifications have per-post reasons and reviewed evidence; 18 of the 50 archived posts qualify, with two uncertain posts excluded. Only one total-follower snapshot currently exists; future sync preserves history instead of inventing it. These are local checks, not proof of publication.

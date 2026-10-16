@@ -7,7 +7,7 @@ export function addLuxuryDetails(scene:T.Scene,resources:RoomResources){
  const {geometries,materials}=resources;
  function mat(color:string,metalness=0,roughness=.65){const m=new T.MeshStandardMaterial({color,metalness,roughness});materials.push(m);return m;}
  const thread=mat('#a9905e',0,.98);
- const gold=mat('#b99a58',.7,.28),ivory=mat('#d8cfb4'),plaster=mat('#bfb79f'),walnut=mat('#39291f'),velvet=mat('#243a32'),glass=mat('#92a29b',.2,.2);
+ const gold=mat('#b99a58',.7,.28),ivory=mat('#d8cfb4'),plaster=mat('#bfb79f'),walnut=mat('#39291f'),velvet=mat('#243a32');
  function mesh(geo:T.BufferGeometry,m:T.Material,x:number,y:number,z:number,parent:T.Object3D=scene){geometries.push(geo);const o=new T.Mesh(geo,m);o.position.set(x,y,z);parent.add(o);return o;}
  function box(x:number,y:number,z:number,w:number,h:number,d:number,m:T.Material){return mesh(new T.BoxGeometry(w,h,d),m,x,y,z);}
  function ring(x:number,y:number,z:number,r:number,tube:number,m:T.Material,parent:T.Object3D=scene){const o=mesh(new T.TorusGeometry(r,tube,6,64),m,x,y,z,parent);o.rotation.x=Math.PI/2;return o;}
@@ -22,10 +22,16 @@ export function addLuxuryDetails(scene:T.Scene,resources:RoomResources){
  for(const y of [.18,.35,1.65,1.78])box(0,y,-4.84,13.8,.07,.1,y===1.78?gold:walnut);
  for(let x=1.4;x<6.9;x+=1.05){box(x,.98,-4.82,.035,1.2,.06,gold);box(x+.5,.42,-4.81,.86,.025,.05,gold);box(x+.5,1.54,-4.81,.86,.025,.05,gold);}
  for(const x of [-6.85,6.85]){box(x,.25,4,.12,.22,18,walnut);box(x,1.78,4,.08,.035,18,gold);for(let z=-4;z<13;z+=1.4)box(x,.96,z,.065,1.35,.035,gold);}
- // Tall glazing and velvet drapes along the left wall.
- box(-6.86,3.65,.5,.06,2.8,2.6,walnut);box(-6.8,3.65,.5,.04,2.57,2.35,glass);
- for(const z of [-.7,.5,1.7])box(-6.75,3.65,z,.06,2.65,.055,gold);box(-6.74,3.65,.5,.055,.06,2.4,gold);
- for(const z of [-1,2])for(let i=0;i<4;i++)mesh(new T.CylinderGeometry(.11,.15,3.25,10),velvet,-6.6+i*.07,3.45,z+i*.12);
+ // A visible window above the desk: changing sky, sun/moon and closing drapes.
+ const sky=new T.MeshBasicMaterial({color:'#a8c6cf'});materials.push(sky);
+ box(4.3,4.12,-4.71,3.45,2.16,.1,walnut);box(4.3,4.12,-4.64,3.2,1.94,.035,sky);
+ const sunMat=new T.MeshBasicMaterial({color:'#ffe9aa'}),moonMat=new T.MeshBasicMaterial({color:'#e4e9d4'});materials.push(sunMat,moonMat);
+ const sun=mesh(new T.CircleGeometry(.23,32),sunMat,3.5,4.65,-4.6),moon=mesh(new T.CircleGeometry(.18,32),moonMat,5.08,4.6,-4.59);
+ const hills=mat('#486859');box(4.3,3.3,-4.59,3.18,.3,.03,hills);
+ for(const x of [2.7,4.3,5.9])box(x,4.12,-4.51,.065,2,.07,gold);box(4.3,4.12,-4.5,3.2,.065,.07,gold);
+ box(4.3,5.32,-4.35,3.8,.065,.08,gold);
+ const drapes=[new T.Group(),new T.Group()];drapes.forEach((g,i)=>{scene.add(g);g.position.set(i?6.04:2.56,4.02,-4.34);for(let j=0;j<8;j++){const fold=mesh(new T.CylinderGeometry(.075,.09,2.48,8),velvet,(i?-1:1)*j*.075,0,Math.sin(j)*.035,g);fold.scale.z=.7;}});
+ const daySky=new T.Color('#a8c6cf'),nightSky=new T.Color('#101c3c');
  // Ornamental rug border and central woven medallion.
  for(const x of [-3.15,3.15])box(x,.035,1,.04,.006,4.5,thread);
  for(const z of [-1.15,3.15])box(0,.035,z,6.3,.006,.04,thread);
@@ -51,7 +57,7 @@ export function addLuxuryDetails(scene:T.Scene,resources:RoomResources){
  }
  const pendant=mesh(new T.OctahedronGeometry(.16),crystal,0,4.28,0,chandelier);pendant.scale.y=1.8;
  const light=new T.PointLight('#ffdb9a',14,15,2);light.position.set(cx,4.9,cz);scene.add(light);
- return {update:(weights:LightingWeights)=>{light.intensity=blendLight(weights,7,14,2);glow.emissiveIntensity=blendLight(weights,1.2,2.3,.35);}};
+ return {update:(weights:LightingWeights)=>{sky.color.copy(nightSky).lerp(daySky,weights.daylight);sun.visible=weights.daylight>.35;moon.visible=weights.daylight<.65;drapes.forEach(g=>{g.scale.x=1+weights.darkroom*2.05;});light.intensity=blendLight(weights,7,14,2);glow.emissiveIntensity=blendLight(weights,1.2,2.3,.35);}};
 }
 
 export function createTurntable(scene:T.Scene,resources:RoomResources){

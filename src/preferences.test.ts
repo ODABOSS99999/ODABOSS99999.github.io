@@ -7,16 +7,17 @@ describe('preferences', () => {
     localStorage.setItem('mcgowen-library', '{invalid');
     expect(readPreferences()).toEqual(defaultPreferences);
   });
-  it('validates saved types and clamps volume', () => {
+  it('ignores previous device settings on a new visit', () => {
     localStorage.setItem('mcgowen-library', JSON.stringify({ lighting: 'neon', volume: 3, motion: 'yes', muted: 0 }));
-    expect(readPreferences()).toEqual({ ...defaultPreferences, volume: 1 });
+    expect(readPreferences()).toEqual(defaultPreferences);
     localStorage.setItem('mcgowen-library', JSON.stringify({ lighting: 'daylight', volume: -2, motion: false, muted: false }));
-    expect(readPreferences()).toEqual({ lighting: 'daylight', volume: 0, motion: false, muted: false });
+    expect(readPreferences()).toEqual(defaultPreferences);
   });
-  it('round trips preferences and survives blocked browser storage', () => {
+  it('does not persist the visit and survives blocked browser storage', () => {
     const prefs = { lighting: 'darkroom' as const, volume: .65, motion: false, muted: true };
     savePreferences(prefs);
-    expect(readPreferences()).toEqual(prefs);
+    expect(readPreferences()).toEqual(defaultPreferences);
+    expect(localStorage.getItem('mcgowen-library')).toBeNull();
     vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => { throw new Error('blocked'); });
     vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new Error('blocked'); });
     expect(readPreferences()).toEqual(defaultPreferences);

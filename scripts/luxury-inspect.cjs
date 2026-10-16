@@ -1,0 +1,1 @@
+async(page)=>{await page.mouse.move(600,440);await page.waitForTimeout(100);return {hover:await page.locator('.seated-tooltip').allTextContents(),canvas:await page.locator('.seated-canvas').boundingBox()};}

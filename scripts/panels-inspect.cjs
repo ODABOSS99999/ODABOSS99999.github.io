@@ -1,0 +1,1 @@
+async(page)=>{await page.waitForTimeout(800);return await page.evaluate(()=>({opacity:getComputedStyle(document.querySelector('.section-page')).opacity,scrollY:scrollY,article:document.querySelector('.section-page').getBoundingClientRect().toJSON(),dialogs:[...document.querySelectorAll('dialog')].map(d=>d.open)}));}

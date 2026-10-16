@@ -6,6 +6,8 @@ import { selectInstagramPhotos } from './instagram-curated';
 export default function InstagramFeed({mode='latest'}:{mode?:'latest'|'portfolio'|'favorites'}){
   const {snapshot,loading}=useInstagramSnapshot();
   const items=selectInstagramPhotos(snapshot?.posts||[],mode);
+  if(mode==='latest'&&items.some(item=>selectInstagramPhotos(snapshot?.posts||[],'portfolio').some(photo=>photo.sourceUrl===item.sourceUrl)))return null;
+  if(mode==='latest'&&items.some(item=>selectInstagramPhotos(snapshot?.posts||[],'portfolio').some(photo=>photo.sourceUrl===item.sourceUrl)))return null;
   const recent=mode==='portfolio'&&instagramSelection.portfolioMode==='recent';
   return <section className={`instagram-feed instagram-${mode}`} aria-label={mode==='latest'?'Latest Instagram post':mode==='portfolio'?'Instagram portfolio':'Favorite and pinned Instagram posts'}>
     {mode==='latest'&&<div className="instagram-heading"><div><p className="eyebrow">A NOTE FROM THE PRESENT</p><h2>Latest from <em>Instagram.</em></h2></div><a className="text-link" href="https://www.instagram.com/mcgowen_media/" target="_blank" rel="noreferrer">@mcgowen_media ↗</a></div>}

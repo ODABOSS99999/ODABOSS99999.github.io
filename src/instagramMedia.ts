@@ -6,14 +6,14 @@ import type { Photo } from './content';
 let request:Promise<InstagramSnapshot>|null=null,cachedAt=0;
 export function loadInstagramSnapshot(force=false){
  if(force||!request||Date.now()-cachedAt>60000){cachedAt=Date.now();request=Promise.all([
-  fetch('/instagram/feed.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error('Instagram images unavailable');return r.json();}).then(validateSnapshot),
-  fetch('/instagram/metrics.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error('Metrics unavailable');return r.json();}).then(validateMetrics).catch(()=>null),
+  fetch('/instagram/feed.json',{cache:force?'no-store':'no-cache'}).then(r=>{if(!r.ok)throw new Error('Instagram images unavailable');return r.json();}).then(validateSnapshot),
+  fetch('/instagram/metrics.json',{cache:force?'no-store':'no-cache'}).then(r=>{if(!r.ok)throw new Error('Metrics unavailable');return r.json();}).then(validateMetrics).catch(()=>null),
  ]).then(([snapshot,metrics])=>{const byId=new Map(metrics?.posts.map(p=>[p.id,p])||[]);return {...snapshot,posts:snapshot.posts.map(post=>{const m=byId.get(post.id);return m&&m.permalink===post.permalink?{...post,metrics:m}:post;})};}).catch(e=>{request=null;throw e;});}
  return request;
 }
-export function useInstagramSnapshot(){
+export function useInstagramSnapshot({refreshOnMount=false}:{refreshOnMount?:boolean}={}){
  const [snapshot,setSnapshot]=useState<InstagramSnapshot|null>(null),[loading,setLoading]=useState(true);
- useEffect(()=>{let live=true;const refresh=()=>{if(document.hidden)return;loadInstagramSnapshot().then(s=>{if(live)setSnapshot(s);}).catch(()=>{}).finally(()=>{if(live)setLoading(false);});};refresh();const interval=setInterval(refresh,300000);document.addEventListener('visibilitychange',refresh);return()=>{live=false;clearInterval(interval);document.removeEventListener('visibilitychange',refresh);};},[]);
+ useEffect(()=>{let live=true;const refresh=(force=false)=>{if(document.hidden&&!force)return;loadInstagramSnapshot(force).then(s=>{if(live)setSnapshot(s);}).catch(()=>{}).finally(()=>{if(live)setLoading(false);});};refresh(refreshOnMount);const poll=()=>refresh();const interval=setInterval(poll,300000);document.addEventListener('visibilitychange',poll);return()=>{live=false;clearInterval(interval);document.removeEventListener('visibilitychange',poll);};},[refreshOnMount]);
  return {snapshot,loading};
 }
 export function instagramPhoto(p:InstagramPost):Photo{
