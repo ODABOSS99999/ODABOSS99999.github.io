@@ -1,6 +1,6 @@
 # The McGowen Library
 
-Free test site: [odaboss99999.github.io](https://odaboss99999.github.io/). See [test deployment and verification](TEST-DEPLOYMENT.md). The custom domain remains separate from this test release.
+Live site: [mcgowen.works](https://mcgowen.works/). See [verified deployment](LIVE-DEPLOYMENT.md) and [completion audit](COMPLETION-AUDIT.md). The older test release is retained in TEST-DEPLOYMENT.md as history.
 
 React, TypeScript, and Vite portfolio with structured owner content, optional procedural audio, lighting preferences, accessible sections, and an image viewer. Visual room work is shared with the parallel design chats; check `PROGRESS.md` for current verification scope.
 

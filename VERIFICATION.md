@@ -25,3 +25,5 @@ Not proven: full portfolio/pinned membership; scheduled-refresh activation or au
 
 Final integration recheck: the other design chat removed the home feed to preserve the full-screen room. The initial repeat timed out because the selector expected a home feed. Latest Instagram was moved into Photography; build and all 60 application tests passed again.
 The adjusted production browser check passed: five widths times three lighting modes, all six routes, real latest photo/source, gallery focus loop and Escape, zero page errors.
+
+Final integration audit: 78 application tests and 17 importer/metrics/staging tests passed. Real renderer context loss after initialization exposed fallback navigation and Contact opened; this is additional evidence beyond the earlier initial-WebGL-absence check. Retargetable 800 ms room/chandelier lighting passed three focused tests and the production build. Source revision and release outcome are recorded in LIVE-DEPLOYMENT.md. Actual browser zoom remains unverified: the browser tool accepted keyboard zoom requests without changing devicePixelRatio or viewport.

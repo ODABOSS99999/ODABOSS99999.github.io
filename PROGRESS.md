@@ -1,6 +1,6 @@
-# McGowen Library progress — October 15, 2026
+# McGowen Library progress â€” October 15, 2026
 
-- Full original brief implemented in React, TypeScript, and Vite. Current entry is main-illustrated → App2D → SeatedRoom/paperRoom; alternate room source is preserved.
+- Full original brief implemented in React, TypeScript, and Vite. Current entry is main-illustrated â†’ App2D â†’ SeatedRoom/paperRoom; alternate room source is preserved.
 - The owner authorized concurrent design chats and approved publication. Preserve the newer seated illustrated room, luxurious ceiling/chandelier, shared rocket/Game Boy control, ladder travel before shelf navigation, hidden-until-hover/focus utilities, and default-on sound. Those later direct user instructions supersede the original brief where they conflict.
 - Public site: https://mcgowen.works/. GitHub repository: ODABOSS99999/ODABOSS99999.github.io. See LIVE-DEPLOYMENT.md for exact source revision and successful release/refresh runs. Local changes from other chats are not automatically published.
 - Name.com login completed. GitHub domain ownership verified. Four apex A records plus www CNAME configured; normal TLS requests succeed and HTTP/www redirect to the secure apex. Enforce HTTPS is enabled. No paid resource or billing change; domain renewal remains off and is not free.
@@ -9,6 +9,6 @@
 - Daily GitHub latest-post refresh is enabled with the owner's privately entered Windsor secret. First authenticated refresh tested, built, committed, and published successfully. CNAME survived the refresh.
 - A separate daily desktop automation checks portfolio/pin membership through the signed-in Chrome session. It requires the computer/app and login to remain available; future unattended execution is unverified. The GitHub latest-post refresh is independent.
 - Biography comes from the owner's verified creator portfolio; contacts use supplied email, phone, and Instagram. Incomplete mailing address omitted. No invented engineering outcomes or publication credits.
-- Other design chat has prepared additional section imagery, engagement snapshots, and EXIT treatments locally. Audit and release checks are in progress before publishing those additions.
-- Current integration audit is repairing renderer context-loss recovery and the original requested smooth lighting transitions. Preserve the approved design while finishing these functional requirements.
+- Additional section imagery, engagement snapshots and EXIT treatments have passed local verification and are included in the final integration release.
+- Runtime context-loss recovery passed a real WEBGL_lose_context browser test; Contact remained usable. Shared 800 ms lighting transitions and reduced-motion behavior passed focused tests. Final integration totals 78 app tests plus 17 pipeline tests. See COMPLETION-AUDIT.md for requirement-by-requirement evidence and limitations.
 - Verification details are in VERIFICATION.md and LIVE-DEPLOYMENT.md. Physical phones, hardware-wide performance, audible sound quality, and actual browser-menu 200% zoom remain unverified; keyboard zoom requests through the available browser tool did not change zoom.
