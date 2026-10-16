@@ -59,3 +59,6 @@ A public Instaloader request for an older portfolio post returned HTTP 403. The 
 
 ## Shelf social ledger
 The framed ledger in the middle-right shelf bay opens follower and post totals plus a daily-new-followers chart and accessible table. public/instagram/stats.json was fetched through Windsor on October 15, 2026 (Chicago). The chart represents new follows, not net follower growth. Co-authored posts require Facebook Login, unavailable on this connection; collaborations remain null rather than zero. scripts/instagram-stats-sync.mjs updates the ledger in the existing daily workflow, preserves previous data on failure, and never exposes credentials to the browser. Scheduled execution and deployment of this change remain unverified.
+
+## Darkroom dashboard (October 16, 2026)
+Darkroom lighting opens the six most recent archived Instagram posts, organic engagement counts, profile totals, and daily new-follower chart/table. It bypasses curated portfolio selection, checks published snapshots every five minutes and on tab return, and offers a manual check. Source synchronization remains daily; browser checks do not trigger Windsor refreshes. Each source timestamp remains visible and older snapshots are labeled. Failed refreshes retain loaded data. No credentials enter the browser.

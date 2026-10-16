@@ -4,8 +4,8 @@ import { validateSnapshot } from './instagram';
 import type { InstagramPost, InstagramSnapshot } from './instagram';
 import type { Photo } from './content';
 let request:Promise<InstagramSnapshot>|null=null,cachedAt=0;
-export function loadInstagramSnapshot(){
- if(!request||Date.now()-cachedAt>60000){cachedAt=Date.now();request=Promise.all([
+export function loadInstagramSnapshot(force=false){
+ if(force||!request||Date.now()-cachedAt>60000){cachedAt=Date.now();request=Promise.all([
   fetch('/instagram/feed.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error('Instagram images unavailable');return r.json();}).then(validateSnapshot),
   fetch('/instagram/metrics.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error('Metrics unavailable');return r.json();}).then(validateMetrics).catch(()=>null),
  ]).then(([snapshot,metrics])=>{const byId=new Map(metrics?.posts.map(p=>[p.id,p])||[]);return {...snapshot,posts:snapshot.posts.map(post=>{const m=byId.get(post.id);return m&&m.permalink===post.permalink?{...post,metrics:m}:post;})};}).catch(e=>{request=null;throw e;});}

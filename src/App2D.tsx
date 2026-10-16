@@ -9,6 +9,7 @@ import { useRoomSound } from './useRoomSound';
 import ExitSign from './ExitSign';
 import { ContentBoundary } from './ContentBoundary';
 const Sections=lazy(()=>import('./Sections'));
+const Darkroom=lazy(()=>import('./Darkroom'));
 export default function App(){
   const [route,setRoute]=useState(()=>routeFromPath(location.pathname));
   const [prefs,setPrefs]=useState(readPreferences);
@@ -57,6 +58,7 @@ export default function App(){
     </div></header>
     <main id="main" tabIndex={-1}>{route==='library'?<>
       <h1 className="sr-only">Explore the library</h1>
+      {prefs.lighting==='darkroom'&&<ContentBoundary onHome={()=>lighting('lamplight')}><Suspense fallback={<p role="status">Opening the darkroom…</p>}><Darkroom/></Suspense></ContentBoundary>}
       <Scene openIndex={()=>{setMenu(true);setSettings(false);requestAnimationFrame(()=>document.querySelector<HTMLAnchorElement>('#library-menu a')?.focus());}} navigate={navigate} toggleLamp={()=>lighting(prefs.lighting==='darkroom'?'lamplight':'darkroom')} toggleAudio={()=>void toggleAudio()} playing={playing} soundEnabled={!prefs.muted} motion={prefs.motion} lighting={prefs.lighting}/>
     </>:known?<ContentBoundary key={route} onHome={()=>navigate('library')}><Suspense fallback={<div className="section-loading" role="status">Opening the collection…</div>}><SectionFocus onReady={restorePosition}/><Sections key={route} section={route as SectionId} navigate={navigate}/></Suspense></ContentBoundary>:<div className="not-found"><p className="eyebrow">AN UNMARKED SHELF</p><h1>A little lost?</h1><p>This page isn’t part of the collection.</p><ExitSign onExit={()=>navigate('library')} label="Return to the library"/></div>}</main>
     {route!=='library'&&<footer className="site-footer"><span>McGowen Media</span><div>{route==='library'?<span className="library-status"><span/>YOU’RE IN THE LIBRARY</span>:<a className="exit-sign" href="/" onClick={e=>link(e,'library')} aria-label="Return to library">EXIT <span aria-hidden="true">↗</span></a>}</div><span className="lighting-status"><span className={`mode-dot ${prefs.lighting}`}/>{prefs.lighting[0].toUpperCase()+prefs.lighting.slice(1)}</span></footer>}
