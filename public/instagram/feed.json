@@ -1,8 +1,20 @@
 {
   "version": 1,
   "account": "mcgowen_media",
-  "fetchedAt": "2026-10-16T02:11:10.046Z",
+  "fetchedAt": "2026-10-16T16:47:55.941Z",
   "posts": [
+    {
+      "id": "18087524315314655",
+      "caption": "🐦",
+      "permalink": "https://www.instagram.com/p/DejsQvam9NB/",
+      "timestamp": "2026-10-16T13:56:42.000Z",
+      "mediaType": "CAROUSEL_ALBUM",
+      "image": {
+        "src": "/instagram/media/18087524315314655.webp",
+        "width": 1200,
+        "height": 1600
+      }
+    },
     {
       "id": "18284501827289818",
       "caption": "Will post more later this week! Tomorrow will be an awesome bird picture though!\n\n#ellaboh #blurrytour",
