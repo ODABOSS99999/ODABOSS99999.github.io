@@ -1,3 +1,9 @@
+## Current portfolio behavior — October 16, 2026
+
+The owner requested automatic recent posts instead of manually adding posts to the Instagram portfolio collection. `portfolioMode: "recent"` now displays the newest 30 posts from the synced feed, ordered by publication time. A new post enters automatically after a successful daily GitHub refresh; no portfolio membership edit, desktop browser, or Codex session is required. Existing verified favorites remain a separate collection. The old desktop membership-check automation was removed.
+
+The selected/all modes and old owner selection data remain available as an optional archive; they do not gate the recent-post portfolio. The sections below describe the source contract and setup history.
+
 # Instagram snapshot and automatic refresh
 
 The website reads a static, local snapshot of the owner's `@mcgowen_media` Instagram posts. It never exposes a Windsor API key to visitors, calls a paid AI service, embeds tracking Instagram widgets, or asks visitors to log in. The connected Windsor account/profile was verified during setup; a local initial import is separate from activating scheduled refresh.

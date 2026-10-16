@@ -62,8 +62,8 @@ export function createPaperRoom(host:HTMLElement,state:()=>State,hover:(id:strin
  const turntable=createTurntable(scene,{geometries,materials});listeningCorner.add(turntable.body);turntable.body.position.set(0,1,0);items.set('record',turntable.body);base.set('record',turntable.body.position.clone());
  const notes=card('notes',svg('<g fill="#e4d3a4" font-family="Georgia" font-size="66"><text x="55" y="110">♪</text><text x="180" y="65">♫</text></g>'),0,2.02,.04,1.6,1.2);listeningCorner.add(notes);notes.visible=false;
  // Hand-painted exit sign and a rolling ladder in front of the shelf rail.
- box(3.8,3.9,-4.85,2.5,.06,.08,paper);
- const exit=card('exit',svg('<path d="M25 65l270-4 2 110-271 4z" fill="#416453" stroke="#c5cfac" stroke-width="5"/><text x="52" y="141" fill="#e2e9c0" font-family="sans-serif" font-size="58" letter-spacing="8">EXIT ↗</text>'),3.8,4.3,-4.65,1.85,1.38);
+ box(3.35,3.85,-2.6,1.9,.06,.08,paper);
+ const exit=card('exit',svg('<path d="M25 65l270-4 2 110-271 4z" fill="#416453" stroke="#c5cfac" stroke-width="5"/><text x="52" y="141" fill="#e2e9c0" font-family="sans-serif" font-size="58" letter-spacing="8">EXIT ↗</text>'),3.35,3.35,-2.45,1.85,1.38);
  box(-2.6,4.95,-3.5,7.5,.055,.06,paper);
  const ladderSvg=svg(`<g stroke-linecap="round"><path d="M55 12L20 370M94 12l14 358" stroke="#382e28" stroke-width="14"/><path d="M55 12L20 370M94 12l14 358" stroke="#bc9269" stroke-width="8"/>${Array.from({length:9},(_,i)=>`<path d="M${52-i*3} ${42+i*36}h${44+i*4}" stroke="#cdb486" stroke-width="8"/>`).join('')}<circle cx="23" cy="375" r="8" fill="#303c34"/><circle cx="108" cy="375" r="8" fill="#303c34"/></g>`,130,390);
  const ladder=card('ladder',ladderSvg,-6.02,2.48,-3.28,.85,4.95);let ladderRight=false,pickup=0,pickupDone=false;

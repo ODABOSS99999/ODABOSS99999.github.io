@@ -11,24 +11,16 @@ const items: Photo[] = [
 ];
 
 describe('photograph viewer', () => {
-  it('keeps the source link reachable inside the focus loop for a single photograph', async () => {
-    const user = userEvent.setup();
-    const photo = { ...items[0], sourceUrl: 'https://www.instagram.com/p/test_source/', sourceLabel: 'View post on Instagram' };
+  it('links Instagram images directly to their post', () => {
+    const photo = { ...items[0], sourceUrl: 'https://www.instagram.com/p/test_source/' };
     render(<Gallery items={[photo]}/>);
-    await user.click(screen.getByRole('button', { name: `View ${photo.alt}` }));
-    const viewer = screen.getByRole('dialog');
-    const close = within(viewer).getByRole('button', { name: 'Close photograph viewer' });
-    const source = within(viewer).getByRole('link', { name: /View post on Instagram/ });
-    expect(source.getAttribute('href')).toBe(photo.sourceUrl);
-    expect(source.getAttribute('target')).toBe('_blank');
-    close.focus();
-    await user.tab({ shift: true });
-    expect(document.activeElement).toBe(source);
-    await user.tab();
-    expect(document.activeElement).toBe(close);
-    await user.tab();
-    expect(document.activeElement).toBe(source);
+    const link = screen.getByRole('link', { name: `View ${photo.alt} on Instagram (opens in a new tab)` });
+    expect(link.getAttribute('href')).toBe(photo.sourceUrl);
+    expect(link.getAttribute('target')).toBe('_blank');
+    expect(within(link).getByRole('img')).toBeTruthy();
+    expect(screen.queryByText(/View post on Instagram/)).toBeNull();
   });
+
   it('changes photos on a horizontal swipe while leaving vertical scrolling gestures alone', async () => {
     const user = userEvent.setup();
     render(<Gallery items={items}/>);

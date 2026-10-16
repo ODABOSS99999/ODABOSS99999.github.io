@@ -30,3 +30,7 @@ Source revision `12cc0d3816160509bfe66859ced7b39f44edc659` includes the complete
 The first attempt at the new metrics step failed closed because the direct REST envelope lacks the connector-only status field. A regression test and parser fix resolved it; the complete subsequent refresh, tests, build, snapshot commit and publication succeeded. Totals are now 78 application tests plus 17 pipeline tests (95 total). The public metrics endpoint contains 48 account-post measurements, fetched October 15, 2026 at 9:11 PM America/Chicago; individual source-check times remain intact.
 
 After this release, all six HTTPS section URLs returned HTTP 200 and matched the exact published asset entry. Browser checks confirmed 30 portfolio images, seven favorites, engagement groups, loaded 1600×1056 latest image, Escape closing and focus restoration, with no observed horizontal overflow. The real runtime WebGL-loss harness passed locally before release. Current shared-workspace edits for a separate statistics board may continue in other chats and are not implied to belong to this published revision.
+
+## Recent-post portfolio — October 16, 2026
+
+The owner replaced collection-membership gating with a recent-post portfolio. The portfolio displays the newest 30 synced Instagram posts automatically; verified favorites remain available separately. The desktop portfolio/pin checker was removed because it is no longer required. GitHub daily refresh remains active and independent of a signed-in desktop browser.

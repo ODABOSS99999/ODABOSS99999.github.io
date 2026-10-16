@@ -34,6 +34,10 @@ The viewer respects image proportions. Do not distort the source or guess dimens
 
 ## Published work
 
+Published Work is reserved for The UTD Mercury articles with an Owen McGowan credit, or Mercury Instagram posts that verifiably tag/credit the owner. General posts from @mcgowen_media do not qualify. Keep photography credits distinct from writing bylines.
+
+Verified October 16, 2026 in a browser: https://utdmercury.com/staff_name/owen-mcgowan/ lists Owen as Photographer and links the September 12, 2026 article “Mercury exclusive: The man underneath the peanut butter” as photo work. The article at https://utdmercury.com/35535/life-arts/the-man-underneath-the-peanut-butter/ credits his lead photograph and gallery; its writers are Kezia Sunil and Erin Baumel. This is the currently verified publication entry. The newspaper links its Instagram as https://www.instagram.com/mercury_utd/; the September 10, 2026 interview preview at https://www.instagram.com/p/DdIJSDnRUbj/ was verified in the signed-in owner tagged grid and on the post itself. The image explicitly tags @mcgowen_media, and the Mercury caption also mentions that handle. It is included as a separate Instagram publication with the descriptive title “Peanut Butter Guy — exclusive interview preview”.
+
 `publications` is a `Publication[]`. Required fields: `title`, `publication`, `role`, `url`. Optional: `date` and `thumbnail` (a URL such as `/images/credit.webp`). Describe the actual role, for example photography versus writing; verify credit and the linked source before adding it. Use complete HTTPS source URLs. Dates are display strings, so format them consistently.
 
 ## Engineering projects
@@ -51,3 +55,9 @@ After changes run `npm test` and `npm run build`, then `npm run dev`. Review pho
 ## Identity
 
 The owner has no logo. Use the supplied name as plain text only. Do not invent logos, monograms, slogans, branded seals, equipment labels, or favicons. Decorative room objects must stay unbranded.
+
+## 2026-10-16: Resume and LinkedIn update
+
+Source: user-supplied `C:/Users/owenm/Downloads/OwenMcGowan_Resume.pdf.pdf` (two pages, text extracted locally), and public LinkedIn profile https://www.linkedin.com/in/mcgowens/ (retrieved October 16, 2026).
+
+LinkedIn lists Captured, 3D printing service, ALTF4 rocketry, Gameboy Remake, and Giveaway finder + applier. Resume supplies teaching, hardware, printing-business, rocketry, robotics, PET-filament, and automation descriptions/outcomes. Captured is linked without unsupported implementation details. Resume metrics are historical self-reported project outcomes, not live Instagram statistics. Home address is not published.

@@ -20,13 +20,14 @@ describe('library navigation', () => {
       render(<App/>);
       await waitFor(() => expect(scrollTo).toHaveBeenCalled());
       scrollY = 140;
-      fireEvent.scroll(window);
+      fireEvent.scroll(document);
       await user.click(screen.getByRole('button', { name: 'Contact' }));
       const contactHeading = await screen.findByRole('heading', { name: /^Contact\s*\.$/, level: 1 });
       await waitFor(() => expect(document.activeElement).toBe(contactHeading));
       expect(scrollY).toBe(0);
-      scrollY = 420;
-      fireEvent.scroll(window);
+      const panel=document.querySelector<HTMLDialogElement>('.collection-panel')!;
+      panel.scrollTop=420;
+      fireEvent.scroll(panel);
       scrollTo.mockClear();
       await user.click(screen.getByRole('button', { name: 'Room settings' }));
       await user.click(screen.getByRole('button', { name: 'Daylight' }));
@@ -39,8 +40,8 @@ describe('library navigation', () => {
       scrollTo.mockClear();
       await act(async () => { history.forward(); });
       await screen.findByRole('heading', { name: /^Contact\s*\.$/, level: 1 });
-      await waitFor(() => expect(scrollTo).toHaveBeenCalledWith(0, 420));
-      expect(scrollY).toBe(420);
+      await waitFor(() => expect(document.querySelector('.collection-panel')?.scrollTop).toBe(420));
+      expect(scrollY).toBe(0);
     } finally {
       Object.defineProperty(window, 'scrollY', descriptor);
     }

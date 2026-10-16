@@ -4,8 +4,8 @@ import { validateSnapshot } from './instagram';
 import type { InstagramPost, InstagramSnapshot } from './instagram';
 import type { Photo } from './content';
 let request:Promise<InstagramSnapshot>|null=null,cachedAt=0;
-export function loadInstagramSnapshot(){
- if(!request||Date.now()-cachedAt>60000){cachedAt=Date.now();request=Promise.all([
+export function loadInstagramSnapshot(force=false){
+ if(force||!request||Date.now()-cachedAt>60000){cachedAt=Date.now();request=Promise.all([
   fetch('/instagram/feed.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error('Instagram images unavailable');return r.json();}).then(validateSnapshot),
   fetch('/instagram/metrics.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error('Metrics unavailable');return r.json();}).then(validateMetrics).catch(()=>null),
  ]).then(([snapshot,metrics])=>{const byId=new Map(metrics?.posts.map(p=>[p.id,p])||[]);return {...snapshot,posts:snapshot.posts.map(post=>{const m=byId.get(post.id);return m&&m.permalink===post.permalink?{...post,metrics:m}:post;})};}).catch(e=>{request=null;throw e;});}
@@ -22,7 +22,6 @@ export function instagramPhoto(p:InstagramPost):Photo{
 }
 export const sectionImageIds={
  about:['18119889931954458','18221320804356544','18111604349466809'],
- published:['18111604349466809','17883850254502684','18339773350248090','18579922954075231'],
  engineering:['17883850254502684','17994026724028663','18105631976166091','18133367926647764'],
  contact:['18221320804356544'],
 };
