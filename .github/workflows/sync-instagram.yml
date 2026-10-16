@@ -27,9 +27,14 @@ jobs:
           node-version: '22'
       - run: npm ci
       - run: node --test scripts/instagram-sync.test.mjs
+      - run: node --test scripts/instagram-metrics-sync.test.mjs
       - run: node --test scripts/publish-pages.test.mjs
       - name: Refresh local static feed
         run: node scripts/instagram-sync.mjs
+        env:
+          WINDSOR_API_KEY: ${{ secrets.WINDSOR_API_KEY }}
+      - name: Refresh Instagram likes, comments, and views
+        run: node scripts/instagram-metrics-sync.mjs
         env:
           WINDSOR_API_KEY: ${{ secrets.WINDSOR_API_KEY }}
       - run: npm test

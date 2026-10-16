@@ -1,5 +1,7 @@
+import type { InstagramMetrics } from './instagramMetrics';
 import selection from '../public/instagram/selection.json';
 export type InstagramPost = {
+  metrics?: InstagramMetrics;
   id: string; caption: string; permalink: string; timestamp: string;
   mediaType: 'IMAGE'|'CAROUSEL_ALBUM'|'VIDEO'|'REEL';
   image: { src: string; width: number; height: number };

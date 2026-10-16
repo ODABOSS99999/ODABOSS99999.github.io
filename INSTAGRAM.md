@@ -49,3 +49,10 @@ The Node tests use mocked network responses and tiny generated image fixtures; t
 
 Instagram content remains owner material; this pipeline does not create a new license or authorize reuse of others' work. Record media provenance in `ASSETS.md` and remove a post from curated public selections if reuse rights are uncertain.
 
+## Engagement freshness (implemented October 15, 2026)
+
+`public/instagram/metrics.json` stores separately timestamped likes, comments, and views from the connected account. Missing counts remain null. The importer uses `media_like_count` and `media_comments_count`, not the all-zero `media_total_*` fields returned by this connection. These organic-media counts can differ from Instagram's combined promoted/cross-posted totals. Each card and viewer shows its last source check; counts older than 24 hours are marked as an older snapshot. Old archive rows are never given a new measurement time merely because a refresh ran.
+
+The existing daily workflow now calls `scripts/instagram-metrics-sync.mjs` using its private `WINDSOR_API_KEY` secret. The local native Windsor connector was used to refresh 48 recent posts. Local `WINDSOR_API_KEY` is absent; repository secret/variable configuration and execution of the updated scheduled job remain unverified. The browser revalidates the static snapshots every five minutes and when returning to the tab; it never receives a connector credential or contacts Windsor directly. A frontend revalidation does not itself refresh the source counts.
+
+A public Instaloader request for an older portfolio post returned HTTP 403. The existing downloaded covers remain available; older counts are omitted rather than fabricated. Instagram may require an authorized session or official account export for additional history.

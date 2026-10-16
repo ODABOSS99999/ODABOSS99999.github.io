@@ -290,7 +290,7 @@ const postCode = (url: string) => url.split('/').filter(Boolean).at(-1)!;
 export function instagramPostPhoto(post: InstagramPost): Photo {
   const video = post.mediaType === 'VIDEO' || post.mediaType === 'REEL';
   return {
-    id: `ig-${post.id}`, src: post.image.src, width: post.image.width, height: post.image.height,
+    metrics:post.metrics, id: `ig-${post.id}`, src: post.image.src, width: post.image.width, height: post.image.height,
     alt: `Instagram ${video ? 'reel cover' : post.mediaType === 'CAROUSEL_ALBUM' ? 'carousel cover' : 'photograph'} from @mcgowen_media, ${new Date(post.timestamp).toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'})}`,
     caption: post.caption, sourceUrl: post.permalink,
     sourceLabel: video ? 'Watch reel on Instagram' : post.mediaType === 'CAROUSEL_ALBUM' ? 'View full carousel on Instagram' : 'View post on Instagram',

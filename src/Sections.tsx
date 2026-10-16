@@ -12,7 +12,7 @@ export default function Sections({ section, navigate }: { section: SectionId; na
   const gallery = section==='favorites' ? photos.filter(p=>p.favorite) : photos;
 
   async function copyEmail(){try{await navigator.clipboard.writeText(owner.email);setCopy('Email copied');}catch{setCopy('Copy unavailable. Select the email address above or open your email app.');}}
-  return <article className={`section-page section-${section}`}><div className="section-heading"><ExitSign className="section-exit" label={`Exit ${meta.title} and return to library`} onExit={()=>navigate('library')}/><p className="eyebrow">THE McGOWEN LIBRARY <span> / {meta.number}</span></p><h1 tabIndex={-1} id="section-title">{meta.title}<span className="serif-dot">.</span></h1><p className="section-deck">{meta.subtitle}.</p></div>
+  return <article className={`section-page section-${section}`}><div className="section-exit-rail"><ExitSign className="section-exit" label={`Exit ${meta.title} and return to library`} onExit={()=>navigate('library')}/></div><div className="section-heading"><p className="eyebrow">THE McGOWEN LIBRARY <span> / {meta.number}</span></p><h1 tabIndex={-1} id="section-title">{meta.title}<span className="serif-dot">.</span></h1><p className="section-deck">{meta.subtitle}.</p></div>
 
     {section==='photography'&&<><InstagramFeed mode="latest"/><InstagramFeed mode="portfolio"/><section id="favorite-posts" className="portfolio-favorites"><p className="eyebrow">WITHIN THE COLLECTION</p><h2>Personal Favorites</h2><InstagramFeed mode="favorites"/></section></>}
     {section==='favorites'&&<InstagramFeed mode="favorites"/>}

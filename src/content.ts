@@ -1,5 +1,6 @@
+import type { InstagramMetrics } from './instagramMetrics';
 export type SectionId = 'photography' | 'about' | 'favorites' | 'published' | 'engineering' | 'contact';
-export type Photo = { id: string; src: string; width: number; height: number; alt: string; caption?: string; credit?: string; favorite?: boolean; note?: string; sourceUrl?: string; sourceLabel?: string };
+export type Photo = { id: string; src: string; width: number; height: number; alt: string; caption?: string; credit?: string; favorite?: boolean; note?: string; sourceUrl?: string; sourceLabel?: string; metrics?: InstagramMetrics };
 export type Publication = { title: string; publication: string; date?: string; role: string; url: string; thumbnail?: string };
 export type Project = { id: string; title: string; overview: string; role?: string; process?: string; tools?: string[]; challenges?: string; outcomes?: string; images?: Photo[] };
 export const destinations: { id: SectionId; title: string; subtitle: string; number: string }[] = [

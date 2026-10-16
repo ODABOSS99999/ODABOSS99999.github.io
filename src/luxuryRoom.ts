@@ -1,4 +1,6 @@
 import * as T from 'three';
+import { blendLight } from './roomLighting';
+import type { LightingWeights } from './roomLighting';
 
 export type RoomResources={geometries:T.BufferGeometry[];materials:T.Material[]};
 export function addLuxuryDetails(scene:T.Scene,resources:RoomResources){
@@ -49,7 +51,7 @@ export function addLuxuryDetails(scene:T.Scene,resources:RoomResources){
  }
  const pendant=mesh(new T.OctahedronGeometry(.16),crystal,0,4.28,0,chandelier);pendant.scale.y=1.8;
  const light=new T.PointLight('#ffdb9a',14,15,2);light.position.set(cx,4.9,cz);scene.add(light);
- return {update:(dark:boolean,day:boolean)=>{light.intensity=dark?2:day?7:14;glow.emissiveIntensity=dark?.35:day?1.2:2.3;}};
+ return {update:(weights:LightingWeights)=>{light.intensity=blendLight(weights,7,14,2);glow.emissiveIntensity=blendLight(weights,1.2,2.3,.35);}};
 }
 
 export function createTurntable(scene:T.Scene,resources:RoomResources){

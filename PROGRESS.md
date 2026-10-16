@@ -1,14 +1,14 @@
 # McGowen Library progress — October 15, 2026
 
-- Brief read in full. New React, TypeScript, Vite project includes typed owner content, galleries, contact, lighting, audio, direct routes, error recovery, and free deployment preparation.
-- Parallel user-owned chats control the visual room. Current index loads main-illustrated → App2D → SeatedRoom/paperRoom. Preserve that direction and alternate 3D source.
-- No fabricated logo, biography, client credits, engineering outcomes, or portrait. Contact uses supplied email, phone, Instagram. Incomplete postal address omitted.
-- Imported 49 real Instagram posts from connected mcgowen_media account (last 30 days), exact captions, source permalinks, local WebP previews (about 7.32 MB). Latest post selected by timestamp.
-- Portfolio link preserved in public/instagram/selection.json. Portfolio/pinned membership unverified: Instagram requires login; Windsor exposes neither field. Never substitute all posts or engagement rankings. Favorites remain a subset of portfolio with explicitly verified pinned selections.
-- Daily refresh engine and gated workflow prepared for GitHub Pages or Azure Free. Not enabled; no Windsor secret or repository variables provisioned by this chat. No money spent.
-- Another user-authorized deployment chat published an older GitHub Pages test snapshot. See TEST-DEPLOYMENT.md; that does not prove this newest revision is live.
-- Name.com requires login. No DNS changes made by this chat. Domain ownership, expiry, renewal, and TLS connection remain unverified.
-- Production build succeeds; 60 app tests, 11 importer tests, one Pages staging test pass. Current browser matrix passes 360/390/768/1440/1920 widths × 3 lighting modes, six routes, real latest-post preview/viewer, real audio play/mute, and WebGL-unavailable fallback. See VERIFICATION.md.
-- Remaining: Instagram login/selection evidence; private Windsor credential setup for disabled schedule; current-revision release approval and host/domain account actions. Keep full goal active until verified.
-
-Latest integration: keep the illustrated room full screen. Latest Instagram now appears inside Photography, followed by the portfolio and favorite selections. Automatic refresh remains unconfigured and selected membership remains unverified.
+- Full original brief implemented in React, TypeScript, and Vite. Current entry is main-illustrated → App2D → SeatedRoom/paperRoom; alternate room source is preserved.
+- The owner authorized concurrent design chats and approved publication. Preserve the newer seated illustrated room, luxurious ceiling/chandelier, shared rocket/Game Boy control, ladder travel before shelf navigation, hidden-until-hover/focus utilities, and default-on sound. Those later direct user instructions supersede the original brief where they conflict.
+- Public site: https://mcgowen.works/. GitHub repository: ODABOSS99999/ODABOSS99999.github.io. See LIVE-DEPLOYMENT.md for exact source revision and successful release/refresh runs. Local changes from other chats are not automatically published.
+- Name.com login completed. GitHub domain ownership verified. Four apex A records plus www CNAME configured; normal TLS requests succeed and HTTP/www redirect to the secure apex. Enforce HTTPS is enabled. No paid resource or billing change; domain renewal remains off and is not free.
+- Imported 49 recent real Instagram posts with exact captions, canonical source links, and local WebP covers. Latest selected by timestamp. No secret or signed CDN URL appears in public feed JSON.
+- Verified the signed-in creator portfolio's 29 selections and five favorites, plus three explicitly marked pins. Site portfolio has 30 distinct posts and Favorites has seven; all favorites belong to portfolio. Older covers have no fabricated dates/captions/IDs.
+- Daily GitHub latest-post refresh is enabled with the owner's privately entered Windsor secret. First authenticated refresh tested, built, committed, and published successfully. CNAME survived the refresh.
+- A separate daily desktop automation checks portfolio/pin membership through the signed-in Chrome session. It requires the computer/app and login to remain available; future unattended execution is unverified. The GitHub latest-post refresh is independent.
+- Biography comes from the owner's verified creator portfolio; contacts use supplied email, phone, and Instagram. Incomplete mailing address omitted. No invented engineering outcomes or publication credits.
+- Other design chat has prepared additional section imagery, engagement snapshots, and EXIT treatments locally. Audit and release checks are in progress before publishing those additions.
+- Current integration audit is repairing renderer context-loss recovery and the original requested smooth lighting transitions. Preserve the approved design while finishing these functional requirements.
+- Verification details are in VERIFICATION.md and LIVE-DEPLOYMENT.md. Physical phones, hardware-wide performance, audible sound quality, and actual browser-menu 200% zoom remain unverified; keyboard zoom requests through the available browser tool did not change zoom.

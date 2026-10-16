@@ -1,4 +1,4 @@
-# Verification record — October 15, 2026
+# Verification record â€” October 15, 2026
 
 Checks actually run against the shared checkout are recorded below. Other chats may continue editing; recheck changed behavior before release. Current production entry is main-illustrated.tsx/App2D and the seated illustrated room.
 

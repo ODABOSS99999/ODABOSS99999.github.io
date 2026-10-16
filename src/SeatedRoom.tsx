@@ -11,7 +11,25 @@ export default function SeatedRoom(props:Props){
  const objectNames:Record<SectionId,string>={photography:'Camera: portfolio and galleries',about:'Books / portrait: About Me, experience and skills',favorites:'Framed prints: favorite photographs and personal notes',published:'Newspaper: published work and photography credits',engineering:'Engineering · rocket & Game Boy',contact:'Contact · pick up the phone'};
  const actions:{id:string;label:string;tip?:string}[]=[...destinations.map(d=>({id:d.id,label:d.title,tip:objectNames[d.id]})),{id:'lamp',label:'Lamp switch: toggle Lamplight and Darkroom'},{id:'record',label:(props.soundEnabled??props.playing)?'Mute room ambience':'Play room ambience'},{id:'ladder',label:'Roll the library ladder'},{id:'exit',label:'Exit the room: open the site index'}];
  function activate(id:string){if(id==='lamp')latest.current.toggleLamp();else if(id==='record')latest.current.toggleAudio();else if(id==='exit')latest.current.openIndex();else if(id!=='ladder')latest.current.navigate(id==='device'?'engineering':id as SectionId);}
- useEffect(()=>{let cancelled=false;if(!window.WebGLRenderingContext){setFailed(true);return;}import('./paperRoom').then(({createPaperRoom})=>{if(cancelled||!host.current)return;try{api.current=createPaperRoom(host.current,()=>({...latest.current,lighting:latest.current.lighting||'lamplight'}),setOver,activate,setAnnouncement);setReady(true);}catch{setFailed(true);}}).catch(()=>setFailed(true));return()=>{cancelled=true;api.current?.dispose();api.current=null;};},[]);
+ useEffect(()=>{
+  const container=host.current;let cancelled=false,unavailable=false;
+  if(!container)return;
+  const dispose=()=>{const room=api.current;api.current=null;room?.dispose();};
+  const fail=()=>{if(cancelled||unavailable)return;unavailable=true;dispose();container.removeAttribute('aria-busy');setReady(false);setFailed(true);setOver(null);setAnnouncement('');};
+  const contextLost=(event:Event)=>{event.preventDefault();fail();};
+  // Context-loss events do not bubble. Capture also covers a lazily created canvas.
+  container.addEventListener('webglcontextlost',contextLost,true);
+  if(!window.WebGLRenderingContext)fail();
+  else import('./paperRoom').then(({createPaperRoom})=>{
+   if(cancelled||unavailable)return;
+   try{
+    const room=createPaperRoom(container,()=>({...latest.current,lighting:latest.current.lighting||'lamplight'}),setOver,activate,setAnnouncement);
+    if(cancelled||unavailable){room.dispose();return;}
+    api.current=room;setReady(true);
+   }catch{fail();}
+  }).catch(fail);
+  return()=>{cancelled=true;container.removeEventListener('webglcontextlost',contextLost,true);dispose();};
+ },[]);
  return <section className="seated-room" aria-label="Hand illustrated room from a reading chair">
   <div ref={host} className="seated-canvas"/>
   {!ready&&!failed&&<p className="room-loading" role="status">Taking a seat…</p>}
