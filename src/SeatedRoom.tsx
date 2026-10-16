@@ -1,3 +1,4 @@
+import InstagramStats from './InstagramStats';
 import { useEffect, useRef, useState } from 'react';
 import { destinations } from './content';
 import type { SectionId } from './content';
@@ -6,11 +7,12 @@ type Props={navigate:(id:SectionId)=>void;toggleLamp:()=>void;toggleAudio:()=>vo
 export default function SeatedRoom(props:Props){
  const host=useRef<HTMLDivElement>(null),api=useRef<ReturnType<typeof createPaperRoom>|null>(null),latest=useRef(props);latest.current=props;
  const [ready,setReady]=useState(false),[failed,setFailed]=useState(false),[over,setOver]=useState<string|null>(null),[objectsOpen,setObjectsOpen]=useState(false),[announcement,setAnnouncement]=useState('');
+ const [statsOpen,setStatsOpen]=useState(false);
  const objectsTrigger=useRef<HTMLButtonElement>(null);
  useEffect(()=>{if(!objectsOpen)return;const close=(e:KeyboardEvent)=>{if(e.key==='Escape'){setObjectsOpen(false);objectsTrigger.current?.focus();}};document.addEventListener('keydown',close);return()=>document.removeEventListener('keydown',close);},[objectsOpen]);
  const objectNames:Record<SectionId,string>={photography:'Camera: portfolio and galleries',about:'Books / portrait: About Me, experience and skills',favorites:'Framed prints: favorite photographs and personal notes',published:'Newspaper: published work and photography credits',engineering:'Engineering · rocket & Game Boy',contact:'Contact · pick up the phone'};
- const actions:{id:string;label:string;tip?:string}[]=[...destinations.map(d=>({id:d.id,label:d.title,tip:objectNames[d.id]})),{id:'lamp',label:'Lamp switch: toggle Lamplight and Darkroom'},{id:'record',label:(props.soundEnabled??props.playing)?'Mute room ambience':'Play room ambience'},{id:'ladder',label:'Roll the library ladder'},{id:'exit',label:'Exit the room: open the site index'}];
- function activate(id:string){if(id==='lamp')latest.current.toggleLamp();else if(id==='record')latest.current.toggleAudio();else if(id==='exit')latest.current.openIndex();else if(id!=='ladder')latest.current.navigate(id==='device'?'engineering':id as SectionId);}
+ const actions:{id:string;label:string;tip?:string}[]=[...destinations.map(d=>({id:d.id,label:d.title,tip:objectNames[d.id]})),{id:'lamp',label:'Lamp switch: toggle Lamplight and Darkroom'},{id:'record',label:(props.soundEnabled??props.playing)?'Mute room ambience':'Play room ambience'},{id:'stats',label:'Instagram statistics: followers, posts and growth'},{id:'ladder',label:'Roll the library ladder'},{id:'exit',label:'Exit the room: open the site index'}];
+ function activate(id:string){if(id==='stats'){setStatsOpen(true);return;}if(id==='lamp')latest.current.toggleLamp();else if(id==='record')latest.current.toggleAudio();else if(id==='exit')latest.current.openIndex();else if(id!=='ladder')latest.current.navigate(id==='device'?'engineering':id as SectionId);}
  useEffect(()=>{
   const container=host.current;let cancelled=false,unavailable=false;
   if(!container)return;
@@ -31,7 +33,7 @@ export default function SeatedRoom(props:Props){
   return()=>{cancelled=true;container.removeEventListener('webglcontextlost',contextLost,true);dispose();};
  },[]);
  return <section className="seated-room" aria-label="Hand illustrated room from a reading chair">
-  <div ref={host} className="seated-canvas"/>
+  <InstagramStats open={statsOpen} onClose={()=>setStatsOpen(false)}/><div ref={host} className="seated-canvas"/>
   {!ready&&!failed&&<p className="room-loading" role="status">Taking a seat…</p>}
   {failed&&<p className="room-loading" role="status">The illustrated room is unavailable. Use the object list to explore.</p>}
   <span className="sr-only" role="status">{announcement}</span>
