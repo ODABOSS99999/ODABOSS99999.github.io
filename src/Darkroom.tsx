@@ -1,6 +1,7 @@
 import {useEffect,useRef,useState} from 'react';
 import {useInstagramSnapshot,instagramPhoto} from './instagramMedia';
 import ExitSign from './ExitSign';
+import PostDetails from './PostDetails';
 import './darkroom.css';
 
 export default function Darkroom({onClose}:{onClose?:()=>void}){
@@ -8,7 +9,7 @@ export default function Darkroom({onClose}:{onClose?:()=>void}){
  const {snapshot,loading,error}=useInstagramSnapshot({refreshOnMount:true});
  const [loadedCount,setLoadedCount]=useState(5);
  const [index,setIndex]=useState(0),[scan,setScan]=useState(0),[direction,setDirection]=useState(1);
- const posts=[...(snapshot?.posts||[])].filter(post=>post.mediaType==='IMAGE'||post.mediaType==='CAROUSEL_ALBUM').sort((a,b)=>Date.parse(b.timestamp)-Date.parse(a.timestamp));
+ const posts=[...(snapshot?.posts||[])].sort((a,b)=>Date.parse(b.timestamp)-Date.parse(a.timestamp));
  const visibleCount=Math.min(loadedCount,posts.length);
  const current=Math.min(index,Math.max(0,visibleCount-1)),post=posts[current];
  const move=(direction:number)=>{if(direction>0&&current===visibleCount-1&&visibleCount<posts.length)setLoadedCount(count=>count+5);setDirection(direction);setIndex(Math.max(0,Math.min(posts.length-1,current+direction)));setScan(value=>value+1);};
@@ -21,8 +22,8 @@ export default function Darkroom({onClose}:{onClose?:()=>void}){
     {post&&<div key={scan} className="scanner-light" aria-hidden="true"/>}
    </div>
    <div className="scanner-controls"><button type="button" onClick={()=>move(-1)} disabled={!post||current===0} aria-label="Scan previous frame">←</button><span role="status" aria-live="polite" aria-atomic="true">{post?`${String(current+1).padStart(2,'0')} / ${String(visibleCount).padStart(2,'0')}`:'—'}</span><button type="button" onClick={()=>move(1)} disabled={!post||current===posts.length-1} aria-label="Scan next frame">→</button></div>
-   {post&&<div key={post.id} className="scanner-caption"><time dateTime={post.timestamp}>{new Date(post.timestamp).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}</time><div className="scanner-caption-text" tabIndex={0} role="region" aria-label="Post caption">{post.caption?<p>{post.caption}</p>:<p className="caption-empty">No caption on this post.</p>}</div></div>}
-   {snapshot&&<p className="scanner-sync-note">{error?'Refresh unavailable · ':Date.now()-Date.parse(snapshot.fetchedAt)>10800000?'Update delayed · ':''}Media checked <time dateTime={snapshot.fetchedAt}>{new Date(snapshot.fetchedAt).toLocaleString()}</time> · updates automatically.</p>}
+   {post&&<div key={post.id} className="scanner-caption"><time dateTime={post.timestamp}>{new Date(post.timestamp).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}</time><PostDetails photo={instagramPhoto(post)}/></div>}
+   {snapshot&&<p className="scanner-sync-note">{error?'Refresh unavailable · ':Date.now()-Date.parse(snapshot.fetchedAt)>10800000?'Update delayed · ':''}Feed checked <time dateTime={snapshot.fetchedAt}>{new Date(snapshot.fetchedAt).toLocaleString()}</time> · checks for new posts each time you open.</p>}
   </div>
  </dialog>;
 }

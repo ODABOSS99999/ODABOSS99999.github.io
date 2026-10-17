@@ -1,6 +1,9 @@
 import type { Photo } from './content';
 import type { InstagramPost, InstagramSelection } from './instagram';
 import { instagramSelection, selectInstagramPosts } from './instagram';
+import archive from '../public/instagram/stats.json';
+import metricsArchive from '../public/instagram/metrics.json';
+import { validateMetrics } from './instagramMetrics';
 
 // Portfolio membership was verified in the signed-in Instagram portfolio.
 // Older covers deliberately carry no inferred media IDs, dates, or captions.
@@ -286,6 +289,9 @@ export const pinnedInstagramPhotos: Photo[] = [
 ];
 
 const postCode = (url: string) => url.split('/').filter(Boolean).at(-1)!;
+// These archived captions are account-source records, not collaboration evidence.
+const archivedCaptions = new Map(archive.trackedPosts.map(post => [postCode(post.permalink), post.caption]));
+const archivedMetrics = new Map(validateMetrics(metricsArchive).posts.map(post => [postCode(post.permalink), post]));
 
 export function instagramPostPhoto(post: InstagramPost): Photo {
   const video = post.mediaType === 'VIDEO' || post.mediaType === 'REEL';
@@ -311,11 +317,14 @@ export function selectInstagramPhotos(
   const portfolioKeys = new Set([...choices.portfolioIds, ...favoriteKeys]);
   const matches = (photo: Photo, keys: Set<string>) => keys.has(photo.sourceUrl!) || keys.has(postCode(photo.sourceUrl!)) || keys.has(photo.id.replace(/^ig-/, ''));
   const snapshotByCode = new Map(posts.map(post => [postCode(post.permalink), post]));
-  const merged = curated
+  const merged: Photo[] = curated
     .filter(photo => choices.portfolioMode === 'all' || matches(photo, portfolioKeys))
     .map(photo => {
-      const post = snapshotByCode.get(postCode(photo.sourceUrl!));
-      return post ? {...photo, ...instagramPostPhoto(post)} : photo;
+      const code = postCode(photo.sourceUrl!);
+      const post = snapshotByCode.get(code);
+      const metrics = post?.metrics ?? archivedMetrics.get(code) ?? photo.metrics;
+      const caption = post?.caption ?? archivedCaptions.get(code) ?? photo.caption;
+      return {...photo, ...(post ? instagramPostPhoto(post) : {}), caption, metrics};
     });
   const seen = new Set(merged.map(photo => postCode(photo.sourceUrl!)));
   for (const post of selectInstagramPosts(posts, 'portfolio', choices)) {

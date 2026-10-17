@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { validateMetrics } from './instagramMetrics';
 import { validateSnapshot } from './instagram';
+import { liveFeedUrl, validateLiveFeed } from './instagramLiveFeed';
 import type { InstagramPost, InstagramSnapshot } from './instagram';
 import type { Photo } from './content';
 import type { MetricsSnapshot } from './instagramMetrics';
@@ -8,14 +9,43 @@ let request:Promise<InstagramSnapshot>|null=null,cachedAt=0;
 let lastMetrics:MetricsSnapshot|null=null;
 export function loadInstagramSnapshot(force=false){
  if(force||!request||Date.now()-cachedAt>60000){cachedAt=Date.now();const refreshQuery=`?refresh=${cachedAt}`;request=Promise.all([
-  fetch(`/instagram/feed.json${refreshQuery}`,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('Instagram images unavailable');return r.json();}).then(validateSnapshot),
-  fetch(`/instagram/metrics.json${refreshQuery}`,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('Metrics unavailable');return r.json();}).then(validateMetrics).then(metrics=>{lastMetrics=metrics;return metrics;}).catch(()=>lastMetrics),
+  fetch(`/instagram/feed.json${refreshQuery}`,{cache:'no-store',signal:AbortSignal.timeout(10000)}).then(r=>{if(!r.ok)throw new Error('Instagram images unavailable');return r.json();}).then(validateSnapshot),
+  fetch(`/instagram/metrics.json${refreshQuery}`,{cache:'no-store',signal:AbortSignal.timeout(10000)}).then(r=>{if(!r.ok)throw new Error('Metrics unavailable');return r.json();}).then(validateMetrics).then(metrics=>{lastMetrics=metrics;return metrics;}).catch(()=>lastMetrics),
  ]).then(([snapshot,metrics])=>{const byId=new Map(metrics?.posts.map(p=>[p.id,p])||[]);return {...snapshot,posts:snapshot.posts.map(post=>{const m=byId.get(post.id);return {...post,image:{...post.image,src:`${post.image.src}?v=${encodeURIComponent(snapshot.fetchedAt)}`},metrics:m&&m.permalink===post.permalink?m:undefined};})};}).catch(e=>{request=null;throw e;});}
  return request;
 }
 export function useInstagramSnapshot({refreshOnMount=false}:{refreshOnMount?:boolean}={}){
  const [snapshot,setSnapshot]=useState<InstagramSnapshot|null>(null),[loading,setLoading]=useState(true),[error,setError]=useState(false);
- useEffect(()=>{let live=true;const refresh=(force=false)=>{if(document.hidden&&!force)return;loadInstagramSnapshot(force).then(s=>{if(live){setSnapshot(s);setError(false);}}).catch(()=>{if(live)setError(true);}).finally(()=>{if(live)setLoading(false);});};refresh(refreshOnMount);const poll=()=>refresh();const interval=setInterval(poll,300000);document.addEventListener('visibilitychange',poll);return()=>{live=false;clearInterval(interval);document.removeEventListener('visibilitychange',poll);};},[refreshOnMount]);
+ useEffect(()=>{
+  let live=true,sequence=0;
+  const refresh=async(force=false)=>{
+   if(document.hidden&&!force)return;
+   const attempt=++sequence;
+   let saved:InstagramSnapshot|null=null,failed=false;
+   try{saved=await loadInstagramSnapshot(force);}catch{failed=true;}
+   if(live&&attempt===sequence&&saved)setSnapshot(saved);
+   if(refreshOnMount){
+    try{
+     const url=liveFeedUrl();
+     if(url){
+      const response=await fetch(url,{cache:'no-store',signal:AbortSignal.timeout(35000)});
+      if(!response.ok)throw Error('Latest post unavailable');
+      const latest=validateLiveFeed(await response.json());
+      const posts=new Map(saved?.posts.map(post=>[post.id,post])||[]);
+      latest.posts.forEach(post=>posts.set(post.id,post));
+      saved={...latest,posts:[...posts.values()].sort((a,b)=>Date.parse(b.timestamp)-Date.parse(a.timestamp))};
+      failed=false;
+     }
+    }catch{failed=true;}
+   }
+   if(live&&attempt===sequence){if(saved)setSnapshot(saved);setError(failed);setLoading(false);}
+  };
+  void refresh(refreshOnMount);
+  const poll=()=>{void refresh();};
+  const interval=setInterval(poll,300000);
+  document.addEventListener('visibilitychange',poll);
+  return()=>{live=false;clearInterval(interval);document.removeEventListener('visibilitychange',poll);};
+ },[refreshOnMount]);
  return {snapshot,loading,error};
 }
 export function instagramPhoto(p:InstagramPost):Photo{

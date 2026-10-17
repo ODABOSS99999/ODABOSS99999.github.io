@@ -168,12 +168,13 @@
 
 .about-profile-frame{width:174px;padding:8px;background:#5b3c29;border:4px solid #805c39;box-shadow:inset 0 0 0 1px #b99a58,5px 8px 18px #30251f33;margin:28px auto;transform:rotate(-2deg)}.about-profile-frame img{display:block;width:150px;height:150px;object-fit:cover}
 
-/* White illuminated emergency-sign housing, shared by every exit control. */
-.gui-exit.exit-sign{position:relative;gap:9px;min-width:122px;min-height:58px;padding:7px 11px!important;border:1px solid #b8bdb5!important;border-radius:5px!important;background:linear-gradient(145deg,#f6f7ee,#d7dbd2)!important;color:#00ad57!important;box-shadow:inset 0 2px 2px #fff,2px 4px 0 #9ca59b,0 7px 15px #101e1933!important;text-shadow:0 0 9px #00e87866;isolation:isolate}
-.gui-exit.exit-sign .exit-word{font-family:'Arial Narrow',Impact,sans-serif;font-size:34px!important;font-weight:900;line-height:1;letter-spacing:1px;transform:scaleX(.85);margin:0 -5px!important}
-.gui-exit.exit-sign .exit-chevron{font:300 30px/1 Arial,sans-serif!important;color:#a9b7aa;letter-spacing:0;margin:0!important;text-shadow:none}
-.gui-exit.exit-sign:is(:hover,:focus-visible){background:linear-gradient(145deg,#fffef5,#e4ecdf)!important;color:#00bf60!important;border-color:#8dba9a!important;box-shadow:inset 0 2px 2px #fff,2px 4px 0 #9ca59b,0 0 24px #00e87866!important;text-shadow:0 0 12px #00e878aa;outline:3px solid #008a48;outline-offset:5px}
-.gui-exit.exit-sign:active{translate:0 2px}
+/* An aged green and brass sign, shared by every exit control. */
+.gui-exit.exit-sign{position:relative;gap:7px;min-width:100px;min-height:46px;padding:7px 11px!important;border:1px solid #8e805b!important;border-radius:3px!important;background:linear-gradient(145deg,#3f5142,#2d3c32)!important;color:#d2d5ad!important;box-shadow:inset 0 1px 1px #c5bd8a25,1px 2px 0 #514530,0 3px 7px #1b251b26!important;text-shadow:0 0 5px #c8d99520;isolation:isolate;transition:background .18s ease,color .18s ease,box-shadow .18s ease}
+.gui-exit.exit-sign .exit-word{font-family:'Arial Narrow',Impact,sans-serif;font-size:26px!important;font-weight:900;line-height:1;letter-spacing:1px;transform:scaleX(.85);margin:0 -5px!important}
+.gui-exit.exit-sign .exit-chevron{font:300 24px/1 Arial,sans-serif!important;color:#a6ad87;letter-spacing:0;margin:0!important;text-shadow:none}
+.gui-exit.exit-sign:is(:hover,:focus-visible){background:linear-gradient(145deg,#4a604b,#344b39)!important;color:#f0ecc8!important;border-color:#b9a773!important;box-shadow:inset 0 1px 2px #e5dfaf30,1px 2px 0 #514530,0 0 13px #c9d88b35!important;text-shadow:0 0 8px #dbe7a65c}
+.gui-exit.exit-sign:focus-visible{outline:3px solid #927348;outline-offset:4px}
+.gui-exit.exit-sign:active{translate:0 1px}
 .collection-panel .section-exit-rail{top:0;z-index:20}
 .collection-panel .section-heading{padding-top:76px}
 @media(prefers-reduced-motion:reduce){.gui-exit.exit-sign{transition:none}}
@@ -201,3 +202,43 @@ html,body,#root{width:100%;height:100%;overflow:hidden}
 
 .portfolio-favorites{padding-top:40px;border-top:1px solid #9f9e803f;margin:35px 0}.portfolio-favorites h2{font-size:37px;margin-top:10px}
 @media(max-width:540px){.portfolio-favorites h2{font-size:33px}}
+
+/* Portrait arrival: a room to explore, with direct routes for social visitors. */
+.mobile-room-intro,.mobile-room-links{display:none}
+@media(max-width:700px) and (orientation:portrait){
+ .mobile-room-intro{display:block;position:absolute;z-index:3;top:calc(24px + env(safe-area-inset-top,0px));left:24px;pointer-events:none;color:#f1e7ce;text-shadow:0 2px 12px #15251d}
+ .mobile-room-intro p{font:500 12px 'DM Sans',sans-serif;letter-spacing:.1em}
+ .mobile-room-intro>span{display:block;font:italic 39px/1.1 var(--serif);margin-top:5px}
+ .seated-canvas{bottom:190px}
+ .mobile-room-links{display:block;position:absolute;bottom:0;left:0;right:0;z-index:4;padding:23px 24px calc(18px + env(safe-area-inset-bottom,0px));background:#e9dfc6;color:#303e36;border-top:1px solid #b39a6b}
+ .mobile-room-links>p{font:italic 23px/1.15 var(--serif);max-width:290px;margin-bottom:17px}
+ .mobile-room-links>div{display:grid;grid-template-columns:1.25fr 1fr;gap:10px}
+ .mobile-room-links a{min-height:48px;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 13px;font-size:12px;border:1px solid #52634d66;border-radius:3px}
+ .mobile-room-links a:first-child{background:#304d3c;color:#f1e7ce;border-color:#304d3c}
+ .mobile-room-links a:active{transform:translateY(1px)}
+ .mobile-room-links a:focus-visible{outline:2px solid #304d3c;outline-offset:3px}
+ .mobile-room-hint{display:block;font-size:10px;color:#59614e;margin-top:15px}
+ .seated-controls{opacity:1;bottom:calc(202px + env(safe-area-inset-bottom,0px));border-radius:24px;padding:3px 10px;gap:3px;max-width:calc(100% - 32px)}
+ .seated-controls button{font-size:11px}
+ .seated-object-list{bottom:calc(263px + env(safe-area-inset-bottom,0px));max-height:calc(100dvh - 300px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));border:1px solid #b39a6b;box-shadow:0 12px 40px #1119;border-radius:8px}
+ .seated-tooltip{bottom:calc(263px + env(safe-area-inset-bottom,0px));width:max-content;max-width:85%;font-size:12px}
+ .collection-panel,.instagram-stats{width:calc(100% - 20px);max-height:calc(100dvh - 24px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));border-width:5px;overscroll-behavior:contain}
+ .collection-panel .section-page{padding:18px}
+ .collection-panel .section-heading h1{font-size:38px}
+ .collection-panel .biography p,.collection-panel .project p{font-size:15px;line-height:1.75}
+ .publication-list>a{flex-wrap:wrap;gap:10px;padding:22px 0}.publication-list .source-link{margin-left:0;min-height:44px;display:flex;align-items:center}
+}
+@media(max-width:700px) and (orientation:portrait) and (max-height:650px){
+ .mobile-room-intro{top:16px}.mobile-room-intro>span{font-size:30px}
+ .mobile-room-links{padding-top:15px}.mobile-room-links>p{font-size:21px;margin-bottom:10px}.mobile-room-hint{margin-top:10px}
+}
+
+/* Direct contact details, without collection content. */
+.collection-panel .section-contact .section-heading{padding-bottom:20px}
+.collection-panel .section-contact .section-heading h1{margin-bottom:0}
+.collection-panel .section-contact .contact-layout{margin:24px 0 8px}
+.section-contact .email-link{overflow-wrap:anywhere;min-height:44px}
+.section-contact .contact-details a{display:flex;align-items:center;min-height:44px}
+.section-contact .contact-details{gap:20px 32px}
+.section-contact .copy-status:empty{display:none}
+.section-contact .copy-status{margin:12px 0}

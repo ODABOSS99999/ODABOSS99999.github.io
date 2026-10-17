@@ -1,5 +1,8 @@
 name: Refresh Instagram snapshot
 
+env:
+  VITE_INSTAGRAM_FEED_URL: ${{ vars.INSTAGRAM_FEED_URL }}
+
 on:
   workflow_dispatch:
   schedule:
