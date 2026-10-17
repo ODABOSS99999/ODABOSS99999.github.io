@@ -1,0 +1,21 @@
+import {afterEach,expect,it,vi} from 'vitest';
+import {act,renderHook} from '@testing-library/react';
+import feed from '../public/instagram/feed.json';
+import metrics from '../public/instagram/metrics.json';
+afterEach(()=>{vi.unstubAllGlobals();vi.useRealTimers();vi.resetModules();});
+it('polls media without browser caching, updates image revisions, and retains data on a network failure',async()=>{
+ vi.useFakeTimers();let fail=false,revision=0;
+ const fetcher=vi.fn(async (url:string)=>{if(fail)throw Error('offline');return {ok:true,json:async()=>url.includes('metrics.json')?metrics:{...feed,fetchedAt:new Date(Date.UTC(2026,9,17,revision++)).toISOString()}};});
+ vi.stubGlobal('fetch',fetcher);
+ const {useInstagramSnapshot}=await import('./instagramMedia');
+ const {result,unmount}=renderHook(()=>useInstagramSnapshot({refreshOnMount:true}));
+ await act(async()=>{await vi.advanceTimersByTimeAsync(0);});
+ const first=result.current.snapshot!.posts[0].image.src;expect(first).toContain('?v=');
+ await act(async()=>{await vi.advanceTimersByTimeAsync(300000);});
+ expect(result.current.snapshot!.posts[0].image.src).not.toBe(first);
+ expect(fetcher.mock.calls.every(call=>(call as unknown as [string,RequestInit])[1].cache==='no-store')).toBe(true);
+ const previous=result.current.snapshot;fail=true;
+ await act(async()=>{await vi.advanceTimersByTimeAsync(300000);});
+ expect(result.current.error).toBe(true);expect(result.current.snapshot).toBe(previous);
+ unmount();
+});

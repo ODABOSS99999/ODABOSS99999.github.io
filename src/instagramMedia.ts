@@ -3,18 +3,20 @@ import { validateMetrics } from './instagramMetrics';
 import { validateSnapshot } from './instagram';
 import type { InstagramPost, InstagramSnapshot } from './instagram';
 import type { Photo } from './content';
+import type { MetricsSnapshot } from './instagramMetrics';
 let request:Promise<InstagramSnapshot>|null=null,cachedAt=0;
+let lastMetrics:MetricsSnapshot|null=null;
 export function loadInstagramSnapshot(force=false){
- if(force||!request||Date.now()-cachedAt>60000){cachedAt=Date.now();request=Promise.all([
-  fetch('/instagram/feed.json',{cache:force?'no-store':'no-cache'}).then(r=>{if(!r.ok)throw new Error('Instagram images unavailable');return r.json();}).then(validateSnapshot),
-  fetch('/instagram/metrics.json',{cache:force?'no-store':'no-cache'}).then(r=>{if(!r.ok)throw new Error('Metrics unavailable');return r.json();}).then(validateMetrics).catch(()=>null),
- ]).then(([snapshot,metrics])=>{const byId=new Map(metrics?.posts.map(p=>[p.id,p])||[]);return {...snapshot,posts:snapshot.posts.map(post=>{const m=byId.get(post.id);return m&&m.permalink===post.permalink?{...post,metrics:m}:post;})};}).catch(e=>{request=null;throw e;});}
+ if(force||!request||Date.now()-cachedAt>60000){cachedAt=Date.now();const refreshQuery=`?refresh=${cachedAt}`;request=Promise.all([
+  fetch(`/instagram/feed.json${refreshQuery}`,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('Instagram images unavailable');return r.json();}).then(validateSnapshot),
+  fetch(`/instagram/metrics.json${refreshQuery}`,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('Metrics unavailable');return r.json();}).then(validateMetrics).then(metrics=>{lastMetrics=metrics;return metrics;}).catch(()=>lastMetrics),
+ ]).then(([snapshot,metrics])=>{const byId=new Map(metrics?.posts.map(p=>[p.id,p])||[]);return {...snapshot,posts:snapshot.posts.map(post=>{const m=byId.get(post.id);return {...post,image:{...post.image,src:`${post.image.src}?v=${encodeURIComponent(snapshot.fetchedAt)}`},metrics:m&&m.permalink===post.permalink?m:undefined};})};}).catch(e=>{request=null;throw e;});}
  return request;
 }
 export function useInstagramSnapshot({refreshOnMount=false}:{refreshOnMount?:boolean}={}){
- const [snapshot,setSnapshot]=useState<InstagramSnapshot|null>(null),[loading,setLoading]=useState(true);
- useEffect(()=>{let live=true;const refresh=(force=false)=>{if(document.hidden&&!force)return;loadInstagramSnapshot(force).then(s=>{if(live)setSnapshot(s);}).catch(()=>{}).finally(()=>{if(live)setLoading(false);});};refresh(refreshOnMount);const poll=()=>refresh();const interval=setInterval(poll,300000);document.addEventListener('visibilitychange',poll);return()=>{live=false;clearInterval(interval);document.removeEventListener('visibilitychange',poll);};},[refreshOnMount]);
- return {snapshot,loading};
+ const [snapshot,setSnapshot]=useState<InstagramSnapshot|null>(null),[loading,setLoading]=useState(true),[error,setError]=useState(false);
+ useEffect(()=>{let live=true;const refresh=(force=false)=>{if(document.hidden&&!force)return;loadInstagramSnapshot(force).then(s=>{if(live){setSnapshot(s);setError(false);}}).catch(()=>{if(live)setError(true);}).finally(()=>{if(live)setLoading(false);});};refresh(refreshOnMount);const poll=()=>refresh();const interval=setInterval(poll,300000);document.addEventListener('visibilitychange',poll);return()=>{live=false;clearInterval(interval);document.removeEventListener('visibilitychange',poll);};},[refreshOnMount]);
+ return {snapshot,loading,error};
 }
 export function instagramPhoto(p:InstagramPost):Photo{
  const date=new Date(p.timestamp).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});

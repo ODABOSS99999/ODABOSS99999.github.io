@@ -3,7 +3,8 @@ name: Refresh Instagram snapshot
 on:
   workflow_dispatch:
   schedule:
-    - cron: '23 12 * * *'
+    # Source responses may be cached; poll without purchasing faster service.
+    - cron: '23 * * * *'
 
 permissions:
   contents: write
@@ -31,14 +32,20 @@ jobs:
       - run: node --test scripts/instagram-stats-sync.test.mjs
       - run: node --test scripts/publish-pages.test.mjs
       - name: Refresh local static feed
+        id: media
+        continue-on-error: true
         run: node scripts/instagram-sync.mjs
         env:
           WINDSOR_API_KEY: ${{ secrets.WINDSOR_API_KEY }}
       - name: Refresh Instagram likes, comments, and views
+        id: metrics
+        continue-on-error: true
         run: node scripts/instagram-metrics-sync.mjs
         env:
           WINDSOR_API_KEY: ${{ secrets.WINDSOR_API_KEY }}
       - name: Refresh Instagram social ledger
+        id: ledger
+        continue-on-error: true
         run: node scripts/instagram-stats-sync.mjs
         env:
           WINDSOR_API_KEY: ${{ secrets.WINDSOR_API_KEY }}
@@ -86,6 +93,11 @@ jobs:
           api_location: ''
           skip_app_build: true
           skip_api_build: true
+      - name: Report source failures after publishing successful refreshes
+        if: steps.media.outcome == 'failure' || steps.metrics.outcome == 'failure' || steps.ledger.outcome == 'failure'
+        run: |
+          echo 'One or more sources failed. Successful updates were published; failed sources retain their last verified data.'
+          exit 1
 
 # Initial public release requires separate human approval. The owner can then
 # authorize automatic publication of future Instagram refreshes with the variable.

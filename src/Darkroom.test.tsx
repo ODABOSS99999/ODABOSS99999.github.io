@@ -43,7 +43,7 @@ it('excludes newest videos and reels while scanning photo posts with buttons and
  expect(close).toHaveBeenCalledOnce();
  expect(screen.queryByText('Followers')).toBeNull();
  expect(screen.queryByText('Check for updates')).toBeNull();
- const feedRequests=()=>vi.mocked(fetch).mock.calls.filter(([url])=>url==='/instagram/feed.json');
+ const feedRequests=()=>vi.mocked(fetch).mock.calls.filter(([url])=>String(url).startsWith('/instagram/feed.json'));
  expect(feedRequests()).toHaveLength(1);
  expect(feedRequests()[0][1]).toMatchObject({cache:'no-store'});
  unmount();

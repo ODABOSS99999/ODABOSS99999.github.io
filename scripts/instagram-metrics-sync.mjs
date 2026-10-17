@@ -3,7 +3,7 @@ import {resolve,join} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {ACCOUNT,ACCOUNT_ID,boundedFetch,validatedUrl} from './instagram-sync.mjs';
 export const METRIC_FIELDS=['media_id','media_permalink','media_like_count','media_comments_count','media_views','data_fetched_at'];
-export function metricsUrl(key){if(!key)throw new Error('Missing Windsor credential');const u=new URL('https://connectors.windsor.ai/instagram');u.search=new URLSearchParams({api_key:key,fields:METRIC_FIELDS.join(','),date_preset:'last_30dT',select_accounts:ACCOUNT_ID}).toString();return u;}
+export function metricsUrl(key,archive=true){if(!key)throw new Error('Missing Windsor credential');const u=new URL('https://connectors.windsor.ai/instagram');u.search=new URLSearchParams({api_key:key,fields:METRIC_FIELDS.join(','),...(archive?{date_from:'2010-01-01',date_to:new Date().toISOString().slice(0,10)}:{date_preset:'last_30dT'}),select_accounts:ACCOUNT_ID}).toString();return u;}
 const count=v=>{if(v===null||v===undefined||v==='')return null;const n=Number(v);if(!Number.isSafeInteger(n)||n<0)throw new Error('Invalid engagement count');return n;};
 function utc(v){if(typeof v!=='string')throw new Error('Missing source fetch time');const date=new Date(/[zZ]$|[+-]\d\d:\d\d$/.test(v)?v:`${v}Z`);if(!Number.isFinite(date.valueOf()))throw new Error('Invalid source fetch time');return date.toISOString();}
 export function normalizeMetrics(payload,now=new Date()){
@@ -12,8 +12,13 @@ export function normalizeMetrics(payload,now=new Date()){
  return {version:1,account:ACCOUNT,source:'Windsor.ai / Instagram',scope:'instagram-organic-media',fetchedAt:now.toISOString(),posts:[...rows.values()]};
 }
 export async function syncMetrics({input,output=resolve('public/instagram'),key=process.env.WINDSOR_API_KEY,fetchImpl=fetch,now=new Date()}={}){
- const payload=input?JSON.parse(await readFile(input,'utf8')):JSON.parse((await boundedFetch(metricsUrl(key),{fetchImpl,maxBytes:5*1024*1024})).toString('utf8'));
- const next=normalizeMetrics(payload,now),file=join(output,'metrics.json');let previous;
+ let payload,next;
+ if(input){payload=JSON.parse(await readFile(input,'utf8'));next=normalizeMetrics(payload,now);}
+ else{
+  try{payload=JSON.parse((await boundedFetch(metricsUrl(key),{fetchImpl,maxBytes:5*1024*1024,timeoutMs:120000})).toString('utf8'));next=normalizeMetrics(payload,now);}
+  catch{console.warn('Full engagement archive unavailable; refreshing recent posts and retaining older dated counts.');payload=JSON.parse((await boundedFetch(metricsUrl(key,false),{fetchImpl,maxBytes:5*1024*1024})).toString('utf8'));next=normalizeMetrics(payload,now);}
+ }
+ const file=join(output,'metrics.json');let previous;
  try{previous=JSON.parse(await readFile(file,'utf8'));}catch(e){if(e.code!=='ENOENT')throw new Error('Previous metrics unreadable');}
  if(previous&&(previous.version!==1||previous.account!==ACCOUNT||!Array.isArray(previous.posts)))throw new Error('Previous metrics invalid');
  const merged=new Map((previous?.posts||[]).map(p=>[p.id,p]));for(const p of next.posts){const old=merged.get(p.id);if(old&&Date.parse(old.checkedAt)>Date.parse(p.checkedAt))continue;merged.set(p.id,p);}next.posts=[...merged.values()];
