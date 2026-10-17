@@ -1,8 +1,20 @@
 {
   "version": 1,
   "account": "mcgowen_media",
-  "fetchedAt": "2026-10-16T20:35:22.620Z",
+  "fetchedAt": "2026-10-17T15:19:32.473Z",
   "posts": [
+    {
+      "id": "17887790223622703",
+      "caption": "“Make tomorrow a good day” 🐿️",
+      "permalink": "https://www.instagram.com/p/DemD-HWm-T-/",
+      "timestamp": "2026-10-17T12:02:21.000Z",
+      "mediaType": "CAROUSEL_ALBUM",
+      "image": {
+        "src": "/instagram/media/17887790223622703.webp",
+        "width": 1200,
+        "height": 1600
+      }
+    },
     {
       "id": "18087524315314655",
       "caption": "🐦",
