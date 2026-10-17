@@ -25,10 +25,16 @@ describe('verified Instagram portfolio', () => {
     expect(portfolio.filter(item => item.sourceUrl === photo.sourceUrl)).toHaveLength(1);
     expect(portfolio.find(item => item.sourceUrl === photo.sourceUrl)?.caption).toBe(post.caption);
   });
-  it('includes pinned covers and keeps latest independent of curation', () => {
+  it('includes each available favorite and pin, and keeps latest independent of curation', () => {
+    const favorites = selectInstagramPhotos(posts, 'favorites');
     const portfolio = selectInstagramPhotos(posts, 'portfolio', selected);
+    expect(favorites).toHaveLength(7);
     expect(portfolio).toHaveLength(30);
     expect(selectInstagramPhotos([], 'portfolio', selected)).toHaveLength(30);
+    expect(selectInstagramPhotos([], 'favorites')).toHaveLength(7);
+    for (const favorite of favorites) expect(portfolio.some(item => item.sourceUrl === favorite.sourceUrl)).toBe(true);
+    const expectedCodes = new Set([...instagramSelection.favoriteIds, ...instagramSelection.pinnedIds]);
+    for (const favorite of favorites) expect(expectedCodes.has(favorite.sourceUrl!.split('/').at(-2)!)).toBe(true);
     const latest = [...posts].sort((a,b) => Date.parse(b.timestamp)-Date.parse(a.timestamp))[0];
     expect(selectInstagramPhotos(posts, 'latest')).toHaveLength(1);
     expect(selectInstagramPhotos(posts, 'latest')[0].sourceUrl).toBe(latest.permalink);
@@ -56,5 +62,6 @@ describe('automatic recent portfolio', () => {
     expect(result[0].sourceUrl).toBe(arrival.permalink);
     expect(result.some(photo=>photo.sourceUrl===posts[5].permalink)).toBe(false);
     expect(selectInstagramPhotos([], 'portfolio', recent)).toEqual([]);
+    expect(selectInstagramPhotos([], 'favorites', recent)).toHaveLength(7);
   });
 });

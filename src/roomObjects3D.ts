@@ -44,6 +44,8 @@ export function createRoomObjects(scene:T.Scene,resources:Resources){
  for(const x of [-.7,.7]){const lug=mesh(camera,new T.TorusGeometry(.045,.012,8,16),silver,x,.15,0);lug.rotation.y=Math.PI/2;}
  const books=group('about',-2.6,3.655,-4.1);
  frame(books,0,0,.93,.93,-.07);
+ const favorites=group('favorites',-.17,2.055,-4.1);
+ frame(favorites,-.4,0,.601,.7,.09);frame(favorites,.4,0,.538,.49,-.12);
  const news=group('published',-5.02,2.61,-3.98);news.rotation.x=-.1;box(news,0,-.07,0,1.53,1.12,.055,paper);box(news,0,-.07,.032,.017,1.1,.008,ivory);box(news,0,.36,.035,1.3,.035,.01,dark);box(news,0,.22,.035,1.3,.015,.01,dark);box(news,-.37,-.04,.035,.49,.31,.012,green);
  for(let col=0;col<3;col++)for(let row=0;row<10;row++)box(news,-.48+col*.48,-.47+row*.052,.037,.35-(row%3)*.025,.009,.008,dark);
  const engineering=group('engineering',-2.6,2.61,-3.98),rocket=new T.Group();engineering.add(rocket);rocket.position.set(-.5,-.03,0);

@@ -9,7 +9,7 @@ const post = (id: string, timestamp: string): InstagramPost => ({
   image: { src: `/instagram/media/test-${id}.webp`, width: 1200, height: 800 },
 });
 const posts = [post('10', '2026-08-01T12:00:00Z'), post('20', '2026-10-01T12:00:00Z'), post('30', '2026-09-01T12:00:00Z')];
-const emptySelection: InstagramSelection = { portfolioMode: 'selected', portfolioIds: [], pinnedIds: [] };
+const emptySelection: InstagramSelection = { portfolioMode: 'selected', portfolioIds: [], favoriteIds: [], pinnedIds: [] };
 const snapshot = (): InstagramSnapshot => ({ version: 1, account: 'mcgowen_media', fetchedAt: '2026-10-15T12:00:00Z', posts: structuredClone(posts) });
 const ids = (items: InstagramPost[]) => items.map(p => p.id);
 
@@ -19,25 +19,32 @@ describe('Instagram collection selection', () => {
     expect(ids(posts)).toEqual(['10', '20', '30']);
     expect(selectInstagramPosts([], 'latest', emptySelection)).toEqual([]);
   });
-  it('includes selected and pinned posts in the portfolio without duplicates', () => {
-    const selection = { ...emptySelection, portfolioIds: ['10', '30'], pinnedIds: ['20'] };
+  it('includes explicit favorites and pinned posts in the portfolio and favorites without duplicates', () => {
+    const selection = { ...emptySelection, portfolioIds: ['10'], favoriteIds: ['30', '20'], pinnedIds: ['20'] };
     const portfolio = selectInstagramPosts(posts, 'portfolio', selection);
+    const favorites = selectInstagramPosts(posts, 'favorites', selection);
     expect(ids(portfolio)).toEqual(['20', '30', '10']);
+    expect(ids(favorites)).toEqual(['20', '30']);
+    expect(favorites.every(f => portfolio.some(p => p.id === f.id))).toBe(true);
   });
   it('matches supplied membership by ID, permalink, or shortcode', () => {
-    const selection = { ...emptySelection, portfolioIds: [posts[0].permalink, 'test_30'], pinnedIds: ['20'] };
+    const selection = { ...emptySelection, portfolioIds: [posts[0].permalink], favoriteIds: ['test_30'], pinnedIds: ['20'] };
     expect(ids(selectInstagramPosts(posts, 'portfolio', selection))).toEqual(['20', '30', '10']);
+    expect(ids(selectInstagramPosts(posts, 'favorites', selection))).toEqual(['20', '30']);
   });
   it('does not infer membership or pinned status from feed position or popularity', () => {
     expect(selectInstagramPosts(posts, 'portfolio', emptySelection)).toEqual([]);
-    const unknownMembership = { ...emptySelection, portfolioIds: ['999'], pinnedIds: ['unknown'] };
+    expect(selectInstagramPosts(posts, 'favorites', emptySelection)).toEqual([]);
+    const unknownMembership = { ...emptySelection, portfolioIds: ['999'], favoriteIds: ['missing'], pinnedIds: ['unknown'] };
     expect(selectInstagramPosts(posts, 'portfolio', unknownMembership)).toEqual([]);
+    expect(selectInstagramPosts(posts, 'favorites', unknownMembership)).toEqual([]);
   });
-  it('all mode automatically includes newly synced posts in date order', () => {
-    const selection = { ...emptySelection, portfolioMode: 'all', };
+  it('all mode automatically includes newly synced posts without assigning favorites', () => {
+    const selection = { ...emptySelection, portfolioMode: 'all', favoriteIds: ['10'] };
     const refreshed = [...posts, post('40', '2026-10-16T12:00:00Z')];
     expect(ids(selectInstagramPosts(refreshed, 'portfolio', selection))).toEqual(['40', '20', '30', '10']);
     expect(ids(selectInstagramPosts(refreshed, 'latest', selection))).toEqual(['40']);
+    expect(ids(selectInstagramPosts(refreshed, 'favorites', selection))).toEqual(['10']);
   });
 });
 

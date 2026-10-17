@@ -1,14 +1,15 @@
 import type { InstagramMetrics } from './instagramMetrics';
-export type SectionId = 'photography' | 'about' | 'published' | 'engineering' | 'contact';
-export type Photo = { id: string; src: string; width: number; height: number; alt: string; caption?: string; credit?: string; note?: string; sourceUrl?: string; sourceLabel?: string; metrics?: InstagramMetrics };
+export type SectionId = 'photography' | 'about' | 'favorites' | 'published' | 'engineering' | 'contact';
+export type Photo = { id: string; src: string; width: number; height: number; alt: string; caption?: string; credit?: string; favorite?: boolean; note?: string; sourceUrl?: string; sourceLabel?: string; metrics?: InstagramMetrics };
 export type Publication = { title: string; publication: string; date?: string; role: string; url: string; thumbnail?: string };
 export type Project = { url?: string; id: string; title: string; overview: string; role?: string; process?: string; tools?: string[]; challenges?: string; outcomes?: string; images?: Photo[] };
 export const destinations: { id: SectionId; title: string; subtitle: string; number: string }[] = [
   { id: 'photography', title: 'Photography', subtitle: 'Through the viewfinder', number: '01' },
   { id: 'about', title: 'About Me', subtitle: 'A few pages of my story', number: '02' },
-  { id: 'published', title: 'Published Work', subtitle: 'Photography for The Mercury', number: '03' },
-  { id: 'engineering', title: 'Engineering Projects', subtitle: 'Curiosity, made tangible', number: '04' },
-  { id: 'contact', title: 'Contact', subtitle: 'A little correspondence', number: '05' },
+  { id: 'favorites', title: 'Personal Favorites', subtitle: 'The ones I keep close', number: '03' },
+  { id: 'published', title: 'Published Work', subtitle: 'Photography for The Mercury', number: '04' },
+  { id: 'engineering', title: 'Engineering Projects', subtitle: 'Curiosity, made tangible', number: '05' },
+  { id: 'contact', title: 'Contact', subtitle: 'A little correspondence', number: '06' },
 ];
 // Supplied personal content only. See CONTENT.md before adding assets.
 export const owner = {

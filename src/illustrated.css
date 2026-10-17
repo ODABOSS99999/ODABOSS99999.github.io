@@ -198,3 +198,6 @@ html,body,#root{width:100%;height:100%;overflow:hidden}
 .seated-object-list{bottom:calc(85px + env(safe-area-inset-bottom,0px));max-height:min(65dvh,calc(100dvh - 110px - env(safe-area-inset-bottom,0px)));overscroll-behavior:contain}
 .seated-tooltip{bottom:calc(90px + env(safe-area-inset-bottom,0px))}
 @media(max-width:800px){.seated-controls{bottom:calc(12px + env(safe-area-inset-bottom,0px))}}
+
+.portfolio-favorites{padding-top:40px;border-top:1px solid #9f9e803f;margin:35px 0}.portfolio-favorites h2{font-size:37px;margin-top:10px}
+@media(max-width:540px){.portfolio-favorites h2{font-size:33px}}
