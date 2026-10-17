@@ -12,7 +12,7 @@ async(page)=>{
  // Click the actual camera card and watch the ladder before routing.
  await page.mouse.click(336,250);await page.waitForTimeout(120);assert(new URL(page.url()).pathname==='/','Shelf opened before ladder');assert(await page.locator('.seated-canvas').getAttribute('data-ladder-state')==='moving','Camera did not trigger ladder');await page.screenshot({path:'output/playwright/luxury-ladder-fetch.png'});await page.waitForURL('**/photography');
  await page.getByRole('link',{name:'Return to library',exact:true}).click();await page.locator('.seated-canvas canvas').waitFor();
- for(const [name,route] of [['About Me','about'],['Personal Favorites','favorites'],['Published Work','published'],['Engineering Projects','engineering'],['Handmade electronic device / Game Boy','engineering']]){
+ for(const [name,route] of [['About Me','about'],['Published Work','published'],['Engineering Projects','engineering'],['Handmade electronic device / Game Boy','engineering']]){
   await page.getByRole('button',{name:'Objects',exact:true}).click();await page.getByRole('button',{name,exact:true}).click();await page.waitForTimeout(100);assert(new URL(page.url()).pathname==='/','Early shelf route');assert(await page.locator('.seated-canvas').getAttribute('data-ladder-state')==='moving',`No ladder for ${name}`);await page.waitForURL(`**/${route}`);await page.getByRole('link',{name:'Return to library',exact:true}).click();await page.locator('.seated-canvas canvas').waitFor();
  }
  await page.getByRole('button',{name:'Reset room view',exact:true}).click();await page.mouse.move(700,550);await page.waitForTimeout(500);await page.screenshot({path:'output/playwright/luxury-final-desktop.png'});

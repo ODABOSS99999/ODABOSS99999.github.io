@@ -7,7 +7,7 @@ export type InstagramPost = {
   image: { src: string; width: number; height: number };
 };
 export type InstagramSnapshot = { version: 1; account: 'mcgowen_media'; fetchedAt: string; posts: InstagramPost[] };
-export type InstagramSelection = { portfolioMode: string; portfolioIds: string[]; favoriteIds: string[]; pinnedIds: string[] };
+export type InstagramSelection = { portfolioMode: string; portfolioIds: string[]; pinnedIds: string[] };
 export const RECENT_POST_LIMIT = 30;
 export const instagramSelection: InstagramSelection = selection;
 export const instagramPortfolioUrl = selection.portfolioUrl;
@@ -21,13 +21,12 @@ export function validateSnapshot(value: unknown): InstagramSnapshot {
   }
   return data;
 }
-export function selectInstagramPosts(posts: InstagramPost[], mode: 'latest'|'portfolio'|'favorites', choices: InstagramSelection=instagramSelection): InstagramPost[] {
+export function selectInstagramPosts(posts: InstagramPost[], mode: 'latest'|'portfolio', choices: InstagramSelection=instagramSelection): InstagramPost[] {
   const sorted=[...posts].sort((a,b)=>Date.parse(b.timestamp)-Date.parse(a.timestamp));
   if(mode==='latest')return sorted.slice(0,1);
   if(mode==='portfolio'&&choices.portfolioMode==='recent')return sorted.slice(0,RECENT_POST_LIMIT);
   const matches=(p:InstagramPost,keys:Set<string>)=>keys.has(p.id)||keys.has(p.permalink)||keys.has(p.permalink.split('/').filter(Boolean).at(-1)!);
-  const favoriteKeys=new Set([...choices.favoriteIds,...choices.pinnedIds]);
-  const portfolioKeys=new Set([...choices.portfolioIds,...favoriteKeys]);
+  const portfolioKeys=new Set([...choices.portfolioIds,...choices.pinnedIds]);
   const portfolio=choices.portfolioMode==='all'?sorted:sorted.filter(p=>matches(p,portfolioKeys));
-  return mode==='portfolio'?portfolio:portfolio.filter(p=>matches(p,favoriteKeys));
+  return portfolio;
 }

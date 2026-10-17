@@ -20,15 +20,24 @@ export const engineeringMentions = [
   { id: 'DEImrh8JkJ6', author: 'twcp.rocketry', title: 'Rocket history and launch safety', topic: 'STEM outreach', summary: 'College Park Rocketry’s return visit to Hailey Elementary for STEM education and launches.' },
 ];
 
-export default function EngineeringMentions() {
-  return <section className="engineering-mentions" aria-labelledby="engineering-mentions-title">
+const projectAuthors: Record<string, string[]> = {
+  'comet-rocketry': ['cometrocketry_utd'],
+  rocketry: ['altf4_rocketry', 'twcp.rocketry'],
+  gameboy: ['learnto.bot'],
+};
+
+export default function EngineeringMentions({ projectId }: { projectId: string }) {
+  const posts = engineeringMentions.filter(post => projectAuthors[projectId]?.includes(post.author));
+  if (!posts.length) return null;
+  const headingId = `tagged-${projectId}`;
+  return <section className="engineering-mentions" aria-labelledby={headingId}>
     <p className="eyebrow">FROM THE TEAMS</p>
-    <h2 id="engineering-mentions-title">Tagged in the work</h2>
+    <h3 id={headingId}>Tagged work</h3>
     <p>Engineering-related posts where I’m tagged, shared by the teams and organizations behind the work.</p>
-    <div className="engineering-mentions-grid">{engineeringMentions.map(post =>
-      <a className="engineering-mention" key={post.id} href={`https://www.instagram.com/${post.author}/${post.kind || 'p'}/${post.id}/`} target="_blank" rel="noopener noreferrer">
+    <div className="engineering-mentions-grid">{posts.map(post =>
+      <a className="engineering-mention" key={post.id} href={`https://www.instagram.com/${post.kind || 'p'}/${post.id}/`} target="_blank" rel="noopener noreferrer">
         <span className="eyebrow">{post.topic}</span>
-        <h3>{post.title}</h3><p>{post.summary}</p>
+        <h4>{post.title}</h4><p>{post.summary}</p>
         <span className="engineering-mention-source">@{post.author} · Instagram ↗</span>
       </a>
     )}</div>

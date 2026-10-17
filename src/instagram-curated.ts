@@ -229,7 +229,6 @@ export const curatedInstagramPhotos: Photo[] = [
     "alt": "Photograph selected for the @mcgowen_media Instagram portfolio",
     "sourceUrl": "https://www.instagram.com/p/DVvxzPWDThf/",
     "sourceLabel": "View post on Instagram",
-    "favorite": true
   },
   {
     "id": "ig-curated-DbvrBR1IA7R",
@@ -239,7 +238,6 @@ export const curatedInstagramPhotos: Photo[] = [
     "alt": "Photograph selected for the @mcgowen_media Instagram portfolio",
     "sourceUrl": "https://www.instagram.com/p/DbvrBR1IA7R/",
     "sourceLabel": "View post on Instagram",
-    "favorite": true
   },
   {
     "id": "ig-curated-DbCwPkxjTL0",
@@ -249,7 +247,6 @@ export const curatedInstagramPhotos: Photo[] = [
     "alt": "Photograph selected for the @mcgowen_media Instagram portfolio",
     "sourceUrl": "https://www.instagram.com/p/DbCwPkxjTL0/",
     "sourceLabel": "View post on Instagram",
-    "favorite": true
   },
   {
     "id": "ig-curated-DY8YYQjjYy0",
@@ -259,7 +256,6 @@ export const curatedInstagramPhotos: Photo[] = [
     "alt": "Photograph selected for the @mcgowen_media Instagram portfolio",
     "sourceUrl": "https://www.instagram.com/p/DY8YYQjjYy0/",
     "sourceLabel": "View post on Instagram",
-    "favorite": true
   },
   {
     "id": "ig-curated-DX5Ub9wDT0H",
@@ -269,7 +265,6 @@ export const curatedInstagramPhotos: Photo[] = [
     "alt": "Photograph selected for the @mcgowen_media Instagram portfolio",
     "sourceUrl": "https://www.instagram.com/p/DX5Ub9wDT0H/",
     "sourceLabel": "View post on Instagram",
-    "favorite": true
   }
 ];
 
@@ -297,18 +292,17 @@ export function instagramPostPhoto(post: InstagramPost): Photo {
   };
 }
 
-/** Recent portfolio follows the feed; verified favorites retain their original selection. */
+/** Recent portfolio follows the feed; selected portfolios retain verified covers. */
 export function selectInstagramPhotos(
   posts: InstagramPost[],
-  mode: 'latest' | 'portfolio' | 'favorites',
+  mode: 'latest' | 'portfolio',
   choices: InstagramSelection = instagramSelection,
   curated: Photo[] = [...curatedInstagramPhotos, ...pinnedInstagramPhotos],
 ): Photo[] {
   if (mode === 'latest' || (mode === 'portfolio' && choices.portfolioMode === 'recent')) {
     return selectInstagramPosts(posts, mode, choices).map(instagramPostPhoto);
   }
-  const favoriteKeys = new Set([...choices.favoriteIds, ...choices.pinnedIds]);
-  const portfolioKeys = new Set([...choices.portfolioIds, ...favoriteKeys]);
+  const portfolioKeys = new Set([...choices.portfolioIds, ...choices.pinnedIds]);
   const matches = (photo: Photo, keys: Set<string>) => keys.has(photo.sourceUrl!) || keys.has(postCode(photo.sourceUrl!)) || keys.has(photo.id.replace(/^ig-/, ''));
   const snapshotByCode = new Map(posts.map(post => [postCode(post.permalink), post]));
   const merged = curated
@@ -322,5 +316,5 @@ export function selectInstagramPhotos(
     const code = postCode(post.permalink);
     if (!seen.has(code)) { merged.push(instagramPostPhoto(post)); seen.add(code); }
   }
-  return mode === 'favorites' ? merged.filter(photo => matches(photo, favoriteKeys)) : merged;
+  return merged;
 }

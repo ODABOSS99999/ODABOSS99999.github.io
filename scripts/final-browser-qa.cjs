@@ -25,7 +25,7 @@ async(page)=>{
    }
  }
  await page.setViewportSize({width:1440,height:1080});
- for(const name of ['Photography','About Me','Personal Favorites','Published Work','Engineering Projects','Contact']){
+ for(const name of ['Photography','About Me','Published Work','Engineering Projects','Contact']){
    await page.getByRole('button',{name:'Index',exact:true}).click();
    await page.getByRole('navigation',{name:'Library index'}).getByRole('link',{name:new RegExp(name)}).click();
    await page.getByRole('heading',{level:1,name:new RegExp('^'+name)}).waitFor();

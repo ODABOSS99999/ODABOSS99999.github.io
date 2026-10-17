@@ -8,7 +8,6 @@ import {OutputPass} from 'three/addons/postprocessing/OutputPass.js';
 import {createRoomObjects} from './roomObjects3D';
 import { addLuxuryDetails, createTurntable } from './luxuryRoom';
 import { ShelfLadder } from './ShelfLadder';
-import { loadInstagramSnapshot } from './instagramMedia';
 import { makeHitTargets,opaqueAt } from './roomHitTargets';
 import { blendLight, createLightingTransition } from './roomLighting';
 import type { LightingWeights } from './roomLighting';
@@ -71,13 +70,12 @@ export function createPaperRoom(host:HTMLElement,state:()=>State,hover:(id:strin
  const ladder=modeled.get('ladder')!;let ladderRight=false,pickup=0,pickupDone=false;
  const shelfLadder=new ShelfLadder(id=>{host.removeAttribute('aria-busy');announce('Opening the selected collection.');activate(id);});
 
- function photoInFrame(id:string,src:string,x:number,_y:number,w:number,h:number,_angle:number){
+ function photoInFrame(id:string,src:string,_x:number,_y:number,w:number,h:number,_angle:number){
   const canvas=document.createElement('canvas');canvas.width=1024;canvas.height=Math.round(1024*h/w);const context=canvas.getContext('2d')!;context.fillStyle='#30251f';context.fillRect(0,0,canvas.width,canvas.height);
   const tex=new T.CanvasTexture(canvas);tex.colorSpace=T.SRGBColorSpace;tex.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());textures.push(tex);
-  const m=new T.MeshBasicMaterial({map:tex,side:T.DoubleSide});materials.push(m);const geometry=new T.PlaneGeometry(w,h);geometries.push(geometry);const photo=new T.Mesh(geometry,m);photo.position.set(0,0,.097);const mounts=items.get(id)?.userData.photoMounts as T.Group[]|undefined;const mount=mounts?.[id==='favorites'&&x>0?1:0];(mount??items.get(id))?.add(photo);
+  const m=new T.MeshBasicMaterial({map:tex,side:T.DoubleSide});materials.push(m);const geometry=new T.PlaneGeometry(w,h);geometries.push(geometry);const photo=new T.Mesh(geometry,m);photo.position.set(0,0,.097);const mounts=items.get(id)?.userData.photoMounts as T.Group[]|undefined;const mount=mounts?.[0];(mount??items.get(id))?.add(photo);
   const image=new Image();image.onload=()=>{if(disposed)return;const scale=Math.max(canvas.width/image.width,canvas.height/image.height),iw=image.width*scale,ih=image.height*scale;context.drawImage(image,(canvas.width-iw)/2,(canvas.height-ih)/2,iw,ih);tex.userData.hitPixels=context.getImageData(0,0,canvas.width,canvas.height).data;tex.needsUpdate=true;};image.src=src;
  }
- loadInstagramSnapshot().then(snapshot=>{if(disposed)return;const source=(id:string)=>snapshot.posts.find(p=>p.id===id)?.image.src;const first=source('18151133245558753'),second=source('18117687656072162');if(first)photoInFrame('favorites',first,-.386,-.006,.601,.7,Math.PI/45);if(second)photoInFrame('favorites',second,.4,-.177,.538,.49,-Math.PI/45);}).catch(()=>{});
  photoInFrame('about','/instagram/profile.jpg',0,-.05,.93,.93,-Math.PI/45);
  const ambient=new T.HemisphereLight('#eee3c8','#3b2920',2.4);scene.add(ambient);const sun=new T.DirectionalLight('#ffe0ad',1.4);sun.position.set(-4,7,5);scene.add(sun);
  const composer=new EffectComposer(renderer);composer.renderTarget1.samples=4;composer.renderTarget2.samples=4;composer.addPass(new RenderPass(scene,camera));
@@ -104,7 +102,7 @@ export function createPaperRoom(host:HTMLElement,state:()=>State,hover:(id:strin
   return null;
  }
  const setHover=(id:string|null)=>{if(id===over)return;over=id;hover(over?aliases(over):null);renderer.domElement.style.cursor=over?'pointer':'grab';};
- const shelfItems=new Set(['photography','about','favorites','published','engineering','stats','shelf-books']);
+ const shelfItems=new Set(['photography','about','published','engineering','stats','shelf-books']);
  function action(raw:string,hitX?:number){
   const id=aliases(raw),motion=state().motion&&!reduced.matches;
   if(raw==='ladder'){ladderRight=!ladderRight;shelfLadder.move(null,ladderRight?.72:-6.02,performance.now(),motion);return;}

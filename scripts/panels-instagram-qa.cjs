@@ -5,7 +5,7 @@ async(page)=>{
  for(const [x,y] of [[443,340],[509,338]]){await page.mouse.move(x,y);await page.waitForTimeout(100);const first=await page.locator('.seated-tooltip').textContent();assert(first.includes('rocket & Game Boy'),'Different engineering hover');for(let i=0;i<6;i++){await page.waitForTimeout(100);assert(await page.locator('.seated-tooltip').textContent()===first,'Flickering hover');}}
  await page.mouse.move(650,340);await page.waitForTimeout(150);assert(await page.locator('.seated-tooltip').count()===0,'Hover leaking into empty shelf');await page.mouse.move(700,550);await page.screenshot({path:'output/playwright/instagram-room-frames.png'});
  const results=[];
- for(const [id,title] of [['photography','Photography'],['about','About Me'],['favorites','Personal Favorites'],['published','Published Work'],['engineering','Engineering Projects'],['contact','Contact']]){
+ for(const [id,title] of [['photography','Photography'],['about','About Me'],['published','Published Work'],['engineering','Engineering Projects'],['contact','Contact']]){
   await page.goto(`http://127.0.0.1:5175/${id}`);await page.getByRole('heading',{level:1,name:new RegExp(title)}).waitFor();await page.locator('.gallery img').first().waitFor();await page.locator('.gallery img').first().evaluate(img=>img.decode());
   const images=await page.locator('.gallery img').count();assert(images>0,`No Instagram images in ${id}`);
   const exit=page.getByRole('button',{name:`Exit ${title} and return to library`,exact:true});assert(await exit.isVisible(),`No EXIT in ${id}`);

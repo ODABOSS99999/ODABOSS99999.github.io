@@ -33,7 +33,6 @@ export function createRoom(host:HTMLElement, state:()=>RoomState, hover:(id:stri
  box(-.6,.72,2.6,1.5,.38,1.3,green);box(-.6,1.35,3.15,1.5,1.4,.3,green);for(const x of [-1.4,.2])box(x,1,2.6,.22,.6,1.5,walnut);for(const x of [-1.15,-.05])for(const z of [2.1,3])box(x,.3,z,.12,.6,.12,brass);
  const cameraObj=item('photography',-4.55,2.46,-3.08);box(0,0,0,.7,.43,.36,black,cameraObj);box(-.17,.26,0,.26,.14,.26,black,cameraObj);const lens=cyl(.1,0,.28,.2,.3,brass,cameraObj);lens.rotation.x=Math.PI/2;const lensGlass=cyl(.1,0,.45,.15,.03,black,cameraObj);lensGlass.rotation.x=Math.PI/2;
  const books=item('about',-2.3,1.5,-3.05);for(let i=0;i<3;i++){box(0,i*.13,0,.8,.11,.5,i===1?cream:red,books);}
- const frame=item('favorites',.1,3.35,-4.47);box(0,0,0,1.5,1.8,.15,brass,frame);box(0,0,.09,1.32,1.62,.03,cream,frame);box(0,0,.12,1.1,1.4,.03,green,frame);ball(.16,.25,.15,.25,brass,frame);box(-.1,-.4,.17,.7,.3,.035,black,frame);
  const paper=item('published',2.6,1.47,-1.3);box(0,0,0,.75,.025,.6,cream,paper);for(let i=0;i<5;i++)box(0,.016,-.19+i*.08,.6,.008,.015,black,paper);
  const rocket=item('engineering',-2.1,3.5,-3.1);cyl(0,0,0,.15,.6,cream,rocket);cyl(0,.4,0,.15,.25,brass,rocket,0);for(const x of [-.18,.18])box(x,-.22,0,.12,.3,.18,red,rocket);cyl(0,-.42,0,.25,.08,brass,rocket);
  const lamp=item('lamp',3.1,1.5,-1.95);cyl(0,0,0,.27,.08,brass,lamp);cyl(0,.4,0,.035,.8,brass,lamp);const shade=material('#e6c77e');cyl(0,.86,0,.43,.43,shade,lamp,.23);const bulb=new T.PointLight('#ffc66d',20,7,2);bulb.position.set(3.1,2.23,-1.95);bulb.castShadow=true;scene.add(bulb);

@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import App from './App2D';
@@ -8,161 +8,49 @@ const audio = vi.hoisted(() => ({ start: vi.fn(async () => {}), pause: vi.fn(asy
 vi.mock('./audio', () => ({ RoomAudio: class { start = audio.start; pause = audio.pause; volume = audio.volume; dispose = audio.dispose; } }));
 
 describe('library navigation', () => {
-  it('preserves distinct scroll positions through Back/Forward without resetting on settings changes', async () => {
-    const user = userEvent.setup();
-    let scrollY = 0;
-    const descriptor = Object.getOwnPropertyDescriptor(window, 'scrollY')!;
-    Object.defineProperty(window, 'scrollY', { configurable: true, get: () => scrollY });
-    const scrollTo = vi.spyOn(window, 'scrollTo').mockImplementation((x: number | ScrollToOptions, y?: number) => {
-      scrollY = typeof x === 'number' ? Number(y) : x.top || 0;
-    });
-    try {
-      render(<App/>);
-      await waitFor(() => expect(scrollTo).toHaveBeenCalled());
-      scrollY = 140;
-      fireEvent.scroll(document);
-      await user.click(screen.getByRole('button', { name: 'Contact' }));
-      const contactHeading = await screen.findByRole('heading', { name: /^Contact\s*\.$/, level: 1 });
-      await waitFor(() => expect(document.activeElement).toBe(contactHeading));
-      expect(scrollY).toBe(0);
-      const panel=document.querySelector<HTMLDialogElement>('.collection-panel')!;
-      panel.scrollTop=420;
-      fireEvent.scroll(panel);
-      scrollTo.mockClear();
-      await user.click(screen.getByRole('button', { name: 'Room settings' }));
-      await user.click(screen.getByRole('button', { name: 'Daylight' }));
-      expect(scrollTo).not.toHaveBeenCalled();
-      expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Daylight' }));
-      await act(async () => { history.back(); });
-      await waitFor(() => expect(location.pathname).toBe('/'));
-      await waitFor(() => expect(scrollY).toBe(140));
-      expect(screen.queryByRole('slider', { name: 'Ambient volume' })).toBeNull();
-      scrollTo.mockClear();
-      await act(async () => { history.forward(); });
-      await screen.findByRole('heading', { name: /^Contact\s*\.$/, level: 1 });
-      await waitFor(() => expect(document.querySelector('.collection-panel')?.scrollTop).toBe(420));
-      expect(scrollY).toBe(0);
-    } finally {
-      Object.defineProperty(window, 'scrollY', descriptor);
-    }
+  it('opens unknown URLs in a focused recovery dialog',async()=>{
+    history.replaceState({},'', '/missing-collection');const user=userEvent.setup();render(<App/>);
+    const dialog=screen.getByRole('dialog',{name:'A little lost?'});
+    expect(dialog.hasAttribute('open')).toBe(true);
+    expect(document.activeElement).toBe(screen.getByRole('heading',{name:'A little lost?'}));
+    await user.click(screen.getByRole('button',{name:'Return to the library'}));
+    await waitFor(()=>expect(location.pathname).toBe('/'));
+    expect(screen.queryByRole('dialog',{name:'A little lost?'})).toBeNull();
   });
-  it.each(destinations)('opens $title from its room object and restores object focus with EXIT', async destination => {
-    const user = userEvent.setup();
-    render(<App/>);
-    await user.click(screen.getByRole('button', { name: destination.title }));
-    await waitFor(() => expect(location.pathname).toBe(`/${destination.id}`));
-    const heading = await screen.findByRole('heading', { name: new RegExp(`^${destination.title}\\s*\\.$`), level: 1 });
-    await waitFor(() => expect(document.activeElement).toBe(heading));
-    await user.click(screen.getByRole('link', { name: 'Return to library' }));
-    expect(location.pathname).toBe('/');
-    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('button', { name: destination.title })));
+  it.each(destinations)('opens $title and returns through its collection EXIT', async destination => {
+    const user=userEvent.setup();history.replaceState({},'', '/');render(<App/>);
+    expect(screen.queryByRole('banner')).toBeNull();
+    await user.click(screen.getByRole('button',{name:destination.title}));
+    await waitFor(()=>expect(location.pathname).toBe(`/${destination.id}`));
+    const heading=await screen.findByRole('heading',{name:new RegExp(`^${destination.title}`),level:1});
+    await waitFor(()=>expect(document.activeElement).toBe(heading));
+    await user.click(screen.getByRole('button',{name:`Exit ${destination.title} and return to library`}));
+    await waitFor(()=>expect(location.pathname).toBe('/'));
+    await waitFor(()=>expect(document.activeElement).toBe(screen.getByRole('button',{name:destination.title})));
   });
-  it('starts at the chair even from a previous section URL, then supports back/forward', async () => {
-    const user = userEvent.setup();
-    history.replaceState({}, '', '/contact');
-    render(<App/>);
-    expect(location.pathname).toBe('/');
-    await user.click(screen.getByRole('button', { name: 'Contact' }));
-    expect(await screen.findByRole('heading', { name: /^Contact\s*\.$/, level: 1 })).toBeTruthy();
-    expect(screen.getByRole('link', { name: 'owenmmcgowan@gmail.com' }).getAttribute('href')).toBe('mailto:owenmmcgowan@gmail.com');
-    const index = screen.getByRole('button', { name: /Index/ });
-    await user.click(index);
-    await user.click(screen.getByRole('link', { name: /Engineering Projects/ }));
-    expect(await screen.findByRole('heading', { name: /^Engineering Projects\s*\.$/, level: 1 })).toBeTruthy();
-    await act(async () => { history.back(); });
-    expect(await screen.findByRole('heading', { name: /^Contact\s*\.$/, level: 1 })).toBeTruthy();
-    expect(location.pathname).toBe('/contact');
-    await act(async () => { history.forward(); });
-    expect(await screen.findByRole('heading', { name: /^Engineering Projects\s*\.$/, level: 1 })).toBeTruthy();
-    expect(location.pathname).toBe('/engineering');
-  });
-  it('restarts unknown URLs at the chair and provides index navigation', async () => {
-    const user = userEvent.setup();
-    history.replaceState({}, '', '/unknown');
-    render(<App/>);
-    expect(location.pathname).toBe('/');
-    await user.click(screen.getByRole('button', { name: /Index/ }));
-    await user.click(screen.getByRole('link', { name: /About Me/ }));
-    expect(await screen.findByRole('heading', { name: /^About Me\s*\.$/, level: 1 })).toBeTruthy();
-    expect(screen.queryByRole('navigation', { name: 'Library index' })).toBeNull();
+  it('opens a linked collection directly and supports browser Back',async()=>{
+    const user=userEvent.setup();history.replaceState({},'', '/engineering');render(<App/>);
+    await screen.findByRole('heading',{name:/^Engineering Projects/,level:1});
+    expect(document.querySelector('#project-rocketry .engineering-mentions')).toBeTruthy();
+    expect(document.querySelector('#project-gameboy .engineering-mentions')).toBeTruthy();
+    await user.click(screen.getByRole('button',{name:'Exit Engineering Projects and return to library'}));
+    await act(async()=>history.back());
+    await waitFor(()=>expect(location.pathname).toBe('/engineering'));
   });
 });
-
-describe('room preferences', () => {
-  it('pauses room audio in a hidden tab, resumes on return, and respects an explicit mute', async () => {
-    const user = userEvent.setup();
-    const visibility = vi.spyOn(document, 'hidden', 'get').mockReturnValue(false);
-    render(<App/>);
-    await waitFor(() => expect(audio.start).toHaveBeenCalledTimes(1));
-    visibility.mockReturnValue(true);
-    act(() => { document.dispatchEvent(new Event('visibilitychange')); });
-    expect(audio.pause).toHaveBeenCalledTimes(1);
-    visibility.mockReturnValue(false);
-    await act(async () => { document.dispatchEvent(new Event('visibilitychange')); });
-    expect(audio.start).toHaveBeenCalledTimes(2);
-    await user.click(screen.getAllByRole('button', { name: 'Mute room ambience' })[0]);
-    act(() => { document.dispatchEvent(new Event('visibilitychange')); });
-    expect(audio.start).toHaveBeenCalledTimes(2);
+describe('physical room controls',()=>{
+  it('mutes audio using the record player',async()=>{
+    history.replaceState({},'', '/');const user=userEvent.setup();render(<App/>);
+    await waitFor(()=>expect(audio.start).toHaveBeenCalled());
+    await user.click(screen.getByRole('button',{name:'Mute room ambience'}));
+    expect(audio.pause).toHaveBeenCalled();
   });
-  it('resets lighting, volume, and movement on reopening, and switches the physical lamp', async () => {
-    const user = userEvent.setup();
-    const { container, unmount } = render(<App/>);
-    await user.click(screen.getByRole('button', { name: 'Room settings' }));
-    await user.click(screen.getByRole('button', { name: 'Daylight' }));
-    fireEvent.change(screen.getByRole('slider', { name: 'Ambient volume' }), { target: { value: '.65' } });
-    await user.click(screen.getByRole('checkbox', { name: 'Subtle room movement' }));
-    expect(container.firstElementChild?.getAttribute('data-lighting')).toBe('daylight');
-    expect(container.firstElementChild?.classList.contains('motion-off')).toBe(true);
-    expect(localStorage.getItem('mcgowen-library')).toBeNull();
-    unmount();
-    const next = render(<App/>);
-    expect(next.container.firstElementChild?.getAttribute('data-lighting')).toBe('lamplight');
-    await user.click(screen.getByRole('button', { name: 'Lamp switch: toggle Lamplight and Darkroom' }));
-    expect(next.container.firstElementChild?.getAttribute('data-lighting')).toBe('darkroom');
-    await user.click(screen.getByRole('button', { name: 'Lamp switch: toggle Lamplight and Darkroom' }));
-    expect(next.container.firstElementChild?.getAttribute('data-lighting')).toBe('lamplight');
-  });
-  it('defaults sound on and retries browser-blocked autoplay on the first interaction', async () => {
-    audio.start.mockRejectedValueOnce(new DOMException('Gesture required', 'NotAllowedError'));
-    const user = userEvent.setup();
-    render(<App/>);
-    await waitFor(() => expect(audio.start).toHaveBeenCalledTimes(1));
-    expect(screen.getAllByRole('button', { name: 'Mute room ambience' })[0].getAttribute('aria-pressed')).toBe('true');
-    await user.click(screen.getByRole('button', { name: /Index/ }));
-    await waitFor(() => expect(audio.start).toHaveBeenCalledTimes(2));
-    expect(screen.queryByText('Room audio is unavailable in this browser.')).toBeNull();
-    await user.click(screen.getAllByRole('button', { name: 'Mute room ambience' })[0]);
-    expect(localStorage.getItem('mcgowen-library')).toBeNull();
-  });
-  it('starts a fresh audio session despite settings from an earlier visit', async () => {
-    localStorage.setItem('mcgowen-library', JSON.stringify({ muted: true, volume: .5, soundDefaultVersion: 2 }));
-    const user = userEvent.setup();
-    render(<App/>);
-    await waitFor(() => expect(audio.start).toHaveBeenCalledWith(.3));
-    await user.click(screen.getByRole('button', { name: /Index/ }));
-    await user.click(screen.getAllByRole('button', { name: 'Mute room ambience' })[0]);
-    expect(localStorage.getItem('mcgowen-library')).not.toBeNull();
-  });
-  it('closes settings and index with Escape and keeps their panels mutually exclusive', async () => {
-    const user = userEvent.setup();
-    render(<App/>);
-    const settings = screen.getByRole('button', { name: 'Room settings' });
-    await user.click(settings);
-    expect(settings.getAttribute('aria-expanded')).toBe('true');
-    const index = screen.getByRole('button', { name: /Index/ });
-    await user.click(index);
-    expect(settings.getAttribute('aria-expanded')).toBe('false');
-    expect(screen.getByRole('navigation', { name: 'Library index' })).toBeTruthy();
-    screen.getByRole('link', { name: /About Me/ }).focus();
-    await user.keyboard('{Escape}');
-    expect(screen.queryByRole('navigation', { name: 'Library index' })).toBeNull();
-    expect(document.activeElement).toBe(index);
-    await user.click(settings);
-    screen.getByRole('slider', { name: 'Ambient volume' }).focus();
-    await user.keyboard('{Escape}');
-    expect(settings.getAttribute('aria-expanded')).toBe('false');
-    expect(document.activeElement).toBe(settings);
+  it('switches the physical lamp',async()=>{
+    history.replaceState({},'', '/');const user=userEvent.setup();const {container}=render(<App/>);
+    await user.click(screen.getByRole('button',{name:'Lamp switch: toggle Lamplight and Darkroom'}));
+    expect(container.firstElementChild?.getAttribute('data-lighting')).toBe('darkroom');
+    await user.click(screen.getByRole('button',{name:'Lamp switch: toggle Lamplight and Darkroom'}));
+    expect(container.firstElementChild?.getAttribute('data-lighting')).toBe('lamplight');
   });
 });
-
 

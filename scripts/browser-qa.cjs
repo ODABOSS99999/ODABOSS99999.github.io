@@ -20,7 +20,7 @@ async (page) => {
     }
   }
   await page.setViewportSize({width:1440,height:1080});
-  for(const [label,id] of [['Photography','photography'],['About Me','about'],['Personal Favorites','favorites'],['Published Work','published'],['Engineering Projects','engineering'],['Contact','contact']]){
+  for(const [label,id] of [['Photography','photography'],['About Me','about'],['Published Work','published'],['Engineering Projects','engineering'],['Contact','contact']]){
     await page.getByRole('button',{name:label,exact:true}).click();
     await page.getByRole('heading',{level:1}).waitFor();
     assert(new URL(page.url()).pathname===`/${id}`,`Wrong route ${id}`);
