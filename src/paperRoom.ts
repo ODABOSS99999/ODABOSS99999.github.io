@@ -67,7 +67,7 @@ export function createPaperRoom(host:HTMLElement,state:()=>State,hover:(id:strin
  }
  // A rolling ladder in front of the shelf rail.
  box(-2.6,4.95,-3.5,7.5,.055,.06,paper);
- const ladder=modeled.get('ladder')!;let ladderRight=false,pickup=0,pickupDone=false;
+ const ladder=modeled.get('ladder')!;let ladderRight=false,pickup=0;
  const shelfLadder=new ShelfLadder(id=>{host.removeAttribute('aria-busy');announce('Opening the selected collection.');activate(id);});
 
  function photoInFrame(id:string,src:string,_x:number,_y:number,w:number,h:number,_angle:number){
@@ -124,7 +124,7 @@ export function createPaperRoom(host:HTMLElement,state:()=>State,hover:(id:strin
   shelfLadder.update(performance.now(),motion);ladder.position.x=shelfLadder.x;host.dataset.ladderState=shelfLadder.moving?'moving':'idle';host.dataset.ladderX=shelfLadder.x.toFixed(3);
   turntable.update(time,s.playing,motion);
   notes.visible=s.playing;notes.position.y=1.2+(motion?(t%2)*.15:0);
-  if(pickup){const p=Math.min((performance.now()-pickup)/650,1);receiver.position.y+=p*.4;receiver.rotation.z=p*.28;if(p===1&&!pickupDone){pickupDone=true;activate('contact');}}
+  if(pickup){const p=Math.min((performance.now()-pickup)/650,1);receiver.position.y+=p*.4;receiver.rotation.z=p*.28;if(p===1){pickup=0;activate('contact');}}
   else if(motion&&(active==='contact'||active==='butler'||active==='receiver'))receiver.rotation.z=Math.sin(t*22)*.025;
   const light=lighting.update(s.lighting,time,motion);blendColor(ambient.color,ambientColors,light);blendColor(sun.color,sunColors,light);ambient.intensity=blendLight(light,2.8,1.8,.7);sun.intensity=blendLight(light,1.6,1,.3);
   // Tint only the illustrated cards; actual photographs retain their source colors.
