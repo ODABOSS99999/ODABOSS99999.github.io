@@ -111,7 +111,7 @@ export function createPaperRoom(host:HTMLElement,state:()=>State,hover:(id:strin
  const ambientColors=palette('#eee3c8','#eee3c8','#ff3730'),sunColors=palette('#ffe0ad','#ffe0ad','#ff241c'),paperColors=palette('#ffffff','#ffe8c5','#e56e63'),backgroundColors=palette('#889381','#394238','#292329');
  const paperColor=new T.Color(),backgroundColor=new T.Color();
  const blendColor=(out:T.Color,colors:readonly T.Color[],weights:LightingWeights)=>out.setRGB(blendLight(weights,colors[0].r,colors[1].r,colors[2].r),blendLight(weights,colors[0].g,colors[1].g,colors[2].g),blendLight(weights,colors[0].b,colors[1].b,colors[2].b));
- const aliases=(id:string)=>id==='receiver'||id==='butler'||id==='letter'?'contact':id==='device'?'engineering':id==='vinyl'?'record':id==='shelf-books'?'about':id;
+ const aliases=(id:string)=>id==='receiver'||id==='butler'?'contact':id==='device'?'engineering':id==='vinyl'?'record':id==='shelf-books'?'about':id;
  scene.updateMatrixWorld(true);
  let lastPointer:{clientX:number;clientY:number}|null=null;
  function pick(e:{clientX:number;clientY:number}){
