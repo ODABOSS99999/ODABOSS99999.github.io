@@ -1,5 +1,6 @@
 import {loadStats} from './InstagramStats';
-import {classifyPartnership,cumulativePosts} from './instagramLedger';
+import {roomLedger} from './roomLedger';
+import type {Stats} from './InstagramStats';
 import * as T from 'three';
 import {EffectComposer} from 'three/addons/postprocessing/EffectComposer.js';
 import {RenderPass} from 'three/addons/postprocessing/RenderPass.js';
@@ -57,11 +58,33 @@ export function createPaperRoom(host:HTMLElement,state:()=>State,hover:(id:strin
  const modeled=createRoomObjects(scene,{geometries,materials,textures});
  modeled.forEach((group,id)=>{items.set(id,group);base.set(id,group.position.clone());});
  const receiver=modeled.get('receiver')!;
- // A framed social ledger fills the empty middle-right shelf bay.
- const board=card('stats',svg('<rect x="8" y="8" width="304" height="224" fill="#ded3b5" stroke="#8b6945" stroke-width="12"/><text x="27" y="60" fill="#34443e" font-size="20">THE SOCIAL LEDGER</text><text x="27" y="110" fill="#34443e" font-size="15">Statistics unavailable</text>'),-.17,4.40,-4.05,2.08,1.42);
+ // The graphs are actual raised strokes, separate from the printed ledger face.
+ const board=card('stats',svg(''),-.17,4.40,-4.05,2.08,1.42);
  const boardMaterial=(board.children[0] as T.Mesh).material as T.MeshBasicMaterial;
  box(0,0,-.07,2.1,1.44,.13,wood,board);for(const x of [-1.04,1.04])box(x,0,.02,.055,1.47,.14,paper,board);for(const y of [-.72,.72])box(0,y,.02,2.12,.055,.14,paper,board);
- const updateBoard=async()=>{try{const stats=await loadStats();if(disposed)return;const points=stats.archiveCurrent===true?cumulativePosts(stats.trackedPosts):[],max=Math.max(1,...points.map(p=>p.count));const start=Date.parse(points[0]?.date||stats.checkedAt),span=Math.max(1,Date.parse(points.at(-1)?.date||stats.checkedAt)-start);const bars=`<path d="${points.map((p,i)=>`${i?'L':'M'}${28+(Date.parse(p.date)-start)/span*264},${188-p.count/max*65}`).join(' ')}" fill="none" stroke="#8b6945" stroke-width="3"/>`;const partnerships=stats.archiveCurrent===true?stats.trackedPosts.filter(p=>classifyPartnership(p).kind==='partnership').length:null;const old=boardMaterial.map;boardMaterial.map=texture(svg(`<rect x="8" y="8" width="304" height="224" fill="#ded3b5" stroke="#8b6945" stroke-width="12"/><text x="27" y="42" fill="#34443e" font-family="serif" font-size="17">THE SOCIAL LEDGER</text><text x="27" y="77" fill="#34443e" font-size="27">${stats.followers.toLocaleString()} followers</text><text x="27" y="102" fill="#34443e" font-size="14">${stats.posts} posts${partnerships===null?'':` · ${partnerships} partnership posts*`}</text>${bars}<text x="27" y="213" fill="#34443e" font-size="12">Live profile · click to explore</text>`));if(old){old.dispose();const i=textures.indexOf(old);if(i>=0)textures.splice(i,1);}boardMaterial.needsUpdate=true;}catch{if(disposed)return;const old=boardMaterial.map;boardMaterial.map=texture(svg('<rect x="8" y="8" width="304" height="224" fill="#ded3b5" stroke="#8b6945" stroke-width="12"/><text x="27" y="60" fill="#34443e" font-size="20">THE SOCIAL LEDGER</text><text x="27" y="110" fill="#34443e" font-size="15">Current statistics unavailable</text>'));if(old){old.dispose();const i=textures.indexOf(old);if(i>=0)textures.splice(i,1);}boardMaterial.needsUpdate=true;}};
+ const graphLayer=new T.Group();graphLayer.name='raised-ledger-graphs';graphLayer.position.z=.12;board.add(graphLayer);
+ const graphInk=new T.MeshBasicMaterial({color:'#385347'}),exportInk=new T.MeshBasicMaterial({color:'#90724a'});
+ materials.push(graphInk,exportInk);
+ const renderBoard=(stats?:Stats)=>{
+  const data=roomLedger(stats);
+  for(const child of [...graphLayer.children]){const geometry=(child as T.Mesh).geometry;geometry.dispose();const index=geometries.indexOf(geometry);if(index>=0)geometries.splice(index,1);graphLayer.remove(child);}
+  const strokes=(points:T.Vector3[],color:T.Material)=>{if(points.length<2)return;const path=new T.CurvePath<T.Vector3>();for(let i=1;i<points.length;i++)path.add(new T.LineCurve3(points[i-1],points[i]));const geometry=new T.TubeGeometry(path,Math.max(2,points.length*2),.009,5,false);geometries.push(geometry);graphLayer.add(new T.Mesh(geometry,color));};
+  data.rows.forEach((row,index)=>{
+   const floor=.11-index*.38;
+   strokes([new T.Vector3(-.87,floor,0),new T.Vector3(.87,floor,0)],exportInk);
+   if(!row.points.length)return;
+   const first=Date.parse(row.points[0].date),span=Math.max(1,Date.parse(row.points.at(-1)!.date)-first),max=Math.max(1,...row.points.map(point=>point.count));
+   let segment:T.Vector3[]=[],previousExport:boolean|undefined;
+   const sample=row.points.filter((_,i)=>i===0||i===row.points.length-1||i%Math.max(1,Math.floor(row.points.length/40))===0);
+   sample.forEach(point=>{const isExport='source' in point&&point.source==='export';if(previousExport!==undefined&&isExport!==previousExport){strokes(segment,previousExport?exportInk:graphInk);segment=[];}segment.push(new T.Vector3(-.87+(Date.parse(point.date)-first)/span*1.74,floor+point.count/max*.19,0));previousExport=isExport;});
+   strokes(segment,previousExport?exportInk:graphInk);
+  });
+  const labels=data.rows.map((row,index)=>`<text x="27" y="${64+index*64}" fill="#34443e" font-size="13">${row.label}${row.archived?' · saved':row.label==='Followers'?' · live':''}</text><text x="293" y="${64+index*64}" fill="#34443e" text-anchor="end" font-size="15">${row.count.toLocaleString()}</text>`).join('');
+  const old=boardMaterial.map;boardMaterial.map=texture(svg(`<rect x="8" y="8" width="304" height="224" fill="#ded3b5" stroke="#8b6945" stroke-width="12"/><text x="27" y="33" fill="#34443e" font-family="serif" font-size="17">THE SOCIAL LEDGER</text>${labels}`));
+  if(old){old.dispose();const index=textures.indexOf(old);if(index>=0)textures.splice(index,1);}boardMaterial.needsUpdate=true;
+ };
+ renderBoard();
+ const updateBoard=async()=>{try{const stats=await loadStats();if(!disposed)renderBoard(stats);}catch{/* Keep the dated graphs visible when the live source is unavailable. */}};
  const refreshBoard=()=>{if(!document.hidden)void updateBoard();};window.addEventListener('focus',refreshBoard);document.addEventListener('visibilitychange',refreshBoard);queueMicrotask(refreshBoard);const statsTimer=setInterval(refreshBoard,60000);
  // Books live only in the bottom row, never behind the objects.
  const bookRow=new T.Group();bookRow.userData.id='shelf-books';scene.add(bookRow);items.set('shelf-books',bookRow);base.set('shelf-books',bookRow.position.clone());
