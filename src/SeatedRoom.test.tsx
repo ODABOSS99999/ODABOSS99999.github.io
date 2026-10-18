@@ -7,6 +7,24 @@ const create = vi.hoisted(() => vi.fn());
 vi.mock('./paperRoom', () => ({ createPaperRoom: create }));
 afterEach(() => vi.unstubAllGlobals());
 
+it('returns restored focus to Objects without revealing the closed page list', async () => {
+  vi.stubGlobal('WebGLRenderingContext', class {});
+  create.mockReturnValue(room);
+  const { container } = render(<SeatedRoom navigate={vi.fn()} toggleLamp={vi.fn()} toggleAudio={vi.fn()} openIndex={vi.fn()} playing={false} motion={true}/>);
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Look left' }).hasAttribute('disabled')).toBe(false));
+  const trigger = screen.getByRole('button', { name: 'Objects' });
+  const contact = container.querySelector<HTMLButtonElement>('#object-contact')!;
+  act(() => contact.focus());
+  expect(document.activeElement).toBe(trigger);
+  expect(trigger.getAttribute('aria-expanded')).toBe('false');
+  fireEvent.click(trigger);
+  act(() => contact.focus());
+  expect(document.activeElement).toBe(contact);
+  fireEvent.keyDown(contact, { key: 'Escape' });
+  expect(document.activeElement).toBe(trigger);
+  expect(trigger.getAttribute('aria-expanded')).toBe('false');
+});
+
 it('recovers from context loss after initialization and cleans up once', async () => {
   vi.stubGlobal('WebGLRenderingContext', class {});
   let canvas!: HTMLCanvasElement;

@@ -51,8 +51,8 @@ export function normalizeRows(payload, now = new Date()) {
   return [...unique.values()].sort((a, b) => b.timestamp.localeCompare(a.timestamp) || b.id.localeCompare(a.id));
 }
 
-export async function boundedFetch(url, { fetchImpl = fetch, maxBytes = MAX_BYTES, image = false } = {}) {
-  const response = await fetchImpl(url, { redirect: 'error', signal: AbortSignal.timeout(30000), headers: { 'User-Agent': 'Windsor/1.0', Accept: image ? 'image/*' : 'application/json' } });
+export async function boundedFetch(url, { fetchImpl = fetch, maxBytes = MAX_BYTES, image = false, timeoutMs = 30000 } = {}) {
+  const response = await fetchImpl(url, { redirect: 'error', signal: AbortSignal.timeout(timeoutMs), headers: { 'User-Agent': 'Windsor/1.0', Accept: image ? 'image/*' : 'application/json' } });
   if (!response.ok) throw new Error('Remote request failed');
   if (image && !/^image\/(jpeg|png|webp|avif)(;|$)/i.test(response.headers.get('content-type') ?? '')) throw new Error('Expected image response');
   const length = Number(response.headers.get('content-length') ?? 0);

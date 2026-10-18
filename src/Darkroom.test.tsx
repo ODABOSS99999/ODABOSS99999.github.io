@@ -4,16 +4,16 @@ import Darkroom from './Darkroom';
 import feed from '../public/instagram/feed.json';
 
 afterEach(()=>vi.unstubAllGlobals());
-it('excludes newest videos and reels while scanning photo posts with buttons and keyboard',async()=>{
+it('opens on the newest post including videos and reels, and checks again on reopening',async()=>{
  const snapshot={...feed,posts:[
   {...feed.posts[0],id:'99999999999999991',mediaType:'VIDEO',timestamp:'2099-01-02T00:00:00Z',permalink:'https://www.instagram.com/reel/newestVideo/'},
   {...feed.posts[0],id:'99999999999999992',mediaType:'REEL',timestamp:'2099-01-01T00:00:00Z',permalink:'https://www.instagram.com/reel/newestReel/'},
-  ...feed.posts,
+  ...feed.posts.slice(0,6),
  ]};
  vi.stubGlobal('fetch',vi.fn(async()=>({ok:true,json:async()=>snapshot})));
  const close=vi.fn();
  const {container,unmount}=render(<Darkroom onClose={close}/>);
- const posts=[...feed.posts].filter(post=>post.mediaType==='IMAGE'||post.mediaType==='CAROUSEL_ALBUM').sort((a,b)=>Date.parse(b.timestamp)-Date.parse(a.timestamp));
+ const posts=[...snapshot.posts].sort((a,b)=>Date.parse(b.timestamp)-Date.parse(a.timestamp));
  await screen.findByRole('link',{name:'View frame 1 on Instagram'});
  expect(container.querySelector('.scanned-photo')?.getAttribute('href')).toBe(posts[0].permalink);
  expect(screen.getByRole('region',{name:'Post caption'}).textContent).toBe(posts[0].caption||'No caption on this post.');
@@ -43,12 +43,15 @@ it('excludes newest videos and reels while scanning photo posts with buttons and
  expect(close).toHaveBeenCalledOnce();
  expect(screen.queryByText('Followers')).toBeNull();
  expect(screen.queryByText('Check for updates')).toBeNull();
- const feedRequests=()=>vi.mocked(fetch).mock.calls.filter(([url])=>url==='/instagram/feed.json');
+ const feedRequests=()=>vi.mocked(fetch).mock.calls.filter(([url])=>String(url).startsWith('/instagram/feed.json?refresh='));
  expect(feedRequests()).toHaveLength(1);
  expect(feedRequests()[0][1]).toMatchObject({cache:'no-store'});
  unmount();
+ const newest={...snapshot.posts[0],id:'99999999999999993',timestamp:'2099-01-03T00:00:00Z',permalink:'https://www.instagram.com/p/newlyPublished/'};
+ snapshot.posts.push(newest);
  render(<Darkroom onClose={close}/>);
  await screen.findByRole('link',{name:'View frame 1 on Instagram'});
  await waitFor(()=>expect(feedRequests()).toHaveLength(2));
  expect(feedRequests()[1][1]).toMatchObject({cache:'no-store'});
+ expect(screen.getByRole('link',{name:'View frame 1 on Instagram'}).getAttribute('href')).toBe(newest.permalink);
 });

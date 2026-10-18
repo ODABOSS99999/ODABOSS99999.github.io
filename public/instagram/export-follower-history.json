@@ -1,0 +1,70 @@
+{
+  "version": 1,
+  "exportedAt": "2026-10-17T08:54:00Z",
+  "source": "Instagram data export: connections/followers_and_following/followers_1.html",
+  "description": "Cumulative follow-date records among followers present in the export. Excludes people absent from the export; not historical profile totals. Dates are grouped by month.",
+  "recordCount": 4057,
+  "points": [
+    {
+      "date": "2025-10-01",
+      "count": 174
+    },
+    {
+      "date": "2025-11-01",
+      "count": 186
+    },
+    {
+      "date": "2025-12-01",
+      "count": 195
+    },
+    {
+      "date": "2026-01-01",
+      "count": 276
+    },
+    {
+      "date": "2026-02-01",
+      "count": 353
+    },
+    {
+      "date": "2026-03-01",
+      "count": 471
+    },
+    {
+      "date": "2026-04-01",
+      "count": 929
+    },
+    {
+      "date": "2026-05-01",
+      "count": 1659
+    },
+    {
+      "date": "2026-06-01",
+      "count": 2374
+    },
+    {
+      "date": "2026-07-01",
+      "count": 3250
+    },
+    {
+      "date": "2026-08-01",
+      "count": 3704
+    },
+    {
+      "date": "2026-09-01",
+      "count": 3924
+    },
+    {
+      "date": "2026-10-01",
+      "count": 4057
+    }
+  ],
+  "audiencePeriod": {
+    "start": "2026-07-19",
+    "end": "2026-10-16",
+    "followers": 4643,
+    "follows": 1038,
+    "unfollows": 558,
+    "netChange": 480,
+    "source": "Instagram data export: logged_information/past_instagram_insights/audience_insights.html"
+  }
+}

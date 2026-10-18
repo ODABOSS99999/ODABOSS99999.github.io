@@ -1,5 +1,8 @@
 name: Publish approved static site
 
+env:
+  VITE_INSTAGRAM_FEED_URL: ${{ vars.INSTAGRAM_FEED_URL }}
+
 # No push/PR trigger: publication is a separate, explicit human action.
 on:
   workflow_dispatch:

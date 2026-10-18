@@ -21,7 +21,6 @@ export default function App(){
     const timer=window.setTimeout(()=>setScannerOpen(true),prefs.motion&&!reduced?1100:0);
     return()=>window.clearTimeout(timer);
   },[route,prefs.lighting,prefs.motion]);
-  const lastObject=useRef('photography');
   const scrollPositions=useRef<Record<string,number>>({});
   const currentRoute=useRef(route), restoring=useRef(true);
 
@@ -41,12 +40,11 @@ export default function App(){
     document.title=title?`${title} — The McGowen Library`:'The McGowen Library — McGowen Media';
     const was=previousRoute.current;previousRoute.current=route;currentRoute.current=route;
     if(route!=='library'&&known)return;
-    const frame=requestAnimationFrame(()=>{restorePosition();if(route==='library'&&was!=='library')document.getElementById(`object-${lastObject.current}`)?.focus({preventScroll:true});});
+    const frame=requestAnimationFrame(()=>{restorePosition();if(route==='library'&&was!=='library')document.getElementById('room-objects-trigger')?.focus({preventScroll:true});});
     return()=>cancelAnimationFrame(frame);
   },[route,known,restorePosition]);
   function navigate(id:SectionId|'library'){
     if(!restoring.current)scrollPositions.current[route]=document.querySelector<HTMLDialogElement>('.collection-panel')?.scrollTop??window.scrollY;
-    if(route==='library'&&id!=='library')lastObject.current=id;
     if(route!==id){restoring.current=true;history.pushState({},'',id==='library'?'/':`/${id}`);setRoute(id);}
 
   }

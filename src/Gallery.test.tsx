@@ -18,7 +18,7 @@ describe('photograph viewer', () => {
     expect(link.getAttribute('href')).toBe(photo.sourceUrl);
     expect(link.getAttribute('target')).toBe('_blank');
     expect(within(link).getByRole('img')).toBeTruthy();
-    expect(screen.queryByText(/View post on Instagram/)).toBeNull();
+    expect(screen.queryByRole('link',{name:/View original source/})).toBeNull();
   });
 
   it('changes photos on a horizontal swipe while leaving vertical scrolling gestures alone', async () => {

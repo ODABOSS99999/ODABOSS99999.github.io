@@ -20,6 +20,8 @@ export async function syncStats(){
  const u=new URL('https://connectors.windsor.ai/instagram');u.search=new URLSearchParams({api_key:key,fields:'username,followers_count,media_count,data_fetched_at',date_preset:'last_1dT',select_accounts:ACCOUNT_ID}).toString();
  const profile=JSON.parse((await boundedFetch(u,{maxBytes:1024*1024})).toString());if(profile.status===undefined&&Array.isArray(profile.data))profile.status='done';
  const file=resolve('public/instagram/stats.json');const previous=JSON.parse(await readFile(file,'utf8')),feed=JSON.parse(await readFile(resolve('public/instagram/feed.json'),'utf8'));
+ // Save the independently verified profile even if the archive request fails.
+ const latest=normalizeStats(profile,previous,feed);await writeFile(file+'.tmp',JSON.stringify(latest,null,2)+'\n');await rename(file+'.tmp',file);
  // Fetch metadata independently of the rolling image feed, retaining the full archive.
  const historyUrl=new URL('https://connectors.windsor.ai/instagram');historyUrl.search=new URLSearchParams({api_key:key,fields:'media_id,media_caption,media_permalink,timestamp',date_from:'2010-01-01',date_to:new Date().toISOString().slice(0,10),select_accounts:ACCOUNT_ID}).toString();
  const archive=JSON.parse((await boundedFetch(historyUrl,{maxBytes:10*1024*1024})).toString());
@@ -27,4 +29,4 @@ export async function syncStats(){
  const posts=archive.data.map(p=>{if(!/^\d{5,40}$/.test(String(p.media_id))||!Number.isFinite(Date.parse(p.timestamp))||!/^https:\/\/www\.instagram\.com\/(p|reel)\/[\w-]+\/$/.test(p.media_permalink)||p.media_caption!=null&&typeof p.media_caption!=='string')throw Error('Invalid archive post');return {id:String(p.media_id),caption:p.media_caption??'',timestamp:new Date(p.timestamp).toISOString(),permalink:p.media_permalink};});
  const stats=normalizeStats(profile,previous,{posts:[...feed.posts,...posts]});await writeFile(file+'.tmp',JSON.stringify(stats,null,2)+'\n');await rename(file+'.tmp',file);
 }
-if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href)syncStats().catch(()=>{console.error('Instagram stats refresh failed; previous snapshot retained.');process.exitCode=1;});
+if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href)syncStats().catch(()=>{console.error('Instagram stats or archive refresh failed; last verified data retained.');process.exitCode=1;});

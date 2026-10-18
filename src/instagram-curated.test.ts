@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import snapshot from '../public/instagram/feed.json';
+import archive from '../public/instagram/stats.json';
 import { curatedInstagramPhotos, selectInstagramPhotos } from './instagram-curated';
 import { instagramSelection, validateSnapshot } from './instagram';
 
@@ -24,6 +25,18 @@ describe('verified Instagram portfolio', () => {
     const portfolio = selectInstagramPhotos(posts, 'portfolio', selected);
     expect(portfolio.filter(item => item.sourceUrl === photo.sourceUrl)).toHaveLength(1);
     expect(portfolio.find(item => item.sourceUrl === photo.sourceUrl)?.caption).toBe(post.caption);
+  });
+  it('retains verified archived captions when posts fall outside the recent feed', () => {
+    const favorites = selectInstagramPhotos([], 'favorites');
+    for (const photo of favorites) {
+      const original = archive.trackedPosts.find(post => post.permalink === photo.sourceUrl);
+      expect(original).toBeDefined();
+      expect(photo.caption).toBe(original!.caption);
+    }
+    const photo = favorites.find(item => item.sourceUrl?.includes('DVvxzPWDThf'))!;
+    expect(photo.caption).toContain('favorite photo');
+    expect(photo.src).toBe('/instagram/curated/DVvxzPWDThf.webp');
+    expect(photo.metrics).toBeUndefined();
   });
   it('includes each available favorite and pin, and keeps latest independent of curation', () => {
     const favorites = selectInstagramPhotos(posts, 'favorites');

@@ -1,0 +1,9 @@
+{
+ "name":"mcgowen-instagram-live",
+ "version":"1.0.0",
+ "private":true,
+ "type":"module",
+ "scripts":{"deploy":"wrangler deploy","dev":"wrangler dev","test":"node --test src/index.test.mjs"},
+ "dependencies":{"image-size":"^2.0.2"},
+ "devDependencies":{"wrangler":"^4.0.0"}
+}

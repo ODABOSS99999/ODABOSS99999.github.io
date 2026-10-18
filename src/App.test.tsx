@@ -26,7 +26,7 @@ describe('library navigation', () => {
     await waitFor(()=>expect(document.activeElement).toBe(heading));
     await user.click(screen.getByRole('button',{name:`Exit ${destination.title} and return to library`}));
     await waitFor(()=>expect(location.pathname).toBe('/'));
-    await waitFor(()=>expect(document.activeElement).toBe(screen.getByRole('button',{name:destination.title})));
+    await waitFor(()=>expect(document.activeElement).toBe(screen.getByRole('button',{name:'Objects'})));
   });
   it('opens a linked collection directly and supports browser Back',async()=>{
     const user=userEvent.setup();history.replaceState({},'', '/engineering');render(<App/>);
