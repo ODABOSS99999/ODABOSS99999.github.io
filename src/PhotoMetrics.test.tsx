@@ -1,9 +1,9 @@
-import {cleanup,fireEvent,render,screen} from '@testing-library/react';
+import {act,cleanup,fireEvent,render,screen} from '@testing-library/react';
 import {afterEach,expect,it,vi} from 'vitest';
 import PhotoMetrics from './PhotoMetrics';
 const permalink='https://www.instagram.com/p/test/';
 const snapshot=(checkedAt=new Date().toISOString())=>({version:1,account:'mcgowen_media',scope:'instagram-organic-media',source:'live',fetchedAt:checkedAt,posts:[{id:'1',permalink,likes:999,comments:null,views:null,checkedAt}]});
-afterEach(()=>{cleanup();vi.unstubAllEnvs();vi.unstubAllGlobals();});
+afterEach(()=>{cleanup();vi.restoreAllMocks();vi.unstubAllEnvs();vi.unstubAllGlobals();});
 it('never displays stale snapshot counts from a live response',async()=>{
  vi.stubEnv('VITE_INSTAGRAM_LIVE_URL','https://live.example');
  const fetcher=vi.fn().mockResolvedValue({ok:true,json:async()=>snapshot('2020-01-01T00:00:00Z')});vi.stubGlobal('fetch',fetcher);
@@ -30,12 +30,13 @@ it('rejects stale live measurements',async()=>{
 });
 
 
-it('shows a dated saved snapshot when live configuration is absent',async()=>{
- vi.stubEnv('VITE_INSTAGRAM_LIVE_URL','');
- const fetcher=vi.fn().mockResolvedValue({ok:true,json:async()=>snapshot('2020-01-01T00:00:00Z')});vi.stubGlobal('fetch',fetcher);
- render(<PhotoMetrics permalink={permalink}/>);
- await screen.findByText(/999 likes/);
- expect(screen.getByText(/Snapshot checked/)).toBeTruthy();
- expect(screen.getByRole('group').getAttribute('aria-label')).toContain('snapshot');
- expect(fetcher.mock.calls[0][0]).toBe('/instagram/metrics.json');
+it('clears expired engagement immediately while a focused refresh is pending',async()=>{
+ const saved=snapshot();let finish!:()=>void;
+ const next=new Promise(resolve=>{finish=()=>resolve({ok:true,json:async()=>snapshot()});});
+ const fetcher=vi.fn().mockResolvedValueOnce({ok:true,json:async()=>saved}).mockReturnValue(next);vi.stubGlobal('fetch',fetcher);
+ render(<PhotoMetrics permalink={permalink}/>);await screen.findByText(/999 likes/);
+ fireEvent.focus(window);expect(screen.getByText(/999 likes/)).toBeTruthy();
+ vi.spyOn(Date,'now').mockReturnValue(Date.parse(saved.fetchedAt)+120001);
+ fireEvent.focus(window);expect(screen.queryByText(/999 likes/)).toBeNull();
+ await act(async()=>{finish();});
 });

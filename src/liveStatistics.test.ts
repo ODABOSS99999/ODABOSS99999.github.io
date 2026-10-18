@@ -1,17 +1,14 @@
 import {afterEach,expect,it,vi} from 'vitest';
 import {assertFresh,liveUrl,liveHeaders} from './liveStatistics';
+import {LIVE_INSTAGRAM_URL,LIVE_INSTAGRAM_ANON_KEY} from './instagramLiveConfig';
 import {loadStats} from './InstagramStats';
 afterEach(()=>{vi.unstubAllEnvs();vi.unstubAllGlobals();});
-it('loads dated snapshots by default without gateway authorization',async()=>{
+it('uses the production connection and public gateway authorization by default',()=>{
  vi.stubEnv('VITE_INSTAGRAM_LIVE_URL','');vi.stubEnv('VITE_INSTAGRAM_LIVE_ANON_KEY','');
- const snapshot={version:2,account:'mcgowen_media',checkedAt:'2020-01-01T00:00:00Z',followers:7,posts:1,followerHistory:[],trackedPosts:[]};
- const fetcher=vi.fn().mockResolvedValue({ok:true,json:async()=>snapshot});vi.stubGlobal('fetch',fetcher);
- await expect(loadStats()).resolves.toEqual(snapshot);
- expect(fetcher.mock.calls[0][0]).toBe('/instagram/stats.json');
- expect(liveHeaders()).toEqual({});
+ expect(liveUrl('/stats')).toContain(LIVE_INSTAGRAM_URL+'/stats?refresh=');
+ expect(liveHeaders()).toEqual({Authorization:`Bearer ${LIVE_INSTAGRAM_ANON_KEY}`});
 });
 it('never falls back to a saved file after a failed live request',async()=>{
- vi.stubEnv('VITE_INSTAGRAM_LIVE_URL','https://live.example');
  const fetcher=vi.fn().mockRejectedValue(new Error('offline'));vi.stubGlobal('fetch',fetcher);
  await expect(loadStats()).rejects.toThrow('offline');
  expect(fetcher).toHaveBeenCalledOnce();
@@ -35,7 +32,6 @@ it('does not disclose default gateway authorization to custom endpoints and reje
  for(const value of ['relative','http://example.com','file:///tmp/test']){vi.stubEnv('VITE_INSTAGRAM_LIVE_URL',value);expect(()=>liveUrl('/stats')).toThrow();}
 });
 it('keeps a current profile available while withholding incomplete or old archive counts',async()=>{
- vi.stubEnv('VITE_INSTAGRAM_LIVE_URL','https://live.example');
  const snapshot={version:2,account:'mcgowen_media',checkedAt:new Date().toISOString(),followers:7,posts:551,followerHistory:[],trackedPosts:[],archiveCurrent:false,archiveCheckedAt:null as string|null};
  vi.stubGlobal('fetch',vi.fn().mockImplementation(async()=>({ok:true,json:async()=>({...snapshot})})));
  await expect(loadStats()).resolves.toMatchObject({followers:7,posts:551,archiveCurrent:false});

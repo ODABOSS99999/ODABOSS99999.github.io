@@ -1,7 +1,8 @@
+import {LIVE_INSTAGRAM_URL,LIVE_INSTAGRAM_ANON_KEY} from './instagramLiveConfig';
 // Never substitute a published snapshot for a current measurement.
 function connection(){
  const custom=import.meta.env.VITE_INSTAGRAM_LIVE_URL?.trim();
- return {base:custom,key:custom?import.meta.env.VITE_INSTAGRAM_LIVE_ANON_KEY?.trim():undefined};
+ return {base:custom||LIVE_INSTAGRAM_URL,key:import.meta.env.VITE_INSTAGRAM_LIVE_ANON_KEY?.trim()||(custom?'':LIVE_INSTAGRAM_ANON_KEY)};
 }
 export function hasLiveStatistics():boolean {return Boolean(connection().base);}
 export function liveHeaders():HeadersInit {

@@ -12,5 +12,5 @@ it('shows full caption, unique mentioned handles and original post without inven
 
 it('marks unavailable likes honestly',()=>{
  render(<PostDetails photo={{id:'fixture',src:'/test.jpg',width:1,height:1,alt:'Test',sourceUrl:'https://www.instagram.com/p/test/'}}/>);
- expect(screen.getByText('Engagement snapshot unavailable')).toBeTruthy();
+ expect(screen.getByText('Live engagement unavailable')).toBeTruthy();
 });
