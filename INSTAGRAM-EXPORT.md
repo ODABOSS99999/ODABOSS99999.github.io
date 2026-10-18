@@ -32,7 +32,9 @@ manifest and optimized photographs belong in `public/instagram/`.
 writes only anonymous monthly aggregates to `public/instagram/export-follower-history.json`.
 The 4,057 follow-date records describe when accounts present in the export followed;
 they exclude absent/unfollowed accounts and must not be described as historical
-profile totals. The ledger offers this series separately from verified dated totals.
+profile totals. The ledger combines this series with verified dated totals on one timeline.
+Export history uses dashed segments, measured totals use solid segments, and
+the source boundary is left unconnected to avoid implying a measured jump.
 The export also supplies the July 19-October 16 audience period: 1,038 follows,
 558 unfollows, and +480 net. No individual follower identities are published.
 

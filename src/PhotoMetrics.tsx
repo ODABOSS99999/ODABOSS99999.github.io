@@ -22,6 +22,7 @@ export default function PhotoMetrics({permalink}:{permalink?:string;metrics?:Ins
   let active=true;
   setMetrics(null);
   const refresh=async()=>{
+   setMetrics(previous=>{if(!previous)return null;try{assertFresh(previous.checkedAt);if(previous.views!==null)assertFresh(previous.viewsCheckedAt||previous.checkedAt);return previous;}catch{return null;}});
    try{
     const snapshot=await fetchMetrics();
     const post=snapshot.posts.find(post=>post.permalink===permalink);

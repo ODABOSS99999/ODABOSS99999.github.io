@@ -84,4 +84,3 @@ export function createGraphLoader({token,accountId,loginMode='facebook',version=
   }catch{throw safeError();}
  };
 }
-

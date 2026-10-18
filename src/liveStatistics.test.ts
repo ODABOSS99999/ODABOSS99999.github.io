@@ -39,4 +39,3 @@ it('keeps a current profile available while withholding incomplete or old archiv
  snapshot.archiveCheckedAt='2020-01-01T00:00:00Z';
  await expect(loadStats()).resolves.toMatchObject({followers:7,archiveCurrent:false});
 });
-
