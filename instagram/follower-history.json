@@ -1,0 +1,45 @@
+{
+  "account": "mcgowen_media",
+  "points": [
+    {
+      "date": "2026-10-16T02:08:57.000Z",
+      "count": 4640,
+      "source": "git:27fcf48a2dba085054cc22bf4879db59597835c7:public/instagram/stats.json"
+    },
+    {
+      "date": "2026-10-16T16:48:27.000Z",
+      "count": 4639,
+      "source": "git:2aa3d890974f9f37aa3e86383f9592cd15a399f1:public/instagram/stats.json"
+    },
+    {
+      "date": "2026-10-16T16:55:13.000Z",
+      "count": 4639,
+      "source": "git:1735d76ddb9f1c61cbe153355af21c41d48dcb2c:public/instagram/stats.json"
+    },
+    {
+      "date": "2026-10-16T20:35:48.000Z",
+      "count": 4642,
+      "source": "git:45ed439279b7046383633510e6c51e1bb329dfb9:public/instagram/stats.json"
+    },
+    {
+      "date": "2026-10-17T15:20:41.000Z",
+      "count": 4643,
+      "source": "git:a5cf44dd1647663cbecb849bd0d9caf471448bcf:public/instagram/stats.json"
+    },
+    {
+      "date": "2026-10-17T21:48:08.000Z",
+      "count": 4644,
+      "source": "git:1e5e3b8c34a4a392fcbacbbfd42b1a0590b29de3:public/instagram/stats.json"
+    },
+    {
+      "date": "2026-10-18T06:00:15.000Z",
+      "count": 4643,
+      "source": "git:796f85ba2ac1626a2381c846e5941bcc8ccfe998:public/instagram/stats.json"
+    },
+    {
+      "date": "2026-10-18T11:17:00.000Z",
+      "count": 4643,
+      "source": "git:b84f74f7306add9daa5e16bf43b0f71610983199:public/instagram/stats.json"
+    }
+  ]
+}
