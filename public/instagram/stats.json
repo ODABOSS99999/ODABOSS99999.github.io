@@ -1,9 +1,9 @@
 {
   "version": 2,
   "account": "mcgowen_media",
-  "checkedAt": "2026-10-18T11:17:00.000Z",
-  "followers": 4643,
-  "posts": 551,
+  "checkedAt": "2026-10-18T18:10:46.000Z",
+  "followers": 4641,
+  "posts": 552,
   "followerGains": [
     {
       "date": "2026-09-17",
@@ -158,6 +158,10 @@
     {
       "date": "2026-10-18T11:17:00.000Z",
       "count": 4643
+    },
+    {
+      "date": "2026-10-18T18:10:46.000Z",
+      "count": 4641
     }
   ],
   "trackedPosts": [
@@ -3778,6 +3782,12 @@
       "timestamp": "2026-10-17T12:02:21.000Z",
       "caption": "“Make tomorrow a good day” 🐿️",
       "permalink": "https://www.instagram.com/p/DemD-HWm-T-/"
+    },
+    {
+      "id": "18120091819947358",
+      "timestamp": "2026-10-18T15:06:13.000Z",
+      "caption": "Shot on iphone",
+      "permalink": "https://www.instagram.com/p/Deo9zqLm5v2/"
     }
   ]
 }
