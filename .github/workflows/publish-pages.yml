@@ -25,8 +25,9 @@ jobs:
         with:
           node-version: '22'
       - run: npm ci
-      - run: npm test
-      - run: node --test scripts/instagram-sync.test.mjs scripts/instagram-metrics-sync.test.mjs scripts/publish-pages.test.mjs
+      - run: npm test -- --maxWorkers=1
+      - run: node --test scripts/*.test.mjs
+      - run: npm run check:media
       - run: npm run build
       - run: node scripts/prepare-pages.mjs
       - run: node scripts/publish-pages.mjs
