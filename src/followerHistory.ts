@@ -20,6 +20,6 @@ export function combinedFollowerHistory(through:string,exported:LedgerPoint[],to
  const recorded=mergeFollowerHistory(through,totals);
  const first=recorded.length?Date.parse(recorded[0].date):Infinity;
  const history:FollowerChartPoint[]=mergeFollowerHistory(through,exported)
-  .filter(point=>Date.parse(point.date)<first).map(point=>({...point,source:'export'}));
+  .filter(point=>Date.parse(point.date)<first).map(point=>({...point,date:point.date.slice(0,10),source:'export'}));
  return [...history,...recorded.map(point=>({...point,source:liveAt&&Date.parse(point.date)===Date.parse(liveAt)?'live' as const:'total' as const}))];
 }

@@ -13,7 +13,7 @@ it('combines export and live observations without relabeling export records as h
  expect(combinedFollowerHistory('2026-10-18',[
   {date:'2025-10-01',count:174},{date:'2026-10-16',count:4057},
  ],[{date:'2026-10-16',count:4642},{date:'2026-10-18',count:4643}],'2026-10-18')).toEqual([
-  {date:'2025-10-01T00:00:00.000Z',count:174,source:'export'},
+  {date:'2025-10-01',count:174,source:'export'},
   {date:'2026-10-16T00:00:00.000Z',count:4642,source:'total'},
   {date:'2026-10-18T00:00:00.000Z',count:4643,source:'live'},
  ]);
