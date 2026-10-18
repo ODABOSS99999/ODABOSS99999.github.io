@@ -19,7 +19,13 @@ describe('shelf models',()=>{
   engineering.userData.updateScreen(9000,false);expect(player.position.equals(start)).toBe(true);
  });
  it('keeps the inward-facing camera grounded',()=>{
-  const camera=setup().get('photography')!;camera.updateWorldMatrix(true,true);
+  const items=setup(),camera=items.get('photography')!;camera.updateWorldMatrix(true,true);
+  const cameraSize=new T.Box3().setFromObject(camera).getSize(new T.Vector3());
+  const handheldSize=new T.Box3().setFromObject(items.get('engineering')!.getObjectByName('handheld-body')!).getSize(new T.Vector3());
+  expect(cameraSize.y/handheldSize.y).toBeGreaterThan(.5);
+  expect(cameraSize.y/handheldSize.y).toBeLessThan(.75);
+  expect(cameraSize.x/handheldSize.x).toBeGreaterThan(1.3);
+  expect(cameraSize.x/handheldSize.x).toBeLessThan(1.8);
   expect(camera.getObjectByName('camera-body')!.rotation.y).toBeGreaterThan(0);
   expect(new T.Box3().setFromObject(camera).min.y).toBeCloseTo(3.62,3);
  });

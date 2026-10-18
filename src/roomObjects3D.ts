@@ -32,22 +32,39 @@ export function createRoomObjects(scene:T.Scene,resources:Resources){
   f.position.y+=g.position.y+bottom-bounds.min.y;
   const mounts=(g.userData.photoMounts??=[]) as T.Group[];mounts.push(f);
  }
- const camera=group('photography',-5.02,4.125,-4.22);
- rounded(camera,0,-.1,0,1.38,.78,.43,dark);rounded(camera,.49,-.1,.055,.3,.77,.49,black,.08);
- rounded(camera,0,.29,-.015,.43,.21,.32,dark,.025);box(camera,0,-.45,.03,1.45,.07,.46,black);
- for(const x of [-.51,.51])box(camera,x,-.08,.231,.19,.57,.018,black);
- const lens=cyl(camera,0,-.08,.4,.3,.32,.43,black,48);lens.rotation.x=Math.PI/2;
- for(const z of [.27,.46,.61]){const ring=cyl(camera,0,-.08,z,.325,.325,.035,silver,48);ring.rotation.x=Math.PI/2;}
- for(let i=0;i<40;i++){const a=i*Math.PI/20;const grip=box(camera,Math.sin(a)*.316,-.08+Math.cos(a)*.316,.4,.014,.014,.14,dark);grip.rotation.z=-a;}
- const optic=cyl(camera,0,-.08,.638,.255,.255,.012,glass,48);optic.rotation.x=Math.PI/2;
- const inner=cyl(camera,0,-.08,.648,.16,.16,.012,black,48);inner.rotation.x=Math.PI/2;
- const reflection=ball(camera,-.08,.015,.661,.035,silver);reflection.scale.set(.6,1,.15);
- cyl(camera,.46,.34,0,.13,.13,.09,brass);cyl(camera,-.46,.34,0,.11,.11,.08,silver);box(camera,0,.34,.2,.19,.09,.025,glass);
- box(camera,.51,.404,.02,.085,.022,.07,silver);ball(camera,.36,.1,.234,.025,red);
- for(const x of [-.7,.7]){const lug=mesh(camera,new T.TorusGeometry(.045,.012,8,16),silver,x,.15,0);lug.rotation.y=Math.PI/2;}
- // Turn the camera slightly inward without moving its shelf contact point.
- const cameraBody=new T.Group();cameraBody.name='camera-body';cameraBody.rotation.y=.18;
+ // Mirrorless-camera proportions: wider, but about two thirds the handheld's height.
+ const camera=group('photography',-5.02,3.62,-4.22);
+ const graphite=mat('#59635e',.3,.46),rubber=mat('#29352f',0,.92),lensMetal=mat('#87928a',.7,.32);
+ const lensCoating=mat('#386a75',.4,.19),opticDark=mat('#101e26',.25,.22);
+ rounded(camera,0,-.1,0,1.3,.73,.4,graphite,.075);
+ rounded(camera,.48,-.12,.065,.32,.77,.54,rubber,.095);
+ rounded(camera,-.45,-.12,.215,.27,.55,.025,rubber,.035);
+ box(camera,0,-.45,.015,1.28,.045,.38,rubber);
+ // Stepped viewfinder housing and a recessed eyepiece, with physical top controls.
+ rounded(camera,-.045,.28,-.04,.39,.22,.35,graphite,.035);
+ box(camera,-.045,.325,-.225,.21,.095,.035,rubber);
+ box(camera,-.045,.325,-.247,.15,.055,.008,glass);
+ box(camera,-.045,.402,-.025,.18,.014,.16,lensMetal);
+ for(const x of [-.49,.36]){cyl(camera,x,.3,-.045,.095,.095,.055,rubber,32);cyl(camera,x,.331,-.045,.079,.079,.008,lensMetal,32);}
+ const shutter=cyl(camera,.51,.291,.18,.062,.062,.032,silver,24);shutter.rotation.x=.1;
+ box(camera,.36,.18,.218,.12,.045,.012,ivory);
+ ball(camera,.35,.08,.222,.017,red);
+ // Lens mount, matte barrel, knurled focus ring and a thin protective rim.
+ const lensPart=(z:number,r:number,depth:number,material:T.Material)=>{const part=cyl(camera,-.07,-.08,z,r,r,depth,material,48);part.rotation.x=Math.PI/2;return part;};
+ lensPart(.225,.294,.045,lensMetal);lensPart(.365,.277,.26,rubber);
+ lensPart(.34,.287,.11,graphite);lensPart(.488,.267,.13,graphite);
+ for(let i=0;i<40;i++){const angle=i*Math.PI/20;const ridge=box(camera,-.07+Math.sin(angle)*.286,-.08+Math.cos(angle)*.286,.35,.012,.012,.09,rubber);ridge.rotation.z=-angle;}
+ lensPart(.557,.277,.026,rubber);lensPart(.574,.254,.012,lensMetal);
+ lensPart(.583,.231,.009,lensCoating);lensPart(.591,.172,.008,opticDark);
+ lensPart(.598,.083,.006,black);
+ // Small off-center reflections read as coated glass without a glowing target.
+ const reflection=ball(camera,-.17,.025,.601,.046,silver);reflection.scale.set(.6,1,.09);reflection.rotation.z=-.45;
+ const blueReflection=ball(camera,.015,-.15,.601,.067,lensCoating);blueReflection.scale.set(1,.26,.06);blueReflection.rotation.z=-.4;
+ for(const x of [-.67,.66]){const lug=mesh(camera,new T.TorusGeometry(.034,.011,8,16),lensMetal,x,.15,-.015);lug.rotation.y=Math.PI/2;}
+ const cameraBody=new T.Group();cameraBody.name='camera-body';cameraBody.rotation.y=.24;cameraBody.scale.setScalar(.64);
  for(const child of [...camera.children])cameraBody.add(child);camera.add(cameraBody);
+ camera.updateWorldMatrix(true,true);
+ cameraBody.position.y=3.62-new T.Box3().setFromObject(cameraBody).min.y;
  const books=group('about',-2.6,3.62,-4.1);
  frame(books,0,0,.93,.93,-.07);
  const favorites=group('favorites',-.17,2.02,-4.1);
@@ -58,7 +75,7 @@ export function createRoomObjects(scene:T.Scene,resources:Resources){
  cyl(rocket,0,-.05,0,.17,.17,.86,ivory);cyl(rocket,0,.48,0,0,.17,.24,red);cyl(rocket,0,-.51,0,.15,.12,.12,brass);
  for(let i=0;i<3;i++){const fin=box(rocket,Math.cos(i*2.094)*.18,-.36,Math.sin(i*2.094)*.18,.12,.36,.19,red);fin.rotation.y=-i*2.094;fin.rotation.z=i===0?-.3:0;}
  const port=cyl(rocket,0,.12,.173,.09,.09,.025,brass);port.rotation.x=Math.PI/2;const window=cyl(rocket,0,.12,.19,.064,.064,.015,glass);window.rotation.x=Math.PI/2;
- const device=new T.Group();engineering.add(device);device.position.set(.43,-.07,.02);device.rotation.z=-.06;rounded(device,0,0,0,.58,.98,.18,ivory);rounded(device,0,.18,.107,.46,.36,.025,dark,.025);box(device,0,.18,.127,.32,.23,.015,green);box(device,-.14,-.19,.13,.19,.055,.025,black);box(device,-.14,-.19,.13,.055,.19,.025,black);for(const [x,y] of [[.14,-.17],[.22,-.27]]){const b=cyl(device,x,y,.14,.045,.045,.028,red);b.rotation.x=Math.PI/2;}for(let i=0;i<4;i++)box(device,.1+i*.035,-.39,.12,.015,.09,.01,dark);
+ const device=new T.Group();device.name='handheld-body';engineering.add(device);device.position.set(.43,-.07,.02);device.rotation.z=-.06;rounded(device,0,0,0,.58,.98,.18,ivory);rounded(device,0,.18,.107,.46,.36,.025,dark,.025);box(device,0,.18,.127,.32,.23,.015,green);box(device,-.14,-.19,.13,.19,.055,.025,black);box(device,-.14,-.19,.13,.055,.19,.025,black);for(const [x,y] of [[.14,-.17],[.22,-.27]]){const b=cyl(device,x,y,.14,.045,.045,.028,red);b.rotation.x=Math.PI/2;}for(let i=0;i<4;i++)box(device,.1+i*.035,-.39,.12,.015,.09,.01,dark);
  // A readable lit LCD with a tiny moving pixel scene, rather than a blank slab.
  const lcd=new T.MeshBasicMaterial({color:'#9eae6a'}),pixel=new T.MeshBasicMaterial({color:'#344d37'});resources.materials.push(lcd,pixel);
  const screen=box(device,0,.18,.14,.32,.23,.006,lcd);screen.name='handheld-screen';
