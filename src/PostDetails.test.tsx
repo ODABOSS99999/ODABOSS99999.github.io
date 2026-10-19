@@ -10,7 +10,7 @@ it('shows full caption, unique mentioned handles and original post without inven
  expect(screen.queryByText(/collaboration/i)).toBeNull();
 });
 
-it('marks unavailable likes honestly',()=>{
+it('shows a checking state before live engagement arrives',()=>{
  render(<PostDetails photo={{id:'fixture',src:'/test.jpg',width:1,height:1,alt:'Test',sourceUrl:'https://www.instagram.com/p/test/'}}/>);
- expect(screen.getByText('Live engagement unavailable')).toBeTruthy();
+ expect(screen.getByText('Checking live engagement…')).toBeTruthy();
 });

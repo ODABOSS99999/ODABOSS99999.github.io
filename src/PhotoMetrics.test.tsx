@@ -8,25 +8,25 @@ it('never displays stale snapshot counts from a live response',async()=>{
  vi.stubEnv('VITE_INSTAGRAM_LIVE_URL','https://live.example');
  const fetcher=vi.fn().mockResolvedValue({ok:true,json:async()=>snapshot('2020-01-01T00:00:00Z')});vi.stubGlobal('fetch',fetcher);
  render(<PhotoMetrics permalink={permalink}/>);
- await screen.findByRole('status');
+ await screen.findByText('Live engagement unavailable');
  expect(screen.queryByText(/999 likes/)).toBeNull();
  expect(fetcher.mock.calls[0][0]).not.toContain('/instagram/metrics.json');
 });
-it('shows current live counts and removes them after a failed refresh',async()=>{
+it('keeps verified current counts through a transient failed refresh',async()=>{
  vi.stubEnv('VITE_INSTAGRAM_LIVE_URL','https://live.example');vi.stubEnv('VITE_INSTAGRAM_LIVE_ANON_KEY','public-key');
  const fetcher=vi.fn().mockResolvedValueOnce({ok:true,json:async()=>snapshot()}).mockRejectedValue(new Error('offline'));vi.stubGlobal('fetch',fetcher);
  render(<PhotoMetrics permalink={permalink}/>);
  await screen.findByText(/999 likes/);
  expect(fetcher.mock.calls[0][0]).toMatch(/^https:\/\/live.example\/metrics\?refresh=/);
  expect(fetcher.mock.calls[0][1].headers).toEqual({Authorization:'Bearer public-key'});
- fireEvent.focus(window);await screen.findByRole('status');
- expect(screen.queryByText(/999 likes/)).toBeNull();
+ fireEvent.focus(window);await act(async()=>{});
+ expect(screen.getByText(/999 likes/)).toBeTruthy();
 });
 it('rejects stale live measurements',async()=>{
  vi.stubEnv('VITE_INSTAGRAM_LIVE_URL','https://live.example');
  vi.stubGlobal('fetch',vi.fn().mockResolvedValue({ok:true,json:async()=>snapshot('2020-01-01T00:00:00Z')}));
  render(<PhotoMetrics permalink={permalink}/>);
- await screen.findByRole('status');expect(screen.queryByText(/999 likes/)).toBeNull();
+ await screen.findByText('Live engagement unavailable');expect(screen.queryByText(/999 likes/)).toBeNull();
 });
 
 
@@ -39,4 +39,14 @@ it('clears expired engagement immediately while a focused refresh is pending',as
  vi.spyOn(Date,'now').mockReturnValue(Date.parse(saved.fetchedAt)+120001);
  fireEvent.focus(window);expect(screen.queryByText(/999 likes/)).toBeNull();
  await act(async()=>{finish();});
+});
+
+it('shows loading before failure and lets the viewer retry',async()=>{
+ const fetcher=vi.fn().mockRejectedValueOnce(new Error('offline')).mockResolvedValueOnce({ok:true,json:async()=>snapshot()});vi.stubGlobal('fetch',fetcher);
+ render(<PhotoMetrics permalink={permalink}/>);
+ expect(screen.getByText('Checking live engagement…')).toBeTruthy();
+ expect(screen.queryByText('Live engagement unavailable')).toBeNull();
+ fireEvent.click(await screen.findByRole('button',{name:'Retry'}));
+ await screen.findByText(/999 likes/);
+ expect(fetcher).toHaveBeenCalledTimes(2);
 });

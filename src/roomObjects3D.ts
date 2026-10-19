@@ -65,12 +65,70 @@ export function createRoomObjects(scene:T.Scene,resources:Resources){
  for(const child of [...camera.children])cameraBody.add(child);camera.add(cameraBody);
  camera.updateWorldMatrix(true,true);
  cameraBody.position.y=3.62-new T.Box3().setFromObject(cameraBody).min.y;
+ // Two display levels use the height of the bay; all gear shares Photography's hit target.
+ cameraBody.position.x=-.46;
+ const displayWood=mat('#795638');
+ box(camera,0,.75,-.02,2.12,.055,.53,displayWood);
+ for(const x of [-.97,.97])box(camera,x,.36,-.21,.045,.72,.07,brass);
+ const digicam=new T.Group();digicam.name='compact-digicam';camera.add(digicam);
+ digicam.position.set(-.48,.96,.03);digicam.rotation.y=.12;
+ rounded(digicam,0,0,0,.69,.35,.19,silver,.035);
+ rounded(digicam,.265,0,.045,.11,.32,.14,graphite,.025);
+ box(digicam,-.22,.105,.103,.16,.065,.016,ivory);
+ box(digicam,.12,.105,.103,.075,.045,.016,opticDark);
+ cyl(digicam,.21,.19,0,.035,.035,.025,lensMetal,20);
+ for(const [z,r,d,m] of [[.12,.125,.06,graphite],[.158,.104,.02,lensMetal],[.172,.085,.012,lensCoating],[.181,.052,.008,opticDark]] as const){
+  const ring=cyl(digicam,-.04,-.025,z,r,r,d,m,32);ring.rotation.x=Math.PI/2;
+ }
+ const standingLens=(x:number,bottom:number,height:number,radius:number,pale=false)=>{
+  const g=new T.Group();g.name='upright-lens';g.position.set(x,bottom,.04);camera.add(g);
+  const shell=pale?ivory:graphite;
+  cyl(g,0,height/2,0,radius*.9,radius,height,shell,32);
+  for(const y of [.08,height*.48,height-.07])cyl(g,0,y,0,radius*1.025,radius*1.025,.065,rubber,32);
+  cyl(g,0,.025,0,radius*1.04,radius*1.04,.04,lensMetal,32);
+  cyl(g,0,height+.009,0,radius*.91,radius*.91,.025,rubber,32);
+  cyl(g,0,height+.024,0,radius*.75,radius*.75,.009,lensCoating,32);
+  box(g,0,height*.7,radius*.94,.09,.035,.012,ivory);
+ };
+ standingLens(.30,0,.62,.19,true);
+ standingLens(.78,0,.43,.17);
+ standingLens(.28,.78,.34,.16);
+ standingLens(.76,.78,.51,.18);
  const books=group('about',-2.6,3.62,-4.1);
  frame(books,0,0,.93,.93,-.07);
  const favorites=group('favorites',-.17,2.02,-4.1);
  frame(favorites,-.4,0,.601,.7,.09);frame(favorites,.4,0,.538,.49,-.12);
- const news=group('published',-5.02,2.61,-3.98);news.rotation.x=-.1;box(news,0,-.07,0,1.53,1.12,.055,paper);box(news,0,-.07,.032,.017,1.1,.008,ivory);box(news,0,.36,.035,1.3,.035,.01,dark);box(news,0,.22,.035,1.3,.015,.01,dark);box(news,-.37,-.04,.035,.49,.31,.012,green);
- for(let col=0;col<3;col++)for(let row=0;row<10;row++)box(news,-.48+col*.48,-.47+row*.052,.037,.35-(row%3)*.025,.009,.008,dark);
+ // A printed front page: clean column gutters and a quiet center fold.
+ const news=group('published',-5.02,2.61,-3.98);news.rotation.set(-.1,0,-.025);
+ for(let page=3;page>=0;page--)box(news,page*.007,-.07-page*.005,-page*.009,1.53,1.12,.012,page%2?ivory:paper);
+ const newsCanvas=document.createElement('canvas');newsCanvas.width=1536;newsCanvas.height=1120;
+ const print=newsCanvas.getContext('2d')!;
+ print.fillStyle='#e6dcc3';print.fillRect(0,0,1536,1120);
+ // Deterministic fine fibers keep the stock tactile without noisy animation.
+ for(let i=0;i<5500;i++){const x=(i*719)%1536,y=(i*397)%1120;print.fillStyle=i%2?'rgba(89,65,35,.035)':'rgba(255,255,255,.12)';print.fillRect(x,y,1+i%3,1);}
+ const rule=(x:number,y:number,w:number,h=2)=>{print.fillStyle='#394038';print.fillRect(x,y,w,h);};
+ const type=(text:string,x:number,y:number,size:number,bold=false)=>{print.fillStyle='#29372f';print.font=`${bold?'bold ':''}${size}px Georgia, serif`;print.fillText(text,x,y);};
+ rule(76,70,1384,5);type('THE McGOWEN',204,215,132,true);type('PHOTOGRAPHY  /  ENGINEERING  /  CREATIVE WORK',310,273,28);
+ rule(76,306,1384,6);rule(76,320,1384);
+ type('PUBLISHED WORK',76,425,82,true);type('Photography & selected credits',80,479,35);
+ rule(76,513,1384,3);
+ // An ink camera engraving, deliberately an illustration rather than a portfolio image.
+ print.fillStyle='#c5c7b2';print.fillRect(76,550,858,310);
+ print.strokeStyle='#536050';print.lineWidth=2;
+ for(let i=0;i<34;i++){print.beginPath();print.moveTo(76,560+i*9);print.lineTo(934,560+i*9);print.stroke();}
+ print.fillStyle='#344339';print.fillRect(288,622,420,173);print.fillRect(370,591,116,42);
+ print.fillStyle='#adb39b';print.fillRect(310,646,72,105);print.fillRect(620,642,55,25);
+ for(const [r,c] of [[105,'#d8d5bb'],[91,'#344339'],[72,'#929d86'],[59,'#344339'],[34,'#657662']] as const){print.beginPath();print.arc(506,710,r,0,Math.PI*2);print.fillStyle=c;print.fill();}
+ rule(76,881,858);type('SELECTED PHOTOGRAPHY',76,918,26,true);
+ const column=(x:number,y:number,w:number,rows:number)=>{for(let row=0;row<rows;row++){const width=row===rows-1?w*.61:w-((row*17)%4)*7;rule(x,y+row*16,width,3);}};
+ type('IN PRINT',989,583,37,true);rule(989,606,471,3);column(989,634,216,13);column(1244,634,216,13);
+ rule(989,865,471);type('SELECTED CREDITS',989,909,28,true);
+ column(76,955,252,5);column(378,955,252,5);column(682,955,252,5);column(989,943,216,6);column(1244,943,216,6);
+ rule(76,1060,1384,3);
+ const fold=print.createLinearGradient(748,0,788,0);fold.addColorStop(0,'rgba(80,65,40,0)');fold.addColorStop(.48,'rgba(80,65,40,.06)');fold.addColorStop(.52,'rgba(255,255,255,.15)');fold.addColorStop(1,'rgba(80,65,40,0)');print.fillStyle=fold;print.fillRect(748,0,40,1120);
+ const newsTexture=new T.CanvasTexture(newsCanvas);newsTexture.colorSpace=T.SRGBColorSpace;newsTexture.anisotropy=8;resources.textures.push(newsTexture);
+ const newsPrint=new T.MeshStandardMaterial({map:newsTexture,roughness:1});resources.materials.push(newsPrint);
+ mesh(news,new T.PlaneGeometry(1.53,1.12),newsPrint,0,-.07,.009);
  const engineering=group('engineering',-2.6,2.61,-3.98),rocket=new T.Group();engineering.add(rocket);rocket.position.set(-.5,-.03,0);
  cyl(rocket,0,-.05,0,.17,.17,.86,ivory);cyl(rocket,0,.48,0,0,.17,.24,red);cyl(rocket,0,-.51,0,.15,.12,.12,brass);
  for(let i=0;i<3;i++){const fin=box(rocket,Math.cos(i*2.094)*.18,-.36,Math.sin(i*2.094)*.18,.12,.36,.19,red);fin.rotation.y=-i*2.094;fin.rotation.z=i===0?-.3:0;}

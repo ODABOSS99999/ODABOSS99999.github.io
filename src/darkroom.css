@@ -6,6 +6,8 @@
 /* Float the scanner over the live, red-lit room. */
 .darkroom-dashboard{position:fixed;inset:0;width:min(820px,calc(100vw - 64px));max-width:none;height:fit-content;max-height:calc(100svh - 140px);margin:auto;padding:clamp(16px,2.8vw,30px);overflow:auto;overscroll-behavior:contain;background:linear-gradient(150deg,#1d1010f5,#100c0df5);border-color:#76312d;box-shadow:0 26px 90px #0009,0 0 55px #a8201415;border-radius:3px;scroll-margin:0}
 .darkroom-dashboard::backdrop{background:#08000024}
+.darkroom-dashboard{scrollbar-width:none}
+.darkroom-dashboard::-webkit-scrollbar{display:none}
 .film-scanner header{margin-bottom:18px}.film-scanner h2{font-size:clamp(28px,4vw,44px)}
 .scanner-header-actions .darkroom-exit{width:auto;height:auto;min-height:44px;border-radius:2px;font:700 15px "DM Sans",sans-serif;padding:8px 12px;border-color:#e17768;color:#ffafa0;background:#270906;box-shadow:0 0 15px #f34b3433,inset 0 0 10px #ed4b2422;text-shadow:0 0 9px #ff6655;gap:10px}
 .scanned-photo img{height:min(49svh,500px);max-height:none}.scanner-body{padding:clamp(10px,2vw,20px);border-radius:5px}.scanner-controls{padding-top:16px}

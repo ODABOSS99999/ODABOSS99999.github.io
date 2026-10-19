@@ -29,6 +29,7 @@ export function createPaperRoom(host:HTMLElement,state:()=>State,hover:(id:strin
  box(0,-.12,0,14,.2,28,wood);box(0,3,-5,14,6,.18,wall);box(-7,3,4,.18,6,18,wall);box(7,3,4,.18,6,18,wall);
  for(let x=-7;x<7;x+=.7)box(x,.001,0,.018,.008,27,edge);
  box(0,.012,4,7,.018,11,rug);for(const x of [-3.3,3.3])box(x,.025,4,.045,.012,10.6,paper);
+ for(const z of [-1.3,9.3])box(0,.025,z,6.6,.012,.045,paper);
  const luxury=addLuxuryDetails(scene,{geometries,materials});
  // A little Minecraft landscape, mounted flush to the right wall.
  const painting=new T.Group();painting.name='Minecraft painting';painting.position.set(6.84,3.65,-2.6);painting.rotation.y=-Math.PI/2;scene.add(painting);
@@ -59,10 +60,12 @@ export function createPaperRoom(host:HTMLElement,state:()=>State,hover:(id:strin
  modeled.forEach((group,id)=>{items.set(id,group);base.set(id,group.position.clone());});
  const receiver=modeled.get('receiver')!;
  // The graphs are actual raised strokes, separate from the printed ledger face.
- const board=card('stats',svg(''),-.17,4.40,-4.05,2.08,1.42);
+ const board=card('stats',svg(''),-.30,4.22,-4.34,2.08,1.42);
+ // Rest the frame on the shelf with breathing room above and beside it.
+ board.scale.setScalar(.8);
  const boardMaterial=(board.children[0] as T.Mesh).material as T.MeshBasicMaterial;
  box(0,0,-.07,2.1,1.44,.13,wood,board);for(const x of [-1.04,1.04])box(x,0,.02,.055,1.47,.14,paper,board);for(const y of [-.72,.72])box(0,y,.02,2.12,.055,.14,paper,board);
- const graphLayer=new T.Group();graphLayer.name='raised-ledger-graphs';graphLayer.position.z=.12;board.add(graphLayer);
+ const graphLayer=new T.Group();graphLayer.name='raised-ledger-graphs';graphLayer.position.z=.025;board.add(graphLayer);
  const graphInk=new T.MeshBasicMaterial({color:'#385347'}),exportInk=new T.MeshBasicMaterial({color:'#90724a'});
  materials.push(graphInk,exportInk);
  const renderBoard=(stats?:Stats)=>{
@@ -79,7 +82,7 @@ export function createPaperRoom(host:HTMLElement,state:()=>State,hover:(id:strin
    sample.forEach(point=>{const isExport='source' in point&&point.source==='export';if(previousExport!==undefined&&isExport!==previousExport){strokes(segment,previousExport?exportInk:graphInk);segment=[];}segment.push(new T.Vector3(-.87+(Date.parse(point.date)-first)/span*1.74,floor+point.count/max*.19,0));previousExport=isExport;});
    strokes(segment,previousExport?exportInk:graphInk);
   });
-  const labels=data.rows.map((row,index)=>`<text x="27" y="${64+index*64}" fill="#34443e" font-size="13">${row.label}${row.archived?' · saved':row.label==='Followers'?' · live':''}</text><text x="293" y="${64+index*64}" fill="#34443e" text-anchor="end" font-size="15">${row.count.toLocaleString()}</text>`).join('');
+  const labels=data.rows.map((row,index)=>`<text x="27" y="${64+index*64}" fill="#34443e" font-size="13">${row.label==='Followers'?'Follows':row.label}${!row.archived&&row.label==='Followers'?' · live':''}</text><text x="293" y="${64+index*64}" fill="#34443e" text-anchor="end" font-size="15">${row.count.toLocaleString()}</text>`).join('');
   const old=boardMaterial.map;boardMaterial.map=texture(svg(`<rect x="8" y="8" width="304" height="224" fill="#ded3b5" stroke="#8b6945" stroke-width="12"/><text x="27" y="33" fill="#34443e" font-family="serif" font-size="17">THE SOCIAL LEDGER</text>${labels}`));
   if(old){old.dispose();const index=textures.indexOf(old);if(index>=0)textures.splice(index,1);}boardMaterial.needsUpdate=true;
  };
@@ -134,7 +137,9 @@ export function createPaperRoom(host:HTMLElement,state:()=>State,hover:(id:strin
  const ambientColors=palette('#eee3c8','#eee3c8','#ff3730'),sunColors=palette('#ffe0ad','#ffe0ad','#ff241c'),paperColors=palette('#ffffff','#ffe8c5','#e56e63'),backgroundColors=palette('#889381','#394238','#292329');
  const paperColor=new T.Color(),backgroundColor=new T.Color();
  const blendColor=(out:T.Color,colors:readonly T.Color[],weights:LightingWeights)=>out.setRGB(blendLight(weights,colors[0].r,colors[1].r,colors[2].r),blendLight(weights,colors[0].g,colors[1].g,colors[2].g),blendLight(weights,colors[0].b,colors[1].b,colors[2].b));
- const aliases=(id:string)=>id==='receiver'||id==='butler'?'contact':id==='device'?'engineering':id==='vinyl'?'record':id==='shelf-books'?'about':id;
+ // The phone remains scenery and an animation prop; only the butler is interactive.
+ const contactTargets=new Map([...items].filter(([id])=>id!=='contact'&&id!=='receiver'));
+ const aliases=(id:string)=>id==='butler'?'contact':id==='device'?'engineering':id==='vinyl'?'record':id==='shelf-books'?'about':id;
  scene.updateMatrixWorld(true);
  let lastPointer:{clientX:number;clientY:number}|null=null;
  function pick(e:{clientX:number;clientY:number}){
@@ -142,7 +147,7 @@ export function createPaperRoom(host:HTMLElement,state:()=>State,hover:(id:strin
   if(!r.width||!r.height||e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)return null;
   pointer.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);
   camera.updateMatrixWorld();scene.updateMatrixWorld(true);ray.setFromCamera(pointer,camera);
-  return pickRoomItem(ray,scene,items);
+  return pickRoomItem(ray,scene,contactTargets);
  }
  const setHover=(id:string|null)=>{if(id===over)return;over=id;hover(over?aliases(over):null);renderer.domElement.style.cursor=over?'pointer':'grab';};
  const shelfItems=new Set(['photography','about','favorites','published','engineering','stats','shelf-books']);
@@ -171,10 +176,10 @@ export function createPaperRoom(host:HTMLElement,state:()=>State,hover:(id:strin
   modeled.get('engineering')?.userData.updateScreen?.(time,motion);
   notes.visible=s.playing;notes.position.y=1.2+(motion?(t%2)*.15:0);
   if(pickup){const p=Math.min((performance.now()-pickup)/650,1);receiver.position.y+=p*.4;receiver.rotation.z=p*.28;if(p===1){pickup=0;activate('contact');}}
-  else if(motion&&(active==='contact'||active==='butler'||active==='receiver'))receiver.rotation.z=Math.sin(t*22)*.025;
+  else if(motion&&active==='butler')receiver.rotation.z=Math.sin(t*22)*.025;
   const light=lighting.update(s.lighting,time,motion);blendColor(ambient.color,ambientColors,light);blendColor(sun.color,sunColors,light);ambient.intensity=blendLight(light,2.8,1.8,.7);sun.intensity=blendLight(light,1.6,1,.3);
   // Tint only the illustrated cards; actual photographs retain their source colors.
   blendColor(paperColor,paperColors,light);paperTints.forEach(material=>material.color.copy(paperColor));renderer.setClearColor(blendColor(backgroundColor,backgroundColors,light));luxury.update(light);lampLight.intensity=blendLight(light,.4,3,0);if(bulb)bulb.emissiveIntensity=blendLight(light,.4,1.5,0);if(selected)composer.render();else renderer.render(scene,camera);
  });
- return{activate:action,focus:(id:string|null)=>{focus=id;lastPointer=null;over=null;hover(id);},look:(delta:number)=>{yaw=T.MathUtils.clamp(yaw+delta,-.46,.46);},reset:()=>{yaw=0;pitch=-.095;},dispose:()=>{disposed=true;clearInterval(statsTimer);window.removeEventListener('focus',refreshBoard);document.removeEventListener('visibilitychange',refreshBoard);renderer.setAnimationLoop(null);observer.disconnect();renderer.domElement.removeEventListener('pointerdown',press);renderer.domElement.removeEventListener('pointermove',move);renderer.domElement.removeEventListener('pointerup',release);renderer.domElement.removeEventListener('pointerleave',leave);renderer.domElement.removeEventListener('pointercancel',cancel);textures.forEach(t=>t.dispose());materials.forEach(m=>m.dispose());geometries.forEach(g=>g.dispose());outline.dispose();composer.dispose();renderer.dispose();renderer.domElement.remove();}};
+ return{activate:action,focus:(id:string|null)=>{focus=id==='contact'?'butler':id;lastPointer=null;over=null;hover(id);},look:(delta:number)=>{yaw=T.MathUtils.clamp(yaw+delta,-.46,.46);},reset:()=>{yaw=0;pitch=-.095;},dispose:()=>{disposed=true;clearInterval(statsTimer);window.removeEventListener('focus',refreshBoard);document.removeEventListener('visibilitychange',refreshBoard);renderer.setAnimationLoop(null);observer.disconnect();renderer.domElement.removeEventListener('pointerdown',press);renderer.domElement.removeEventListener('pointermove',move);renderer.domElement.removeEventListener('pointerup',release);renderer.domElement.removeEventListener('pointerleave',leave);renderer.domElement.removeEventListener('pointercancel',cancel);textures.forEach(t=>t.dispose());materials.forEach(m=>m.dispose());geometries.forEach(g=>g.dispose());outline.dispose();composer.dispose();renderer.dispose();renderer.domElement.remove();}};
 }

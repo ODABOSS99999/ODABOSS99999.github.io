@@ -19,9 +19,25 @@ export function addLuxuryDetails(scene:T.Scene,resources:RoomResources){
  for(const x of [-5,-2,1,4])box(x,5.91,4,.12,.16,17.5,plaster);
  for(const z of [-3,0,3,6,9,12])box(0,5.91,z,13.5,.16,.12,plaster);
  for(const x of [-5,-2,1,4])for(const z of [-3,0,3,6,9]){box(x+1.43,5.94,z+1.44,2.65,.025,.025,gold);box(x+.1,5.94,z+1.4,.025,.025,2.65,gold);}
- for(const y of [.18,.35,1.65,1.78])box(0,y,-4.84,13.8,.07,.1,y===1.78?gold:walnut);
- for(let x=1.4;x<6.9;x+=1.05){box(x,.98,-4.82,.035,1.2,.06,gold);box(x+.5,.42,-4.81,.86,.025,.05,gold);box(x+.5,1.54,-4.81,.86,.025,.05,gold);}
- for(const x of [-6.85,6.85]){box(x,.25,4,.12,.22,18,walnut);box(x,1.78,4,.08,.035,18,gold);for(let z=-4;z<13;z+=1.4)box(x,.96,z,.065,1.35,.035,gold);}
+ // Build each wall in local coordinates so rails and closed panel frames share
+ // the same heights and profile, including where the walls meet at the corners.
+ function wainscot(length:number,x:number,z:number,rotation:number){
+  const wall=new T.Group();wall.position.set(x,0,z);wall.rotation.y=rotation;scene.add(wall);
+  const trim=(u:number,y:number,depth:number,w:number,h:number,d:number,m:T.Material)=>mesh(new T.BoxGeometry(w,h,d),m,u,y,depth,wall);
+  trim(0,.18,0,length,.22,.12,walnut);
+  trim(0,.35,.015,length,.07,.1,walnut);
+  trim(0,1.65,.015,length,.07,.1,walnut);
+  trim(0,1.78,.025,length,.035,.08,gold);
+  const count=Math.round(length/1.15),pitch=length/count;
+  for(let i=0;i<count;i++){
+   const center=-length/2+(i+.5)*pitch,width=pitch-.18;
+   for(const u of [center-width/2,center+width/2])trim(u,.995,.04,.025,1.145,.05,gold);
+   for(const y of [.435,1.555])trim(center,y,.04,width,.025,.05,gold);
+  }
+ }
+ wainscot(13.8,0,-4.84,0);
+ wainscot(17.84,-6.84,4.08,Math.PI/2);
+ wainscot(17.84,6.84,4.08,-Math.PI/2);
  // A visible window above the desk: changing sky, sun/moon and closing drapes.
  const sky=new T.MeshBasicMaterial({color:'#a8c6cf'});materials.push(sky);
  box(4.3,4.12,-4.71,3.45,2.16,.1,walnut);box(4.3,4.12,-4.64,3.2,1.94,.035,sky);
@@ -33,11 +49,11 @@ export function addLuxuryDetails(scene:T.Scene,resources:RoomResources){
  const drapes=[new T.Group(),new T.Group()];drapes.forEach((g,i)=>{scene.add(g);g.position.set(i?6.04:2.56,4.02,-4.34);for(let j=0;j<8;j++){const fold=mesh(new T.CylinderGeometry(.075,.09,2.48,8),velvet,(i?-1:1)*j*.075,0,Math.sin(j)*.035,g);fold.scale.z=.7;}});
  const daySky=new T.Color('#a8c6cf'),nightSky=new T.Color('#101c3c');
  // Ornamental rug border and central woven medallion.
- for(const x of [-3.15,3.15])box(x,.035,1,.04,.006,4.5,thread);
- for(const z of [-1.15,3.15])box(0,.035,z,6.3,.006,.04,thread);
- for(let i=0;i<19;i++)for(const z of [-1,3]){const o=box(-2.9+i*.32,.039,z,.075,.005,.075,thread);o.rotation.y=Math.PI/4;}
- const medallion=ring(0,.033,1,1,.018,thread);medallion.scale.set(1,1.4,.08);
- for(let i=0;i<12;i++){const a=i*Math.PI/6;const petal=ring(Math.cos(a)*.5,.034,1+Math.sin(a)*.7,.18,.01,thread);petal.scale.set(.8,1.3,.08);}
+ for(const x of [-3.15,3.15])box(x,.035,4,.04,.006,10.3,thread);
+ for(const z of [-1.15,9.15])box(0,.035,z,6.3,.006,.04,thread);
+ for(let i=0;i<19;i++)for(const z of [-1,9]){const o=box(-2.9+i*.32,.039,z,.075,.005,.075,thread);o.rotation.y=Math.PI/4;}
+ const medallion=ring(0,.033,4,1,.018,thread);medallion.scale.set(1,1.4,.08);
+ for(let i=0;i<12;i++){const a=i*Math.PI/6;const petal=ring(Math.cos(a)*.5,.034,4+Math.sin(a)*.7,.18,.01,thread);petal.scale.set(.8,1.3,.08);}
  // A chandelier with curved brass arms, candle bulbs, and faceted crystal drops.
  const chandelier=new T.Group();chandelier.position.set(.75,0,-1.4);scene.add(chandelier);
  const cx=.75,cz=-1.4;ring(cx,5.92,cz,.65,.055,plaster);ring(cx,5.90,cz,.43,.02,gold);
