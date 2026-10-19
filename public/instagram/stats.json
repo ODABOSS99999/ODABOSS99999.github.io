@@ -1,9 +1,9 @@
 {
   "version": 2,
   "account": "mcgowen_media",
-  "checkedAt": "2026-10-18T18:10:46.000Z",
-  "followers": 4641,
-  "posts": 552,
+  "checkedAt": "2026-10-19T20:00:00.000Z",
+  "followers": 4642,
+  "posts": 460,
   "followerGains": [
     {
       "date": "2026-09-17",
@@ -127,6 +127,10 @@
     },
     {
       "date": "2026-10-17",
+      "count": 4
+    },
+    {
+      "date": "2026-10-18",
       "count": 0
     }
   ],
@@ -162,6 +166,18 @@
     {
       "date": "2026-10-18T18:10:46.000Z",
       "count": 4641
+    },
+    {
+      "date": "2026-10-19T01:22:01.000Z",
+      "count": 4639
+    },
+    {
+      "date": "2026-10-19T13:31:37.000Z",
+      "count": 4640
+    },
+    {
+      "date": "2026-10-19T20:00:00.000Z",
+      "count": 4642
     }
   ],
   "trackedPosts": [
@@ -3788,6 +3804,12 @@
       "timestamp": "2026-10-18T15:06:13.000Z",
       "caption": "Shot on iphone",
       "permalink": "https://www.instagram.com/p/Deo9zqLm5v2/"
+    },
+    {
+      "id": "18129783205831674",
+      "timestamp": "2026-10-19T13:26:44.000Z",
+      "caption": "2 months!\n\nI’ve learned so much, made alot of GREAT memories, kept my grades up, met professors I genuinely love, and had WAY more random side quests than I ever expected.\n\nBut the best part has easily been the people. I’m so grateful for all the friends I’ve made, the late-night shenanigans, random plans, and all the little moments that make college feel like home.\n\nAnd I’m just as excited for all the friends I haven’t met yet and the memories we still have to make.\n\nLife is good. College is fun. And if this is only the first 2 months, I can’t wait to see what the next 4 years bring.\n\nmake today a good day 😺\n\n#UTDallas #UTD #CollegeLife #CollegeMemories #Comets",
+      "permalink": "https://www.instagram.com/p/DerZX-Cj9Wg/"
     }
   ]
 }
