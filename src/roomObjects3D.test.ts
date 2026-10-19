@@ -20,7 +20,7 @@ describe('shelf models',()=>{
  });
  it('keeps the inward-facing camera grounded',()=>{
   const items=setup(),camera=items.get('photography')!;camera.updateWorldMatrix(true,true);
-  const cameraSize=new T.Box3().setFromObject(camera).getSize(new T.Vector3());
+  const cameraSize=new T.Box3().setFromObject(camera.getObjectByName('camera-body')!).getSize(new T.Vector3());
   const handheldSize=new T.Box3().setFromObject(items.get('engineering')!.getObjectByName('handheld-body')!).getSize(new T.Vector3());
   expect(cameraSize.y/handheldSize.y).toBeGreaterThan(.5);
   expect(cameraSize.y/handheldSize.y).toBeLessThan(.75);

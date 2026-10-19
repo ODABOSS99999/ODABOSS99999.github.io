@@ -102,7 +102,9 @@ export function createRoomObjects(scene:T.Scene,resources:Resources){
  const news=group('published',-5.02,2.61,-3.98);news.rotation.set(-.1,0,-.025);
  for(let page=3;page>=0;page--)box(news,page*.007,-.07-page*.005,-page*.009,1.53,1.12,.012,page%2?ivory:paper);
  const newsCanvas=document.createElement('canvas');newsCanvas.width=1536;newsCanvas.height=1120;
- const print=newsCanvas.getContext('2d')!;
+ const print=newsCanvas.getContext('2d');
+ // Keep the paper model usable when canvas drawing is unavailable.
+ if(print){
  print.fillStyle='#e6dcc3';print.fillRect(0,0,1536,1120);
  // Deterministic fine fibers keep the stock tactile without noisy animation.
  for(let i=0;i<5500;i++){const x=(i*719)%1536,y=(i*397)%1120;print.fillStyle=i%2?'rgba(89,65,35,.035)':'rgba(255,255,255,.12)';print.fillRect(x,y,1+i%3,1);}
@@ -129,6 +131,7 @@ export function createRoomObjects(scene:T.Scene,resources:Resources){
  const newsTexture=new T.CanvasTexture(newsCanvas);newsTexture.colorSpace=T.SRGBColorSpace;newsTexture.anisotropy=8;resources.textures.push(newsTexture);
  const newsPrint=new T.MeshStandardMaterial({map:newsTexture,roughness:1});resources.materials.push(newsPrint);
  mesh(news,new T.PlaneGeometry(1.53,1.12),newsPrint,0,-.07,.009);
+ }
  const engineering=group('engineering',-2.6,2.61,-3.98),rocket=new T.Group();engineering.add(rocket);rocket.position.set(-.5,-.03,0);
  cyl(rocket,0,-.05,0,.17,.17,.86,ivory);cyl(rocket,0,.48,0,0,.17,.24,red);cyl(rocket,0,-.51,0,.15,.12,.12,brass);
  for(let i=0;i<3;i++){const fin=box(rocket,Math.cos(i*2.094)*.18,-.36,Math.sin(i*2.094)*.18,.12,.36,.19,red);fin.rotation.y=-i*2.094;fin.rotation.z=i===0?-.3:0;}
