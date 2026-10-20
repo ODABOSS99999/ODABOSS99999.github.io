@@ -18,11 +18,11 @@ export default function Sections({ section, navigate }: { section: SectionId; na
     {section==='photography'&&<><InstagramFeed mode="portfolio"/><section id="favorite-posts" className="portfolio-favorites"><h2>Personal Favorites</h2><InstagramFeed mode="favorites"/></section><InstagramFeed mode="latest"/></>}
     {section==='favorites'&&<InstagramFeed mode="favorites"/>}
     {section==='about'&&owner.biography.length>0&&<div className="about-layout">
-      <aside className="about-sidebar">
-        <figure className="about-profile-frame"><img src="/instagram/profile.jpg" width="150" height="150" alt="Owen McGowan"/></figure>
+      <details className="about-topics"><summary>Jump to a topic</summary>
         <nav className="about-index" aria-label="About me topics">{owner.biography.map((p,i)=><button key={p.heading} onClick={()=>{const topic=panel.current?.querySelector<HTMLElement>(`#about-topic-${i}`);topic?.focus({preventScroll:true});topic?.scrollIntoView({block:'start'});}}>{p.heading}</button>)}</nav>
-      </aside>
+      </details>
       <div className="biography">{owner.biography.map((p,i)=><section key={p.heading} id={`about-topic-${i}`} tabIndex={-1} aria-labelledby={`about-heading-${i}`}>
+        {i===0&&<figure className="about-profile-frame"><img src="/instagram/profile.jpg" width="150" height="150" alt="Owen McGowan"/></figure>}
         {p.heading&&<h2 id={`about-heading-${i}`}>{p.heading}</h2>}<p>{p.text}</p>
         {p.items&&<ul className="about-clubs">{p.items.map(item=><li key={item.name}><h3>{item.name}</h3><p>{item.detail}</p></li>)}</ul>}
       </section>)}</div>

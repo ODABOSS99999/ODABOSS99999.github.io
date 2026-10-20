@@ -271,21 +271,28 @@ html,body,#root{width:100%;height:100%;overflow:hidden}
  .seated-object-list{max-height:calc(100dvh - 200px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))}
 }
 
-/* About: a quiet topic index and a readable, continuous biography. */
-.about-layout{display:grid;grid-template-columns:180px minmax(0,1fr);gap:clamp(28px,5vw,64px);align-items:start;margin:32px auto 40px;max-width:940px}
-.about-sidebar{min-width:0}
-.about-sidebar .about-profile-frame{margin:0 auto 24px}
-.about-index{display:flex;flex-direction:column;gap:2px}
-.about-index button{text-align:left;font:400 13px/1.45 'DM Sans',sans-serif;padding:10px 8px;min-height:44px;border-bottom:1px solid #9f9e803f;color:inherit}
+/* About uses the full reading width without a reserved sidebar. */
+.collection-panel .section-about{padding:28px 32px 24px}
+.collection-panel .section-about .section-heading{padding:0 0 16px}
+.collection-panel .section-about .section-heading h1{margin:0;padding-right:130px}
+.about-layout{margin:16px 0 24px}
+.about-topics{margin-bottom:20px;border-bottom:1px solid #9f9e803f}
+.about-topics summary{cursor:pointer;min-height:44px;padding:10px 0;font:500 13px/1.6 'DM Sans',sans-serif}
+.about-topics summary:hover{color:#725127}
+.about-topics summary:focus-visible,.about-index button:focus-visible{outline:2px solid currentColor;outline-offset:3px}
+.about-index{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 20px;padding-bottom:12px}
+.about-index button{text-align:left;font:400 13px/1.45 'DM Sans',sans-serif;padding:8px 0;min-height:44px;border-bottom:1px solid #9f9e803f;color:inherit}
 .about-index button:hover{background:#9f9e801a}
-.about-index button:focus-visible{outline:2px solid currentColor;outline-offset:2px}
-.collection-panel .about-layout .biography{margin:0;max-width:64ch;min-width:0}
-.about-layout .biography section{scroll-margin-block:80px 24px}
-.about-layout .biography section:focus{outline:2px solid #927348;outline-offset:8px}
-.collection-panel .about-layout .biography h2{margin:28px 0 0;padding-top:24px}
+.collection-panel .about-layout .biography{margin:0;max-width:none;min-width:0}
+.about-layout .biography section{display:flow-root;scroll-margin-block:80px 24px}
+.about-layout .biography section:focus{outline:2px solid #927348;outline-offset:4px}
+.about-layout .about-profile-frame{float:right;width:126px;padding:5px;margin:0 0 12px 24px}
+.about-layout .about-profile-frame img{width:100%;height:auto;aspect-ratio:1;object-fit:cover}
+.collection-panel .about-layout .biography h2{margin:20px 0 0;padding-top:20px}
 .collection-panel .about-layout .biography section:first-child h2{border-top:0;padding-top:0;margin-top:0}
+.collection-panel .about-layout .biography p{margin:12px 0 16px}
 .about-clubs{list-style:none;margin:0;padding:0}
-.about-clubs li{padding:17px 0;border-bottom:1px solid #9f9e803f}
+.about-clubs li{padding:14px 0;border-bottom:1px solid #9f9e803f}
 .about-clubs h3{font:500 15px/1.5 'DM Sans',sans-serif;margin:0}
 .collection-panel .about-clubs li p{font-size:14px;margin:6px 0 0;line-height:1.7}
-@media(max-width:700px){.about-layout{grid-template-columns:minmax(0,1fr);gap:28px;margin-top:24px}.about-sidebar .about-profile-frame{margin-bottom:22px}.about-index{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:16px}.about-index button{font-size:12px;padding-inline:0}.collection-panel .about-layout .biography h2{font-size:28px}.about-layout .biography section:focus{outline-offset:4px}}
+@media(max-width:700px){.collection-panel .section-about{padding:20px 18px}.collection-panel .section-about .section-heading h1{font-size:32px;padding-right:116px}.about-index{column-gap:14px}.about-index button{font-size:12px}.about-layout .about-profile-frame{width:88px;margin-left:16px}.collection-panel .about-layout .biography h2{font-size:27px}}
