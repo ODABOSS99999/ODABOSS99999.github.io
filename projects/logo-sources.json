@@ -1,0 +1,36 @@
+[
+  {
+    "asset": "cometrocketry_utd-profile.jpg",
+    "source": "https://www.instagram.com/cometrocketry_utd/",
+    "method": "Official profile og:image",
+    "retrieved": "2026-10-22"
+  },
+  {
+    "asset": "altf4_rocketry-profile.jpg",
+    "source": "https://www.instagram.com/altf4_rocketry/",
+    "method": "Official profile og:image",
+    "retrieved": "2026-10-22"
+  },
+  {
+    "asset": "texas-torque-logo.png",
+    "source": "https://www.texastorque.org/",
+    "image": "https://www.texastorque.org/wp-content/uploads/2022/11/cropped-cropped-cropped-Site-Team-Banner-e1668549253880.png",
+    "method": "Official team website header logo",
+    "retrieved": "2026-10-22"
+  },
+  {
+    "asset": "cprintabl3-profile.jpg",
+    "source": "https://www.instagram.com/cprintabl3/",
+    "verification": "https://www.linkedin.com/in/mcgowens",
+    "method": "Official profile og:image; correct handle linked from owner LinkedIn",
+    "retrieved": "2026-10-22"
+  },
+  {
+    "asset": "gameboy-learntobot-reel.jpg",
+    "source": "https://www.instagram.com/reel/DLGVLaVoboQ/",
+    "method": "Official LearnToBot reel og:image; visually verified custom handheld CAD, shell printing, electronics and completed console",
+    "caption": "New Project cooking! Kids get to take this HOME!",
+    "published": "2025-06-19",
+    "retrieved": "2026-10-22"
+  }
+]
