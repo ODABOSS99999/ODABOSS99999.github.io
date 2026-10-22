@@ -17,12 +17,26 @@ export function createRoomObjects(scene:T.Scene,resources:Resources){
  function group(id:string,x:number,y:number,z:number){const g=new T.Group();g.userData.id=id;g.position.set(x,y,z);scene.add(g);items.set(id,g);return g;}
  function rounded(g:T.Object3D,x:number,y:number,z:number,w:number,h:number,d:number,m:T.Material,r=.055){const s=new T.Shape();s.moveTo(-w/2+r,-h/2);s.lineTo(w/2-r,-h/2);s.quadraticCurveTo(w/2,-h/2,w/2,-h/2+r);s.lineTo(w/2,h/2-r);s.quadraticCurveTo(w/2,h/2,w/2-r,h/2);s.lineTo(-w/2+r,h/2);s.quadraticCurveTo(-w/2,h/2,-w/2,h/2-r);s.lineTo(-w/2,-h/2+r);s.quadraticCurveTo(-w/2,-h/2,-w/2+r,-h/2);return mesh(g,new T.ExtrudeGeometry(s,{depth:d,bevelEnabled:true,bevelSegments:2,steps:1,bevelSize:.015,bevelThickness:.015,curveSegments:5}),m,x,y,z-d/2);}
  function frame(g:T.Object3D,x:number,bottom:number,w:number,h:number,yaw:number){
-  // Bottom edge sits on the furniture; the top leans back on a hinged easel.
+  // Square, sixteen-pixel wooden rim and recessed leather backing.
+  const size=Math.max(w,h)+.14,pixel=size/16;
+  const oak=mat('#a77b43'),edge=mat('#614323'),lightOak=mat('#c49a5e'),grain=mat('#896033'),leather=mat('#79452f');
   const pivot=new T.Group();pivot.position.set(x,bottom,.12);pivot.rotation.y=yaw;g.add(pivot);
-  const f=new T.Group();f.rotation.x=-.16;pivot.add(f);f.position.y=(h+.14)/2;
-  box(f,0,0,-.045,w+.14,h+.14,.09,walnut);
-  for(const side of [-1,1]){box(f,side*(w/2+.035),0,.025,.07,h+.14,.12,brass);box(f,0,side*(h/2+.035),.025,w,.07,.12,brass);box(f,side*(w/2+.003),0,.089,.012,h,.012,ivory);box(f,0,side*(h/2+.003),.089,w,.012,.012,ivory);}
-  const hinge=v(0,h*.25,-.08),foot=v(0,-(h+.14)/2,-.36);
+  const f=new T.Group();f.rotation.x=-.16;pivot.add(f);f.position.y=size/2;
+  box(f,0,0,-.045,size,size,.09,edge);
+  box(f,0,0,.008,size-2*pixel,size-2*pixel,.025,leather);
+  for(const side of [-1,1]){
+   box(f,side*(size-pixel)/2,0,.035,pixel,size,.10,oak);
+   box(f,0,side*(size-pixel)/2,.035,size-2*pixel,pixel,.10,oak);
+   box(f,side*(size/2-pixel*1.15),0,.087,pixel*.3,size-2*pixel,.008,side<0?lightOak:edge);
+   box(f,0,side*(size/2-pixel*1.15),.087,size-2*pixel,pixel*.3,.008,side>0?lightOak:edge);
+   for(let i=0;i<8;i++){
+    const along=(-6.5+i*1.8)*pixel;
+    box(f,along,side*(size-pixel)/2,.089,pixel*(i%3===0?1.4:.7),pixel*.4,.008,i%2?grain:lightOak);
+    box(f,side*(size-pixel)/2,along,.089,pixel*.4,pixel*(i%3===0?1.4:.7),.008,i%2?lightOak:grain);
+   }
+  }
+  f.userData.photoScale=(size-5*pixel)/Math.max(w,h);
+  const hinge=v(0,h*.25,-.08),foot=v(0,-size/2,-.36);
   const support=box(f,0,0,0,w*.32,hinge.distanceTo(foot),.035,walnut);
   support.position.copy(hinge).add(foot).multiplyScalar(.5);support.quaternion.setFromUnitVectors(v(0,1,0),hinge.clone().sub(foot).normalize());
   rod(f,v(-.09,h*.25,-.085),v(.09,h*.25,-.085),.02,brass);

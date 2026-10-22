@@ -38,16 +38,26 @@ export function addLuxuryDetails(scene:T.Scene,resources:RoomResources){
  wainscot(13.8,0,-4.84,0);
  wainscot(17.84,-6.84,4.08,Math.PI/2);
  wainscot(17.84,6.84,4.08,-Math.PI/2);
- // A visible window above the desk: changing sky, sun/moon and closing drapes.
- const sky=new T.MeshBasicMaterial({color:'#a8c6cf'});materials.push(sky);
+ // Minecraft-inspired night sky, built from crisp square geometry.
+ const sky=new T.MeshBasicMaterial({color:'#101a39'});materials.push(sky);
  box(4.3,4.12,-4.71,3.45,2.16,.1,walnut);box(4.3,4.12,-4.64,3.2,1.94,.035,sky);
- const sunMat=new T.MeshBasicMaterial({color:'#ffe9aa'}),moonMat=new T.MeshBasicMaterial({color:'#e4e9d4'});materials.push(sunMat,moonMat);
- const sun=mesh(new T.CircleGeometry(.23,32),sunMat,3.5,4.65,-4.6),moon=mesh(new T.CircleGeometry(.18,32),moonMat,5.08,4.6,-4.59);
- const hills=mat('#486859');box(4.3,3.3,-4.59,3.18,.3,.03,hills);
+ const pixelMaterial=(color:string)=>{const m=new T.MeshBasicMaterial({color});materials.push(m);return m;};
+ const moonPalette=['#eeeee5','#d7d9d1','#b5bbb6','#959f9c'].map(pixelMaterial);
+ const moonPixels=['11111111','10000001','10022001','10233001','10022001','12000111','12200121','11111111'];
+ const pixel=.065;
+ moonPixels.forEach((row,y)=>[...row].forEach((shade,x)=>{
+  box(5.04+(x-3.5)*pixel,4.63+(3.5-y)*pixel,-4.58,pixel,pixel,.012,moonPalette[Number(shade)]);
+ }));
+ const star=pixelMaterial('#c9d6e5');
+ for(const [x,y,size] of [[2.89,4.9,.022],[3.17,4.55,.03],[3.48,4.99,.025],[3.76,4.69,.018],[4.04,4.88,.025],[4.49,4.96,.018],[4.62,4.47,.024],[5.51,4.95,.024],[5.75,4.49,.02],[3.56,4.27,.022],[4.41,4.29,.018]])box(x,y,-4.61,size,size,.008,star);
+ const cloud=pixelMaterial('#29364e');
+ for(const [x,y,w,h] of [[3.28,4.09,.78,.11],[3.51,4.2,.44,.11],[5.38,3.94,.92,.1],[5.62,4.04,.44,.1]])box(x,y,-4.6,w,h,.012,cloud);
+ const hills=pixelMaterial('#142b2c');
+ for(const [x,height] of [[2.9,.22],[3.3,.34],[3.7,.28],[4.1,.4],[4.5,.3],[4.9,.22],[5.3,.35],[5.7,.26]])box(x,3.15+height/2,-4.57,.4,height,.02,hills);
  for(const x of [2.7,4.3,5.9])box(x,4.12,-4.51,.065,2,.07,gold);box(4.3,4.12,-4.5,3.2,.065,.07,gold);
  box(4.3,5.32,-4.35,3.8,.065,.08,gold);
  const drapes=[new T.Group(),new T.Group()];drapes.forEach((g,i)=>{scene.add(g);g.position.set(i?6.04:2.56,4.02,-4.34);for(let j=0;j<8;j++){const fold=mesh(new T.CylinderGeometry(.075,.09,2.48,8),velvet,(i?-1:1)*j*.075,0,Math.sin(j)*.035,g);fold.scale.z=.7;}});
- const daySky=new T.Color('#a8c6cf'),nightSky=new T.Color('#101c3c');
+ const daySky=new T.Color('#1b2c50'),nightSky=new T.Color('#080d20');
  // Ornamental rug border and central woven medallion.
  for(const x of [-3.15,3.15])box(x,.035,4,.04,.006,10.3,thread);
  for(const z of [-1.15,9.15])box(0,.035,z,6.3,.006,.04,thread);
@@ -73,7 +83,7 @@ export function addLuxuryDetails(scene:T.Scene,resources:RoomResources){
  }
  const pendant=mesh(new T.OctahedronGeometry(.16),crystal,0,4.28,0,chandelier);pendant.scale.y=1.8;
  const light=new T.PointLight('#ffdb9a',14,15,2);light.position.set(cx,4.9,cz);scene.add(light);
- return {update:(weights:LightingWeights)=>{sky.color.copy(nightSky).lerp(daySky,weights.daylight);sun.visible=weights.daylight>.35;moon.visible=weights.daylight<.65;drapes.forEach(g=>{g.scale.x=1+weights.darkroom*2.05;});light.intensity=blendLight(weights,7,14,2);glow.emissiveIntensity=blendLight(weights,1.2,2.3,.35);}};
+ return {update:(weights:LightingWeights)=>{sky.color.copy(nightSky).lerp(daySky,weights.daylight);drapes.forEach(g=>{g.scale.x=1+weights.darkroom*2.05;});light.intensity=blendLight(weights,7,14,2);glow.emissiveIntensity=blendLight(weights,1.2,2.3,.35);}};
 }
 
 export function createTurntable(scene:T.Scene,resources:RoomResources){

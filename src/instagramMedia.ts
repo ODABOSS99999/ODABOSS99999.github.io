@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import { validateMetrics } from './instagramMetrics';
 import { validateSnapshot } from './instagram';
-import { liveFeedUrl, validateLiveFeed } from './instagramLiveFeed';
+import { liveFeedUrl, liveFeedHeaders, validateLiveFeed } from './instagramLiveFeed';
 import type { InstagramPost, InstagramSnapshot } from './instagram';
 import type { Photo } from './content';
 import type { MetricsSnapshot } from './instagramMetrics';
 let request:Promise<InstagramSnapshot>|null=null,cachedAt=0,snapshotPending=false;
 let liveRequest:Promise<InstagramSnapshot>|null=null;
 function loadLiveSnapshot(url:string){
- if(!liveRequest)liveRequest=fetch(url,{cache:'no-store',signal:AbortSignal.timeout(35000)}).then(response=>{if(!response.ok)throw Error('Latest post unavailable');return response.json();}).then(validateLiveFeed).finally(()=>{liveRequest=null;});
+ if(!liveRequest)liveRequest=fetch(url,{headers:liveFeedHeaders(),cache:'no-store',signal:AbortSignal.timeout(35000)}).then(response=>{if(!response.ok)throw Error('Latest post unavailable');return response.json();}).then(validateLiveFeed).finally(()=>{liveRequest=null;});
  return liveRequest;
 }
 let lastMetrics:MetricsSnapshot|null=null;

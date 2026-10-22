@@ -30,10 +30,10 @@ describe('library navigation', () => {
   });
   it('opens a linked collection directly and supports browser Back',async()=>{
     const user=userEvent.setup();history.replaceState({},'', '/engineering');render(<App/>);
-    await screen.findByRole('heading',{name:/^Engineering Projects/,level:1});
+    await screen.findByRole('heading',{name:/^Other Projects/,level:1});
     expect(document.querySelector('#project-rocketry .engineering-mentions')).toBeTruthy();
     expect(document.querySelector('#project-gameboy .engineering-mentions')).toBeTruthy();
-    await user.click(screen.getByRole('button',{name:'Exit Engineering Projects and return to library'}));
+    await user.click(screen.getByRole('button',{name:'Exit Other Projects and return to library'}));
     await act(async()=>history.back());
     await waitFor(()=>expect(location.pathname).toBe('/engineering'));
   });

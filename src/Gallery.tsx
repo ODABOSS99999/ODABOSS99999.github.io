@@ -7,7 +7,7 @@ export function Image({ photo, ...props }: { photo: Photo; className?: string; l
   useEffect(()=>setFailed(false),[photo.src]);
   return failed ? <div className="image-missing" role="img" aria-label={`${photo.alt} — image unavailable`}>Image unavailable</div> : <img {...props} src={photo.src} width={photo.width} height={photo.height} alt={photo.alt} onError={()=>setFailed(true)}/>;
 }
-export default function Gallery({ items, intimate = false }: { items: Photo[]; intimate?: boolean }) {
+export default function Gallery({ items, intimate = false, captionOnly = false }: { items: Photo[]; intimate?: boolean; captionOnly?: boolean }) {
   const [active,setActive] = useState<number|null>(null);
   const dialog = useRef<HTMLDialogElement>(null);
   const origin = useRef<HTMLButtonElement|null>(null);
@@ -27,13 +27,13 @@ export default function Gallery({ items, intimate = false }: { items: Photo[]; i
   },[active,items]);
   return <><div className={`gallery ${intimate?'intimate':''}`}>{items.map((photo,i)=><figure key={photo.id}>
     {photo.sourceUrl?.startsWith("https://www.instagram.com/") ? <a className="photo-image-link" href={photo.sourceUrl} target="_blank" rel="noreferrer" aria-label={`View ${photo.alt} on Instagram (opens in a new tab)`}><Image photo={photo} loading="lazy"/></a> : <button aria-label={`View ${photo.alt}`} onClick={e=>{origin.current=e.currentTarget;setActive(i);}}><Image photo={photo} loading="lazy"/></button>}
-    {(photo.caption||photo.credit||photo.note||photo.sourceUrl||photo.metrics)&&<figcaption><PostDetails photo={photo} hideSource={photo.sourceUrl?.startsWith('https://www.instagram.com/')}/>{intimate&&photo.note&&<p>{photo.note}</p>}</figcaption>}
+    {(photo.caption||photo.credit||photo.note||photo.sourceUrl||photo.metrics)&&<figcaption>{captionOnly ? <p className="publication-cutline">{photo.caption}{photo.credit&&<small>{photo.credit}</small>}</p> : <PostDetails photo={photo} hideSource={photo.sourceUrl?.startsWith('https://www.instagram.com/')}/>}{intimate&&photo.note&&<p>{photo.note}</p>}</figcaption>}
   </figure>)}</div>
-  <dialog className="image-viewer" ref={dialog} aria-label="Photograph viewer" onCancel={e=>{e.preventDefault();setActive(null);}} onClick={e=>{if(e.target===e.currentTarget)setActive(null);}} onKeyDown={e=>{if(e.key==='Tab'){const controls=[...e.currentTarget.querySelectorAll<HTMLElement>('button:not([disabled]),a[href]')];const first=controls[0],last=controls[controls.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last?.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first?.focus();}}if(e.key==='ArrowRight'){e.preventDefault();change(1);}if(e.key==='ArrowLeft'){e.preventDefault();change(-1);}}}>
+  <dialog className="image-viewer" ref={dialog} aria-label="Photograph viewer" onCancel={e=>{e.preventDefault();e.stopPropagation();setActive(null);}} onClick={e=>{if(e.target===e.currentTarget)setActive(null);}} onKeyDown={e=>{if(e.key==='Tab'){const controls=[...e.currentTarget.querySelectorAll<HTMLElement>('button:not([disabled]),a[href]')];const first=controls[0],last=controls[controls.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last?.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first?.focus();}}if(e.key==='ArrowRight'){e.preventDefault();change(1);}if(e.key==='ArrowLeft'){e.preventDefault();change(-1);}}}>
     {active!==null&&<><div className="viewer-top"><span aria-live="polite">{active+1} / {items.length}</span><ExitSign autoFocus onExit={()=>setActive(null)} label="Close photograph viewer"/></div>
     <figure className="viewer-image" onTouchStart={e=>{start.current={x:e.touches[0].clientX,y:e.touches[0].clientY};}} onTouchEnd={e=>{const p=start.current;start.current=null;if(!p)return;const dx=e.changedTouches[0].clientX-p.x,dy=e.changedTouches[0].clientY-p.y;if(Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.5)change(dx<0?1:-1);}}>
       <Image key={items[active].id} photo={items[active]} loading="eager"/>
-      <figcaption><PostDetails photo={items[active]}/></figcaption>
+      <figcaption><>{captionOnly ? <p className="publication-cutline">{items[active].caption}{items[active].credit&&<small>{items[active].credit}</small>}</p> : <PostDetails photo={items[active]}/>}</></figcaption>
     </figure><div className="viewer-bottom"><button onClick={()=>change(-1)} disabled={items.length<2} aria-label="Previous photograph">← Previous</button><span>Use arrow keys to explore</span><button onClick={()=>change(1)} disabled={items.length<2} aria-label="Next photograph">Next →</button></div></>}
   </dialog></>;
 }

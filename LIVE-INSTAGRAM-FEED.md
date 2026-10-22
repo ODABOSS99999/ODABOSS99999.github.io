@@ -1,5 +1,11 @@
 # Live newest Instagram post
 
+The default endpoint is now the existing Supabase project's `instagram-feed` function. It uses the private Instagram Graph connection directly, verifies `mcgowen_media`, selects the newest timestamp (including video covers), and reuses the Worker image validation. Every opening requests it with `no-store` and the project's existing public anonymous authorization. The separate function preserves the statistics endpoint. Source or network failures retain the saved archive with a refresh-unavailable note.
+
+Deploy `supabase/functions/instagram-feed/index.ts` with JWT verification enabled, its `deno.json` import map, and the relative `workers/instagram/src/index.mjs` dependency. Existing project secrets supply the connection; no new account or paid service is needed. Verified October 22, 2026: HTTP 200, `Cache-Control: no-store`, latest permalink `https://www.instagram.com/p/Dey7wb0gcBa/`, published `2026-10-22T12:00:02Z`.
+
+## Optional Cloudflare override
+
 The GitHub Pages website can call a separate Cloudflare **Workers Free** endpoint on every opening of Fresh off the roll. No website hosting or DNS migration is needed. The Worker is in `workers/instagram`.
 
 The endpoint queries the existing Windsor Instagram connection for `mcgowen_media`, selects the newest timestamp, fetches its photo or video cover, verifies its raster type and actual dimensions, and returns that one post with an inline image. The frontend merges it into the saved archive. HTTP responses are not cached. Source-side Windsor/Instagram caching may still delay a newly published post; a fresh request cannot force those providers to bypass their caches.

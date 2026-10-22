@@ -33,6 +33,16 @@ test('every opening fetches upstream again and uses actual image dimensions', as
   assert.equal(image.width, actual.width); assert.equal(image.height, actual.height); assert.equal(image.width, 1080);
 });
 
+test('direct Instagram loader checks again on every opening without a Windsor credential', async () => {
+  const f = fixture([]);
+  let calls = 0;
+  const worker = createLatestWorker({ fetchImpl: f.fetchImpl, now: () => date, loadPosts: async () => ({ account: 'mcgowen_media', data: ++calls === 1 ? [old] : [old, fresh] }) });
+  assert.equal((await (await worker.fetch(req())).json()).posts[0].id, old.media_id);
+  assert.equal((await (await worker.fetch(req())).json()).posts[0].id, fresh.media_id);
+  assert.equal(calls, 2);
+  assert.equal(f.urls.some(url => url.includes('connectors.windsor.ai')), false);
+});
+
 test('newest video fetches its cover, including when older photo is first', async () => {
   const video = { ...fresh, media_type: 'VIDEO', media_url: 'https://scontent.cdninstagram.com/movie.mp4', media_thumbnail_url: 'https://scontent.cdninstagram.com/cover.jpg' };
   const f = fixture([{ data: [old, video] }]);
