@@ -1,9 +1,9 @@
 {
   "version": 2,
   "account": "mcgowen_media",
-  "checkedAt": "2026-10-22T07:41:14.000Z",
-  "followers": 4665,
-  "posts": 462,
+  "checkedAt": "2026-10-22T13:52:40.000Z",
+  "followers": 4664,
+  "posts": 463,
   "followerGains": [
     {
       "date": "2026-09-17",
@@ -230,6 +230,10 @@
     {
       "date": "2026-10-22T07:41:14.000Z",
       "count": 4665
+    },
+    {
+      "date": "2026-10-22T13:52:40.000Z",
+      "count": 4664
     }
   ],
   "trackedPosts": [
@@ -3874,6 +3878,12 @@
       "timestamp": "2026-10-21T13:34:27.000Z",
       "caption": "🐝",
       "permalink": "https://www.instagram.com/p/Dewi5qmj3Xf/"
+    },
+    {
+      "id": "18071722394788964",
+      "timestamp": "2026-10-22T12:00:02.000Z",
+      "caption": "“Don’t wanna be your girl, just your muse.” \n\nA little bit of Ella Boh, a whole lot of emotion.\n\n@ellaboh live in Dallas, edited in black & white.\n\nTag your friend who would enjoy this!\n\n#EllaBoh #ALittleBit #ConcertPhotography #BlackAndWhitePhotography #DallasMusicScene",
+      "permalink": "https://www.instagram.com/p/Dey7wb0gcBa/"
     }
   ]
 }
