@@ -1,3 +1,5 @@
+const CACHE_MS = 60000;
+const ERROR_BACKOFF_MS = 30000;
 const API = 'https://api.spotify.com/v1';
 const TOKEN = 'https://accounts.spotify.com/api/token';
 const origins = new Set(['https://mcgowen.works', 'https://www.mcgowen.works']);
@@ -54,14 +56,14 @@ export function createWorker(fetcher = fetch) {
         const token = await read(await fetcher(TOKEN, {
           method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           body: new URLSearchParams({ grant_type: 'refresh_token', client_id: env.SPOTIFY_CLIENT_ID, refresh_token: env.SPOTIFY_REFRESH_TOKEN }),
-          signal: AbortSignal.timeout(10000), redirect: 'error',
+          signal: AbortSignal.timeout(10000), redirect: 'manual',
         }));
         if (!string(token?.access_token)) throw new UpstreamError(502);
         if (string(token.refresh_token) && token.refresh_token !== env.SPOTIFY_REFRESH_TOKEN && typeof env.saveRefreshToken === 'function') {
           await env.saveRefreshToken(token.refresh_token);
         }
         const get = async path => read(await fetcher(`${API}${path}`, {
-          headers: { Authorization: `Bearer ${token.access_token}` }, signal: AbortSignal.timeout(10000), redirect: 'error',
+          headers: { Authorization: `Bearer ${token.access_token}` }, signal: AbortSignal.timeout(10000), redirect: 'manual',
         }));
         const [recent, top, artists] = await Promise.all([
           get('/me/player/recently-played?limit=50'),
@@ -87,7 +89,6 @@ export function createWorker(fetcher = fetch) {
         const result = { source: 'spotify', fetchedAt: new Date().toISOString(), period: 'Last 4 weeks', recentTracks, topTracks, topArtists, albums: [...albumMap.values()] };
         return reply(result);
       } catch (error) {
-        headers['X-Music-Diagnostic'] = error instanceof UpstreamError ? `upstream-${error.status}` : `runtime-${error?.name ?? 'error'}-${String(error?.message ?? '').replace(/[^a-zA-Z :().-]/g,'').slice(0,160)}`;
         if (error instanceof UpstreamError && error.retryAfter) headers['Retry-After'] = error.retryAfter;
         return reply({ error: 'Music is temporarily unavailable' }, error instanceof UpstreamError ? error.status : 502);
       }
@@ -96,7 +97,9 @@ export function createWorker(fetcher = fetch) {
 }
 // One named instance serializes refreshes and retains Spotify's rotated token.
 export class MusicState {
-  constructor(ctx, env, fetcher = fetch) {
+  constructor(ctx, env, fetcher = fetch, now = Date.now) {
+    this.now = now;
+    this.clients = new Map();
     this.ctx = ctx;
     this.env = env;
     this.worker = createWorker(fetcher);
@@ -108,13 +111,42 @@ export class MusicState {
       this.credentials = saved?.fingerprint === fingerprint && string(saved.refreshToken)
         ? saved : { fingerprint, refreshToken: env.SPOTIFY_REFRESH_TOKEN };
       if (this.credentials !== saved) await ctx.storage.put('credentials', this.credentials);
+      const cached = await ctx.storage.get('publicData');
+      this.publicData = cached?.fingerprint === fingerprint ? cached : { fingerprint };
     });
   }
 
   fetch(request) {
+    const origin = request.headers.get('origin');
+    const headers = { 'Cache-Control': 'no-store', Vary: 'Origin' };
+    if (origin && allowedOrigin(origin)) headers['Access-Control-Allow-Origin'] = origin;
+    const error = (status, retry) => Response.json({ error: 'Music is temporarily unavailable' }, {
+      status, headers: { ...headers, ...(retry ? { 'Retry-After': String(retry) } : {}) },
+    });
+    // Reject invalid traffic before storage, queueing, or consuming a client's allowance.
+    if ((origin && !allowedOrigin(origin)) || new URL(request.url).pathname !== '/music' || request.method !== 'GET') {
+      return this.worker.fetch(request, {});
+    }
+    const time = this.now();
+    for (const [key, entry] of this.clients) if (time >= entry.until) this.clients.delete(key);
+    // CF-Connecting-IP is supplied by Cloudflare, never trust forwarded-for headers.
+    const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+    let client = this.clients.get(ip);
+    if (!client) {
+      if (this.clients.size >= 1000) return Promise.resolve(error(429, 60));
+      client = { until: time + 60000, count: 0 };
+      this.clients.set(ip, client);
+    }
+    if (++client.count > 20) return Promise.resolve(error(429, Math.max(1, Math.ceil((client.until - time) / 1000))));
     const operation = this.queue.then(async () => {
       await this.ready;
-      return this.worker.fetch(request, {
+      const current = this.now();
+      const cached = this.publicData;
+      if (cached.body && current >= cached.savedAt && current - cached.savedAt < CACHE_MS) {
+        return Response.json(cached.body, { headers });
+      }
+      if (cached.retryAt > current) return error(cached.status || 502, Math.ceil((cached.retryAt - current) / 1000));
+      const response = await this.worker.fetch(request, {
         ...this.env,
         SPOTIFY_REFRESH_TOKEN: this.credentials.refreshToken,
         saveRefreshToken: async refreshToken => {
@@ -123,12 +155,16 @@ export class MusicState {
           this.credentials = next;
         },
       });
-    }).catch(error => {
-      const origin = request.headers.get('origin');
-      const headers = { 'Cache-Control': 'no-store', Vary: 'Origin', 'X-Music-Diagnostic': `storage-${error?.name ?? 'error'}` };
-      if (origin && allowedOrigin(origin)) headers['Access-Control-Allow-Origin'] = origin;
-      return Response.json({ error: 'Music is temporarily unavailable' }, { status: 502, headers });
-    });
+      if (response.ok) {
+        this.publicData = { fingerprint: this.credentials.fingerprint, savedAt: this.now(), body: await response.clone().json() };
+      } else {
+        const delay = Math.max(ERROR_BACKOFF_MS, Number(response.headers.get('Retry-After') || 0) * 1000);
+        this.publicData = { fingerprint: this.credentials.fingerprint, retryAt: this.now() + delay, status: response.status };
+        response.headers.set('Retry-After', String(Math.ceil(delay / 1000)));
+      }
+      await this.ctx.storage.put('publicData', this.publicData);
+      return response;
+    }).catch(() => error(502, 30));
     this.queue = operation.then(() => undefined);
     return operation;
   }

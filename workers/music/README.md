@@ -1,6 +1,6 @@
 # Spotify music endpoint
 
-This optional Worker exposes `GET /music` for the owner's recent listening, top tracks and artists, and albums derived from those tracks. Spotify's short-term ranking is labeled “Last 4 weeks.” Every request refreshes Spotify data; responses use `Cache-Control: no-store`. Access tokens exist only inside the request and are never cached or returned.
+This optional Worker exposes `GET /music` for the owner's recent listening, top tracks and artists, and albums derived from those tracks. Spotify's short-term ranking is labeled “Last 4 weeks.” The shared Durable Object caches successful public music data for 60 seconds, retaining its original fetchedAt. Concurrent visits share that refresh; responses use `Cache-Control: no-store`. Access tokens exist only inside the request and are never cached or returned.
 
 Run checks from the repository root with `node --test workers/music/src/index.test.mjs`.
 
@@ -15,3 +15,9 @@ Spotify may return a rotated refresh token. The deployed Worker routes through o
 The local adapter provides an asynchronous `env.saveRefreshToken` callback; the setup helper saves replacements in its local private credential file. The same handler awaits persistence before reading Spotify data.
 
 No deployment is performed by these files. Wrangler includes the SQLite Durable Object binding and initial migration. Use the confirmed free Workers plan only; the free plan's request limits stop service at the allowance. The CPU limit is a runtime cap, not a billing guarantee.
+
+## Request budget
+
+The Durable Object persists the public response cache and upstream cooldown alongside separately stored private credentials. Expired cache entries are never served. Upstream failures pause refreshes for at least 30 seconds; Spotify Retry-After delays are honored up to the handler cap of 24 hours. The cooldown survives object restarts. Access tokens are never persisted.
+
+Each Cloudflare-supplied client IP gets 20 GET requests per minute per active object. The limiter keeps at most 1,000 client entries, rejects excess new clients until entries expire, and does not write IPs to storage. Its counters reset on object restart; persisted global cooldown and cache still bound Spotify refresh work. Requests without Cloudflare client IP metadata share one allowance. Invalid origins, routes and methods are checked before cache access. Public errors contain no runtime diagnostics.
