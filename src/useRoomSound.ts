@@ -30,5 +30,6 @@ export function useRoomSound(muted:boolean,volume:number,setMuted:(muted:boolean
  useEffect(()=>{intent.current=!muted;if(muted){generation.current++;setPlaying(false);void audio.current?.pause();}else void start.current();},[muted]);
  useEffect(()=>{audio.current?.volume(muted?0:volume);},[volume,muted]);
  function toggle(){const next=!latest.current.muted;setError('');if(next){intent.current=false;generation.current++;setPlaying(false);}latest.current.setMuted(next);}
- return{playing,error,toggle};
+ function effect(kind:'ring'|'pickup'|'whoosh'){if(!latest.current.muted&&!document.hidden)audio.current?.effect(kind);}
+ return{playing,error,toggle,effect};
 }

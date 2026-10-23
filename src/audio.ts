@@ -1,3 +1,4 @@
+export type RoomSound = 'ring' | 'pickup' | 'whoosh';
 // Original procedural ambience: filtered noise and two very quiet sine tones.
 // No recordings, external requests, or licensed music.
 export class RoomAudio {
@@ -24,6 +25,33 @@ export class RoomAudio {
       [110, 165].forEach(f => { const tone = ctx.createOscillator(); const gain = ctx.createGain(); tone.frequency.value = f; gain.gain.value = 0.003; tone.connect(gain); gain.connect(master); tone.start(); this.sources.push(tone); });
     }
     await this.context.resume(); this.volume(volume);
+  }
+  private lastRing = -Infinity;
+  /** Effects share the existing volume control and never unlock audio on hover. */
+  effect(kind: RoomSound) {
+    const ctx=this.context,master=this.master;
+    if(!ctx||!master||ctx.state!=='running'||master.gain.value<.001)return;
+    const now=ctx.currentTime;
+    if(kind==='ring'){if(now-this.lastRing<2)return;this.lastRing=now;}
+    const envelope=ctx.createGain();envelope.connect(master);
+    const duration=kind==='whoosh'?.55:kind==='ring'?.38:.12;
+    envelope.gain.setValueAtTime(0,now);
+    envelope.gain.linearRampToValueAtTime(kind==='ring'?.065:.10,now+.018);
+    envelope.gain.exponentialRampToValueAtTime(.0001,now+duration);
+    if(kind==='ring'){
+      for(const frequency of [660,880]){
+        const tone=ctx.createOscillator();tone.frequency.value=frequency;tone.type='sine';tone.connect(envelope);tone.start(now);tone.stop(now+duration);
+        tone.onended=()=>{tone.disconnect();if(frequency===880)envelope.disconnect();};
+      }
+    }else{
+      const buffer=ctx.createBuffer(1,Math.ceil(ctx.sampleRate*duration),ctx.sampleRate),data=buffer.getChannelData(0);
+      for(let i=0;i<data.length;i++)data[i]=Math.random()*2-1;
+      const source=ctx.createBufferSource(),filter=ctx.createBiquadFilter();source.buffer=buffer;
+      filter.type='bandpass';filter.Q.value=kind==='whoosh'?.7:2;
+      filter.frequency.setValueAtTime(kind==='whoosh'?1100:1800,now);filter.frequency.exponentialRampToValueAtTime(220,now+duration);
+      source.connect(filter);filter.connect(envelope);source.start(now);source.stop(now+duration);
+      source.onended=()=>{source.disconnect();filter.disconnect();envelope.disconnect();};
+    }
   }
   volume(value: number) { if (this.context && this.master) { this.master.gain.cancelScheduledValues(this.context.currentTime); this.master.gain.setTargetAtTime(value, this.context.currentTime, 0.08); } }
   async pause() { if (this.context) await this.context.suspend(); }

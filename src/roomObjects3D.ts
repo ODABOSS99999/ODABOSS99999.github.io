@@ -108,6 +108,7 @@ export function createRoomObjects(scene:T.Scene,resources:Resources){
  standingLens(.78,0,.43,.17);
  standingLens(.28,.78,.34,.16);
  standingLens(.76,.78,.51,.18);
+ camera.userData.highlightObjects=camera.children.filter(child=>child instanceof T.Group);
  const books=group('about',-2.6,3.62,-4.1);
  frame(books,0,0,.93,.93,-.07);
  const favorites=group('favorites',-.17,2.02,-4.1);

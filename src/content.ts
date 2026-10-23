@@ -1,5 +1,5 @@
 import type { InstagramMetrics } from './instagramMetrics';
-export type SectionId = 'photography' | 'about' | 'favorites' | 'published' | 'engineering' | 'contact';
+export type SectionId = 'photography' | 'about' | 'favorites' | 'published' | 'engineering' | 'contact' | 'music';
 export type Photo = { id: string; src: string; width: number; height: number; alt: string; caption?: string; credit?: string; favorite?: boolean; note?: string; sourceUrl?: string; sourceLabel?: string; metrics?: InstagramMetrics };
 export type Publication = { title: string; publication: string; date?: string; role: string; url: string; thumbnail?: string; images?: (Photo & { cutline?: string })[] };
 export type Project = { url?: string; id: string; title: string; overview: string; role?: string; process?: string; tools?: string[]; challenges?: string; outcomes?: string; logo?: Photo; images?: Photo[] };
@@ -10,6 +10,7 @@ export const destinations: { id: SectionId; title: string; subtitle: string; num
   { id: 'published', title: 'Published Work', subtitle: '', number: '04' },
   { id: 'engineering', title: 'Other Projects', subtitle: '', number: '05' },
   { id: 'contact', title: 'Contact', subtitle: '', number: '06' },
+  { id: 'music', title: 'Music', subtitle: '', number: '07' },
 ];
 // Supplied personal content only. See CONTENT.md before adding assets.
 export const owner = {
@@ -20,7 +21,7 @@ export const owner = {
     { heading: 'McGowen Media', text: 'I’ve worked as a freelance commercial photographer since January 2023, creating product photographs for more than 20 brands and building recurring client relationships. My photography also covers cars, live events, campus life, and the street. I handle the work from lighting and shooting to editing and delivery, using a Sony a7 III, Adobe Creative Suite, and Luminar Neo.' },
     { heading: 'LearnToBot', text: 'From June 2025 to August 2026, I worked at LearnToBot as an R&D / STEM instructor in The Woodlands and Katy. I taught learners ages 6–18 through hands-on robotics projects with Arduino, Raspberry Pi, Python, and sensors. One project was an Arduino-based Game Boy with a custom shell and bulk parts costing under $5 per unit.' },
     { heading: 'At UT Dallas', text: 'I photograph for The Mercury, UTD’s student newspaper, and lead marketing contributors for Comet Rocketry, an American Institute of Aeronautics and Astronautics (AIAA) organization. I was also selected as a freshman for its L3 Rockets technical team, continuing the rocketry work I started in high school.' },
-    { heading: 'Building and running things', text: 'I founded CPRINTABL3S, a 3D-printing service that fulfilled more than 30 orders from 2023 to 2025, often making parts for science-fair projects. I maintained and tuned the printers as well as managing orders. I also ran a neighborhood pool-cleaning service throughout high school, from 2022 to 2026. As a school-yearbook contributor, I supplied photographs and worked to publication deadlines.' },
+    { heading: 'Building and running things', text: 'I founded CPRINTABL3S, a 3D-printing service that fulfilled more than 30 orders from 2023 to 2025, often making parts for science-fair projects. I maintained and tuned the printers as well as managing orders. As a school-yearbook contributor, I supplied photographs and worked to publication deadlines.' },
     { heading: 'My STEM foundation', text: 'I attended the Academy of Science & Technology (AST), an application-only STEM academy within The Woodlands College Park High School, from 2022 to 2026. At Texas Torque, I designed and machined components for FIRST Robotics Competition robots. I later led our American Rocketry Challenge team, which achieved the highest performance score in College Park High School history.' },
     { heading: 'Destination Imagination (DI)', text: 'From August 2023 to May 2024, I competed on a six-person Destination Imagination team, contributing prop concepts and Instant Challenge performance. We placed first at State and second at Globals, with recognition for Highest Instant Challenge and the Renaissance Award.' },
     { heading: 'Clubs and teams', text: 'My activities span engineering, creative problem-solving, photography, and campus media.', items: [
@@ -59,7 +60,6 @@ export const projects: Project[] = [
  { id: 'destination-imagination', title: 'Destination Imagination', overview: 'Creative problem-solving on a six-person competition team, August 2023–May 2024.', role: 'Team member contributing prop concepts and Instant Challenge performance.', outcomes: 'First at State and second at Globals, with recognition for Highest Instant Challenge and the Renaissance Award.' },
  { id: 'vex', title: 'VEX Robotics', overview: 'Team robotics at the International School of Kuala Lumpur.', outcomes: 'Our team received the Best Designed Robot award at VEX International.' },
  { id: 'stem-teaching', title: 'Hands-on Robotics at LearnToBot', overview: 'Robotics instruction for learners ages 6–18 in The Woodlands and Katy.', role: 'R&D / STEM Instructor, June 2025–August 2026.', process: 'Taught hands-on robotic builds using microcontrollers, programming, and sensors.', tools: ['Arduino', 'Raspberry Pi', 'Python', 'Sensors'] },
- { id: 'pool-service', title: 'Neighborhood Pool Service', overview: 'An independent neighborhood pool-cleaning service run throughout high school.', role: 'Owner and pool cleaner, 2022–2026.' },
  { id: 'mcgowen-library', title: 'The McGowen Library', overview: 'My interactive portfolio, bringing photography, published work, and other projects into an explorable room.', process: 'Explore the room’s objects to open collections, change the lighting, and control the ambience.', tools: ['TypeScript', 'React', 'Three.js'], url: '/' },
 
  { id: 'captured', url: 'https://bookcaptured.vercel.app/', title: 'Captured', overview: 'A web project listed on my LinkedIn portfolio.', tools: ['Web development'] },

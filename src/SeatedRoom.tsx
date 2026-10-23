@@ -3,14 +3,14 @@ import { useEffect, useRef, useState } from 'react';
 import { owner, destinations } from './content';
 import type { SectionId } from './content';
 import type { createPaperRoom } from './paperRoom';
-type Props={navigate:(id:SectionId)=>void;toggleLamp:()=>void;toggleAudio:()=>void;openIndex:()=>void;playing:boolean;soundEnabled?:boolean;motion:boolean;lighting?:string};
+type Props={soundEffect?:(effect:'ring'|'pickup'|'whoosh')=>void;navigate:(id:SectionId)=>void;toggleLamp:()=>void;toggleAudio:()=>void;openIndex:()=>void;playing:boolean;soundEnabled?:boolean;motion:boolean;lighting?:string};
 export default function SeatedRoom(props:Props){
  const host=useRef<HTMLDivElement>(null),api=useRef<ReturnType<typeof createPaperRoom>|null>(null),latest=useRef(props);latest.current=props;
  const [ready,setReady]=useState(false),[failed,setFailed]=useState(false),[over,setOver]=useState<string|null>(null),[objectsOpen,setObjectsOpen]=useState(false),[announcement,setAnnouncement]=useState('');
  const [statsOpen,setStatsOpen]=useState(false);
  const objectsTrigger=useRef<HTMLButtonElement>(null);
  useEffect(()=>{if(!objectsOpen)return;const close=(e:KeyboardEvent)=>{if(e.key==='Escape'){setObjectsOpen(false);objectsTrigger.current?.focus();}};document.addEventListener('keydown',close);return()=>document.removeEventListener('keydown',close);},[objectsOpen]);
- const objectNames:Record<SectionId,string>={photography:'Camera: portfolio and galleries',about:'Books / portrait: About Me, experience and skills',favorites:'Framed prints: favorite photographs and personal notes',published:'Newspaper: published work and photography credits',engineering:'Other Projects · rocket & Game Boy',contact:'Butler: contact details'};
+ const objectNames:Record<SectionId,string>={photography:'Camera: portfolio and galleries',about:'Books / portrait: About Me, experience and skills',favorites:'Framed prints: favorite photographs and personal notes',published:'Newspaper: published work and photography credits',engineering:'Other Projects · rocket & Game Boy',contact:'Telephone: contact details',music:'Records: listening activity and album collection'};
  const actions:{id:string;label:string;tip?:string}[]=[...destinations.map(d=>({id:d.id,label:d.title,tip:objectNames[d.id]})),{id:'lamp',label:'Lamp switch: toggle Lamplight and Darkroom'},{id:'record',label:(props.soundEnabled??props.playing)?'Mute room ambience':'Play room ambience'},{id:'stats',label:'Instagram statistics: followers, posts and growth'},{id:'ladder',label:'Roll the library ladder'}];
  function activate(id:string){setObjectsOpen(false);if(id==='stats'){setStatsOpen(true);return;}if(id==='lamp')latest.current.toggleLamp();else if(id==='record')latest.current.toggleAudio();else if(id!=='ladder')latest.current.navigate(id==='device'?'engineering':id as SectionId);}
  useEffect(()=>{
@@ -25,7 +25,7 @@ export default function SeatedRoom(props:Props){
   else import('./paperRoom').then(({createPaperRoom})=>{
    if(cancelled||unavailable)return;
    try{
-    const room=createPaperRoom(container,()=>({...latest.current,lighting:latest.current.lighting||'lamplight'}),setOver,activate,setAnnouncement);
+    const room=createPaperRoom(container,()=>({...latest.current,lighting:latest.current.lighting||'lamplight'}),setOver,activate,setAnnouncement,effect=>latest.current.soundEffect?.(effect));
     if(cancelled||unavailable){room.dispose();return;}
     api.current=room;setReady(true);
    }catch{fail();}

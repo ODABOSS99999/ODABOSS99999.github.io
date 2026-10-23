@@ -1,6 +1,7 @@
 name: Publish approved GitHub Pages release
 
 env:
+  VITE_MUSIC_FEED_URL: ${{ vars.MUSIC_FEED_URL }}
   VITE_INSTAGRAM_FEED_URL: ${{ vars.INSTAGRAM_FEED_URL }}
 
 on:

@@ -12,7 +12,7 @@ const Darkroom=lazy(()=>import('./Darkroom'));
 export default function App(){
   const [route,setRoute]=useState(()=>routeFromPath(location.pathname));
   const [prefs,setPrefs]=useState(readPreferences);
-  const {playing,error:audioError,toggle:toggleAudio}=useRoomSound(prefs.muted,prefs.volume,muted=>setPrefs(p=>({...p,muted})));
+  const {playing,error:audioError,toggle:toggleAudio,effect}=useRoomSound(prefs.muted,prefs.volume,muted=>setPrefs(p=>({...p,muted})));
   const [scannerOpen,setScannerOpen]=useState(false);
   useEffect(()=>{
     setScannerOpen(false);
@@ -54,7 +54,7 @@ export default function App(){
     <main id="main" tabIndex={-1}><>
       <h1 className="sr-only">Explore the library</h1>
       {route==='library'&&prefs.lighting==='darkroom'&&scannerOpen&&<ContentBoundary onHome={()=>lighting('lamplight')}><Suspense fallback={<p role="status">Opening the darkroom…</p>}><Darkroom onClose={()=>{lighting('lamplight');window.scrollTo(0,0);}}/></Suspense></ContentBoundary>}
-      <Scene openIndex={()=>{}} navigate={navigate} toggleLamp={()=>lighting(prefs.lighting==='darkroom'?'lamplight':'darkroom')} toggleAudio={()=>void toggleAudio()} playing={playing} soundEnabled={!prefs.muted} motion={prefs.motion} lighting={prefs.lighting}/>
+      <Scene soundEffect={effect} openIndex={()=>{}} navigate={navigate} toggleLamp={()=>lighting(prefs.lighting==='darkroom'?'lamplight':'darkroom')} toggleAudio={()=>void toggleAudio()} playing={playing} soundEnabled={!prefs.muted} motion={prefs.motion} lighting={prefs.lighting}/>
     </>{route==='library'?null:known?<ContentBoundary key={route} onHome={()=>navigate('library')}><Suspense fallback={<div className="section-loading" role="status">Opening the collection…</div>}><SectionFocus onReady={restorePosition}/><Sections key={route} section={route as SectionId} navigate={navigate}/></Suspense></ContentBoundary>:<MissingCollection onHome={()=>navigate('library')}/>}</main>
     {audioError&&<p className="audio-error" role="status">{audioError}</p>}
   </div>;
