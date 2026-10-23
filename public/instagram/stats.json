@@ -1,9 +1,9 @@
 {
   "version": 2,
   "account": "mcgowen_media",
-  "checkedAt": "2026-10-23T07:38:42.000Z",
-  "followers": 4677,
-  "posts": 463,
+  "checkedAt": "2026-10-23T13:32:34.000Z",
+  "followers": 4679,
+  "posts": 464,
   "followerGains": [
     {
       "date": "2026-09-17",
@@ -250,6 +250,10 @@
     {
       "date": "2026-10-23T07:38:42.000Z",
       "count": 4677
+    },
+    {
+      "date": "2026-10-23T13:32:34.000Z",
+      "count": 4679
     }
   ],
   "trackedPosts": [
@@ -3900,6 +3904,12 @@
       "timestamp": "2026-10-22T12:00:02.000Z",
       "caption": "“Don’t wanna be your girl, just your muse.” \n\nA little bit of Ella Boh, a whole lot of emotion.\n\n@ellaboh live in Dallas, edited in black & white.\n\nTag your friend who would enjoy this!\n\n#EllaBoh #ALittleBit #ConcertPhotography #BlackAndWhitePhotography #DallasMusicScene",
       "permalink": "https://www.instagram.com/p/Dey7wb0gcBa/"
+    },
+    {
+      "id": "18140485618621399",
+      "timestamp": "2026-10-23T12:10:40.000Z",
+      "caption": "“Babydoll, maybe I’ll let you have me” \n\nRevisiting my first @ellaboh post, this time in black & white.\n\nHuge thank you to Ella and her entire team for making this possible!\n\n#EllaBoh #Babydoll #ConcertPhotography #BlackAndWhitePhotography #DallasMusicScene",
+      "permalink": "https://www.instagram.com/p/De1rbFtjUFg/"
     }
   ]
 }
