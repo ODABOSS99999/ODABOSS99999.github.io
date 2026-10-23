@@ -1,0 +1,38 @@
+name: Deploy free live Instagram endpoint
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: instagram-worker
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: vars.SITE_PUBLIC_RELEASE_APPROVED == 'true' && vars.INSTAGRAM_WORKER_DEPLOY_ENABLED == 'true' && !github.event.repository.private
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci --ignore-scripts
+        working-directory: workers/instagram
+      - run: npm ci
+      - run: npm test
+        working-directory: workers/instagram
+      - name: Deploy Worker and its server-side secret
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: workers/instagram
+          command: deploy
+          secrets: |
+            WINDSOR_API_KEY
+        env:
+          WINDSOR_API_KEY: ${{ secrets.WINDSOR_API_KEY }}
