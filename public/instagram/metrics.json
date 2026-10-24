@@ -3,7 +3,7 @@
   "account": "mcgowen_media",
   "source": "Windsor.ai / Instagram",
   "scope": "instagram-organic-media",
-  "fetchedAt": "2026-10-23T22:17:19.043Z",
+  "fetchedAt": "2026-10-24T00:46:46.107Z",
   "posts": [
     {
       "id": "17948663019273239",
@@ -4362,8 +4362,8 @@
       "permalink": "https://www.instagram.com/p/Dcb9CGNkm8O/",
       "likes": 60,
       "comments": 2,
-      "views": 2614,
-      "checkedAt": "2026-10-17T15:00:04.000Z"
+      "views": 2618,
+      "checkedAt": "2026-10-24T00:46:46.000Z"
     },
     {
       "id": "18437996077124755",
@@ -4371,7 +4371,7 @@
       "likes": 93,
       "comments": 0,
       "views": 2603,
-      "checkedAt": "2026-10-17T15:00:04.000Z"
+      "checkedAt": "2026-10-24T00:46:46.000Z"
     },
     {
       "id": "18169573204454280",
@@ -4840,10 +4840,10 @@
     {
       "id": "18129783205831674",
       "permalink": "https://www.instagram.com/p/DerZX-Cj9Wg/",
-      "likes": 150,
+      "likes": 151,
       "comments": 13,
-      "views": 3594,
-      "checkedAt": "2026-10-23T07:38:37.000Z"
+      "views": 3654,
+      "checkedAt": "2026-10-24T00:46:46.000Z"
     },
     {
       "id": "18069838922773740",
@@ -4858,24 +4858,24 @@
       "permalink": "https://www.instagram.com/p/Dewi5qmj3Xf/",
       "likes": 33,
       "comments": 0,
-      "views": 1254,
-      "checkedAt": "2026-10-23T18:26:38.000Z"
+      "views": 1265,
+      "checkedAt": "2026-10-24T00:46:46.000Z"
     },
     {
       "id": "18071722394788964",
       "permalink": "https://www.instagram.com/p/Dey7wb0gcBa/",
-      "likes": 2648,
+      "likes": 2945,
       "comments": 37,
-      "views": 18647,
-      "checkedAt": "2026-10-23T18:26:38.000Z"
+      "views": 20391,
+      "checkedAt": "2026-10-24T00:46:46.000Z"
     },
     {
       "id": "18140485618621399",
       "permalink": "https://www.instagram.com/p/De1rbFtjUFg/",
-      "likes": 137,
+      "likes": 293,
       "comments": 6,
-      "views": 1432,
-      "checkedAt": "2026-10-23T18:26:38.000Z"
+      "views": 2711,
+      "checkedAt": "2026-10-24T00:46:46.000Z"
     }
   ]
 }
