@@ -1,8 +1,20 @@
 {
   "version": 1,
   "account": "mcgowen_media",
-  "fetchedAt": "2026-10-25T11:40:49.380Z",
+  "fetchedAt": "2026-10-25T16:30:22.219Z",
   "posts": [
+    {
+      "id": "18167362216421122",
+      "caption": "soon. \n\n#glaive #dallas",
+      "permalink": "https://www.instagram.com/p/De7A-bft_1T/",
+      "timestamp": "2026-10-25T15:20:52.000Z",
+      "mediaType": "IMAGE",
+      "image": {
+        "src": "/instagram/media/18167362216421122.webp",
+        "width": 1206,
+        "height": 1600
+      }
+    },
     {
       "id": "18140485618621399",
       "caption": "“Babydoll, maybe I’ll let you have me” \n\nRevisiting my first @ellaboh post, this time in black & white.\n\nHuge thank you to Ella and her entire team for making this possible!\n\n#EllaBoh #Babydoll #ConcertPhotography #BlackAndWhitePhotography #DallasMusicScene",

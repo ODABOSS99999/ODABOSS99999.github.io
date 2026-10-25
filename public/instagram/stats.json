@@ -1,9 +1,9 @@
 {
   "version": 2,
   "account": "mcgowen_media",
-  "checkedAt": "2026-10-25T11:41:32.000Z",
-  "followers": 4708,
-  "posts": 465,
+  "checkedAt": "2026-10-25T16:30:51.000Z",
+  "followers": 4706,
+  "posts": 466,
   "followerGains": [
     {
       "date": "2026-09-17",
@@ -294,6 +294,10 @@
     {
       "date": "2026-10-25T11:41:32.000Z",
       "count": 4708
+    },
+    {
+      "date": "2026-10-25T16:30:51.000Z",
+      "count": 4706
     }
   ],
   "trackedPosts": [
@@ -3950,6 +3954,12 @@
       "timestamp": "2026-10-23T12:10:40.000Z",
       "caption": "“Babydoll, maybe I’ll let you have me” \n\nRevisiting my first @ellaboh post, this time in black & white.\n\nHuge thank you to Ella and her entire team for making this possible!\n\n#EllaBoh #Babydoll #ConcertPhotography #BlackAndWhitePhotography #DallasMusicScene",
       "permalink": "https://www.instagram.com/p/De1rbFtjUFg/"
+    },
+    {
+      "id": "18167362216421122",
+      "timestamp": "2026-10-25T15:20:52.000Z",
+      "caption": "soon. \n\n#glaive #dallas",
+      "permalink": "https://www.instagram.com/p/De7A-bft_1T/"
     }
   ]
 }
