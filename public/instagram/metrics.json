@@ -3,7 +3,7 @@
   "account": "mcgowen_media",
   "source": "Windsor.ai / Instagram",
   "scope": "instagram-organic-media",
-  "fetchedAt": "2026-10-26T01:16:32.424Z",
+  "fetchedAt": "2026-10-26T06:21:36.418Z",
   "posts": [
     {
       "id": "17948663019273239",
@@ -4872,18 +4872,18 @@
     {
       "id": "18140485618621399",
       "permalink": "https://www.instagram.com/p/De1rbFtjUFg/",
-      "likes": 1358,
+      "likes": 1634,
       "comments": 6,
-      "views": 10460,
-      "checkedAt": "2026-10-25T22:37:41.000Z"
+      "views": 11970,
+      "checkedAt": "2026-10-26T06:21:36.000Z"
     },
     {
       "id": "18167362216421122",
       "permalink": "https://www.instagram.com/p/De7A-bft_1T/",
-      "likes": 26,
+      "likes": 29,
       "comments": 0,
-      "views": 870,
-      "checkedAt": "2026-10-25T22:37:41.000Z"
+      "views": 1052,
+      "checkedAt": "2026-10-26T06:21:36.000Z"
     }
   ]
 }
