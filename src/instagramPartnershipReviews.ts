@@ -2,6 +2,10 @@
 // Reasons describe evidence, not paid sponsorship or formal Instagram co-authorship.
 export type PartnershipReview={kind:'partnership'|'personal'|'unreviewed';reason:string};
 const groups:[PartnershipReview['kind'],string,string[]][]=[
+ ['partnership','Brand creative project or product campaign explicitly described in the owner caption (reviewed 2026-10-26)',['18080101235545181','17969970030071338','18357006946246629','18058473749520532']],
+ ['partnership','Gifted product creative content: owner caption identifies the supplied product and sending brand (reviewed 2026-10-26)',['18076301384694654','18119334575486795','17986985147858491','18121442216476205']],
+ ['partnership','Mercury editorial photography or interview collaboration explicitly described in the owner caption (reviewed 2026-10-26)',['18123260671830712','17940239082091999']],
+ ['partnership','Glaive concert coverage: artist named in caption and performer shown on stage in the reviewed cover (2026-10-26)',['18167362216421122']],
  ['partnership','Artist / concert coverage, supported by caption and stage photograph',['18284501827289818','18111604349466809','18117687656072162','18639790621020652','18579922954075231','18128184998508590','18024203922094277','18076426544405835','17947498050315720','18203166592372084','18090877790378171','18187454746414867','18144415966568719','17879838834535093','18103445810262996']],
  ['partnership','Commercial product photography, identified in caption and cover',['17994026724028663','17883850254502684']],
  ['partnership','Editorial photojournalism concerning UT Dallas surveillance, explained in caption',['18339773350248090']],
