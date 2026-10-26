@@ -1,9 +1,9 @@
 {
   "version": 2,
   "account": "mcgowen_media",
-  "checkedAt": "2026-10-26T06:21:39.000Z",
+  "checkedAt": "2026-10-26T13:19:33.000Z",
   "followers": 4714,
-  "posts": 466,
+  "posts": 467,
   "followerGains": [
     {
       "date": "2026-09-17",
@@ -309,6 +309,10 @@
     },
     {
       "date": "2026-10-26T06:21:39.000Z",
+      "count": 4714
+    },
+    {
+      "date": "2026-10-26T13:19:33.000Z",
       "count": 4714
     }
   ],
@@ -3972,6 +3976,12 @@
       "timestamp": "2026-10-25T15:20:52.000Z",
       "caption": "soon. \n\n#glaive #dallas",
       "permalink": "https://www.instagram.com/p/De7A-bft_1T/"
+    },
+    {
+      "id": "18109472219184318",
+      "timestamp": "2026-10-26T13:13:08.000Z",
+      "caption": "“A zoologist who observed gorillas in their native habitat was amazed by the uniformity of their life and their vast idleness. Hours and hours without doing anything. Was boredom unknown to them? This is indeed a question raised by a human, a busy ape. Far from fleeing monotony, animals crave it, and what they most dread is to see it end. For it ends, only to be replaced by fear, the cause of all activity. Inaction is divine; yet it is against inaction that man has rebelled. Man alone, in nature, is incapable of enduring monotony, man alone wants something to happen at all costs — something, anything.... Thereby he shows himself unworthy of his ancestor: the need for novelty is the characteristic of an alienated gorilla.”\n― E. M. Cioran, The Trouble With Being Born",
+      "permalink": "https://www.instagram.com/p/De8RzQ1NPjc/"
     }
   ]
 }
