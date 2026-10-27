@@ -2,6 +2,8 @@
 // Reasons describe evidence, not paid sponsorship or formal Instagram co-authorship.
 export type PartnershipReview={kind:'partnership'|'personal'|'unreviewed';reason:string};
 const groups:[PartnershipReview['kind'],string,string[]][]=[
+ ['partnership','Ella Boh concert photography explicitly identified in the owner caption (reviewed 2026-10-27)',['18071722394788964','18140485618621399']],
+ ['personal','Squirrel post; caption mentions upcoming Glaive edits rather than identifying this as concert coverage (reviewed 2026-10-27)',['18027964538698670']],
  ['partnership','Brand creative project or product campaign explicitly described in the owner caption (reviewed 2026-10-26)',['18080101235545181','17969970030071338','18357006946246629','18058473749520532']],
  ['partnership','Gifted product creative content: owner caption identifies the supplied product and sending brand (reviewed 2026-10-26)',['18076301384694654','18119334575486795','17986985147858491','18121442216476205']],
  ['partnership','Mercury editorial photography or interview collaboration explicitly described in the owner caption (reviewed 2026-10-26)',['18123260671830712','17940239082091999']],
