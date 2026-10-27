@@ -8,6 +8,7 @@ Read only the row relevant to the task; confirm paths when changing architecture
 | Room composition/interactions | `src/paperRoom.ts`, `src/roomObjects3D.ts` |
 | Routing, preferences, navigation/focus | `src/App2D.tsx` |
 | Content/order and sections | `src/content.ts`, `src/Sections.tsx` |
+| Contact card / paper-airplane delivery | `src/ContactCard.tsx`, `src/businessCard.css` |
 | Appearance | `src/illustrated.css`, `src/contactAbout.css`; feature styles beside components |
 | Instagram | `src/instagramLiveFeed.ts`, `src/InstagramStats.tsx`, `workers/instagram/src/` |
 | Audio/music | `src/audio.ts`, `src/useRoomSound.ts`, `src/MusicShelf.tsx`, `src/musicData.ts`, `workers/music/src/` |
