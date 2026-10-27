@@ -3,7 +3,7 @@
   "account": "mcgowen_media",
   "source": "Windsor.ai / Instagram",
   "scope": "instagram-organic-media",
-  "fetchedAt": "2026-10-27T07:58:34.888Z",
+  "fetchedAt": "2026-10-27T14:36:44.678Z",
   "posts": [
     {
       "id": "17948663019273239",
@@ -4842,32 +4842,32 @@
       "permalink": "https://www.instagram.com/p/DerZX-Cj9Wg/",
       "likes": 155,
       "comments": 13,
-      "views": 3832,
-      "checkedAt": "2026-10-26T13:19:02.000Z"
+      "views": 3858,
+      "checkedAt": "2026-10-27T14:36:45.000Z"
     },
     {
       "id": "18069838922773740",
       "permalink": "https://www.instagram.com/p/Det9iJjj2Ov/",
-      "likes": 47,
+      "likes": 50,
       "comments": 2,
-      "views": 1399,
-      "checkedAt": "2026-10-26T13:19:02.000Z"
+      "views": 1412,
+      "checkedAt": "2026-10-27T14:36:45.000Z"
     },
     {
       "id": "18106245194629500",
       "permalink": "https://www.instagram.com/p/Dewi5qmj3Xf/",
       "likes": 36,
       "comments": 0,
-      "views": 1433,
-      "checkedAt": "2026-10-27T02:08:36.000Z"
+      "views": 1450,
+      "checkedAt": "2026-10-27T14:36:45.000Z"
     },
     {
       "id": "18071722394788964",
       "permalink": "https://www.instagram.com/p/Dey7wb0gcBa/",
-      "likes": 3996,
+      "likes": 4037,
       "comments": 41,
-      "views": 27377,
-      "checkedAt": "2026-10-27T02:08:36.000Z"
+      "views": 27692,
+      "checkedAt": "2026-10-27T14:36:45.000Z"
     },
     {
       "id": "18140485618621399",
@@ -4880,18 +4880,26 @@
     {
       "id": "18167362216421122",
       "permalink": "https://www.instagram.com/p/De7A-bft_1T/",
-      "likes": 31,
+      "likes": 33,
       "comments": 0,
-      "views": 1138,
-      "checkedAt": "2026-10-27T02:08:36.000Z"
+      "views": 1182,
+      "checkedAt": "2026-10-27T14:36:45.000Z"
     },
     {
       "id": "18109472219184318",
       "permalink": "https://www.instagram.com/p/De8RzQ1NPjc/",
-      "likes": 25,
+      "likes": 27,
       "comments": 2,
-      "views": 912,
-      "checkedAt": "2026-10-27T02:08:36.000Z"
+      "views": 1023,
+      "checkedAt": "2026-10-27T14:36:45.000Z"
+    },
+    {
+      "id": "18027964538698670",
+      "permalink": "https://www.instagram.com/p/De_4PKlm7Ia/",
+      "likes": 10,
+      "comments": 0,
+      "views": 306,
+      "checkedAt": "2026-10-27T14:36:45.000Z"
     }
   ]
 }
