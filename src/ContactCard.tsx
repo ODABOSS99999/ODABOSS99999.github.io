@@ -13,7 +13,7 @@ export default function ContactCard({ navigate }: { navigate: (id: SectionId|'li
     catch { setStatus('Select the email address to copy it, or tap it to open your mail app.'); }
   }
   return <div className="calling-card">
-    <div className="calling-card-top"><a href="/photography" onClick={e=>{e.preventDefault();navigate('photography');}} className="calling-brand">{owner.brand}</a><span>Photography &amp; engineering</span></div>
+    <div className="calling-card-top"><a href="/photography" onClick={e=>{e.preventDefault();navigate('photography');}} className="calling-brand">{owner.brand}</a></div>
     <div className="calling-card-body">
       <div className="calling-identity">
         <a className="calling-portrait" href="/about" onClick={e=>{e.preventDefault();navigate('about');}} aria-label="About Owen McGowan"><img src="/instagram/profile.jpg" width="96" height="96" alt="Owen McGowan"/></a>
