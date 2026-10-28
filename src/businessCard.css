@@ -22,10 +22,12 @@
 .calling-details a>span{font-size:9px;text-transform:uppercase;letter-spacing:.14em;color:#687060}
 .calling-details strong{font-weight:500;font-size:13px;line-height:1.65}
 .calling-details i{font-style:normal;padding-left:8px;font-size:12px}
-.calling-actions{display:flex;gap:20px;align-items:center;border-top:1px solid #253e352b;padding-top:10px}
-.calling-actions a,.calling-actions button{display:inline-flex;align-items:center;justify-content:space-between;gap:18px;min-height:44px;font:500 12px 'DM Sans',sans-serif}
-.calling-actions button{border:0;background:none;color:#5e685c;padding:0;cursor:pointer}
-.calling-actions button:hover{color:#875132}
+.calling-save{display:inline-flex;align-items:center;gap:18px;min-height:44px;margin-top:12px;font:500 12px 'DM Sans',sans-serif}
+.calling-email{display:flex;align-items:center;flex-wrap:wrap;gap:0 12px;min-width:0}
+.calling-email>a{flex:1;min-width:min(100%,15em)}
+.calling-copy{border:0;background:none;color:#5e685c;padding:0;min-height:44px;font:500 11px 'DM Sans',sans-serif;cursor:pointer;white-space:nowrap}
+.calling-copy:hover{color:#875132}
+.calling-email .calling-status{flex-basis:100%}
 .calling-card .calling-status{margin:6px 0 0;font-size:12px}
 .calling-delivery{position:relative;height:66px;overflow:hidden;margin:0 -36px;padding:0 36px;display:flex;align-items:center;gap:9px}
 .calling-butler{flex:none;width:52px;height:62px;padding:0;border:0;background:none;cursor:pointer;z-index:1;transform-origin:50% 100%;animation:butler-bow 1.2s .15s both}
@@ -47,7 +49,8 @@
  .calling-name{font-size:37px}.calling-name br{display:none}
  .calling-card .calling-slogan{font-size:16px;margin:8px 0 0}.calling-slogan br{display:none}
  .calling-details{border-left:0;border-top:1px solid #253e3522;padding:14px 0 0;display:grid;grid-template-columns:1fr 1fr;gap:5px 18px}
- .calling-details a:first-child,.calling-details a:nth-child(2){grid-column:1/-1}
+ .calling-email,.calling-details>a:nth-child(2){grid-column:1/-1}
+ .calling-save{grid-column:2;margin-top:4px;justify-self:start}
  .calling-details strong{font-size:12px}
  .calling-delivery{margin:0 -24px;padding:0 24px}
 }

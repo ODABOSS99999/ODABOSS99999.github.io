@@ -19,15 +19,14 @@ export default function ContactCard({ navigate }: { navigate: (id: SectionId|'li
         <a className="calling-portrait" href="/about" onClick={e=>{e.preventDefault();navigate('about');}} aria-label="About Owen McGowan"><img src="/instagram/profile.jpg" width="96" height="96" alt="Owen McGowan"/></a>
         <a className="calling-name" href="/about" onClick={e=>{e.preventDefault();navigate('about');}}>Owen<br/> McGowan</a>
         <p className="calling-slogan">creating everyday</p>
+        <a className="calling-save" download="Owen-McGowan.vcf" href={`data:text/vcard;charset=utf-8,${encodeURIComponent(vcard)}`}>Save contact <span aria-hidden="true">↓</span></a>
       </div>
       <address className="calling-details">
-        <a href={`mailto:${owner.email}`}><span>Email</span><strong>{owner.email}</strong></a>
+        <div className="calling-email"><a href={`mailto:${owner.email}`}><span>Email</span><strong>{owner.email}</strong></a><button className="calling-copy" onClick={copyEmail}>Copy email</button>{status&&<p className="calling-status" role="status">{status}</p>}</div>
         <a href={`tel:${owner.phone}`}><span>Phone</span><strong>{owner.phoneDisplay}</strong></a>
         {owner.social.map(s=><a key={s.url} href={s.url} target="_blank" rel="noreferrer"><span>{s.label}</span><strong>{s.handle}<i aria-hidden="true">↗</i></strong></a>)}
       </address>
     </div>
-    <div className="calling-actions"><a download="Owen-McGowan.vcf" href={`data:text/vcard;charset=utf-8,${encodeURIComponent(vcard)}`}>Save contact <span aria-hidden="true">↓</span></a><button onClick={copyEmail}>Copy email</button></div>
-    {status&&<p className="calling-status" role="status">{status}</p>}
     <div className="calling-delivery">
       <button className="calling-butler" onClick={()=>setDelivery(n=>n+1)} aria-label="Replay the butler’s paper airplane delivery">
         <svg viewBox="0 0 60 66" aria-hidden="true"><path d="M10 65V49Q11 37 30 37T50 49V65" fill="#253e35"/><path d="m20 38 10 24 10-24" fill="#faf6e9"/><ellipse cx="30" cy="23" rx="13" ry="16" fill="#d6aa85"/><path d="M17 22Q10 5 29 5Q48 4 43 22L38 14Q22 18 19 13Z" fill="#dad6cb"/><path d="M26 29q4 3 8 0" fill="none" stroke="#253e35" strokeWidth="1.5"/><circle cx="25" cy="22" r="1.5"/><circle cx="35" cy="22" r="1.5"/><path d="m23 40 7 4-7 4zm14 0-7 4 7 4z" fill="#915a41"/><path className="butler-arm" d="m43 51 11-7" stroke="#253e35" strokeWidth="8" strokeLinecap="round"/><circle cx="54" cy="44" r="4" fill="#faf6e9"/></svg>
