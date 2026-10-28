@@ -1,3 +1,6 @@
+import {followerRatingsPreferenceEvent} from './instagramLedger';
+import { musicAlbums, subscribeMusicAlbums, fetchMusicFeed, publishMusicAlbums } from './musicData';
+import type { RoomSound } from './audio';
 import {loadStats} from './InstagramStats';
 import {roomLedger} from './roomLedger';
 import type {Stats} from './InstagramStats';
@@ -8,14 +11,15 @@ import {OutlinePass} from 'three/addons/postprocessing/OutlinePass.js';
 import {OutputPass} from 'three/addons/postprocessing/OutputPass.js';
 import {createRoomObjects} from './roomObjects3D';
 import { addLuxuryDetails, createTurntable } from './luxuryRoom';
-import { ShelfLadder } from './ShelfLadder';
+import { createFireplace } from './Fireplace';
+import { ShelfLadder, shelfLadderBounds } from './ShelfLadder';
 import { loadInstagramSnapshot } from './instagramMedia';
 import { pickRoomItem } from './roomHitTargets';
 import { blendLight, createLightingTransition } from './roomLighting';
 import type { LightingWeights } from './roomLighting';
 type State={motion:boolean;playing:boolean;lighting:string};
 const svg=(body:string,w=320,h=240)=>`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}">${body}</svg>`;
-export function createPaperRoom(host:HTMLElement,state:()=>State,hover:(id:string|null)=>void,activate:(id:string)=>void,announce:(message:string)=>void=()=>{}){
+export function createPaperRoom(host:HTMLElement,state:()=>State,hover:(id:string|null)=>void,activate:(id:string)=>void,announce:(message:string)=>void=()=>{},sound:(effect:RoomSound)=>void=()=>{}){
  const renderer=new T.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2.5));renderer.outputColorSpace=T.SRGBColorSpace;renderer.setClearColor('#252d28');host.appendChild(renderer.domElement);
  const scene=new T.Scene(),camera=new T.PerspectiveCamera(57,1,.1,60);camera.position.set(0,1.65,6.8);
  const textures:T.Texture[]=[],materials:T.Material[]=[],geometries:T.BufferGeometry[]=[],paperTints:T.MeshBasicMaterial[]=[];
@@ -30,6 +34,7 @@ export function createPaperRoom(host:HTMLElement,state:()=>State,hover:(id:strin
  for(let x=-7;x<7;x+=.7)box(x,.001,0,.018,.008,27,edge);
  box(0,.012,4,7,.018,11,rug);for(const x of [-3.3,3.3])box(x,.025,4,.045,.012,10.6,paper);
  for(const z of [-1.3,9.3])box(0,.025,z,6.6,.012,.045,paper);
+ const fireplace=createFireplace(scene,{geometries,materials});items.set('fireplace',fireplace.body);base.set('fireplace',fireplace.body.position.clone());host.dataset.fireplace='lit';
  const luxury=addLuxuryDetails(scene,{geometries,materials});
  // A little Minecraft landscape, mounted flush to the right wall.
  const painting=new T.Group();painting.name='Minecraft painting';painting.position.set(6.84,3.65,-2.6);painting.rotation.y=-Math.PI/2;scene.add(painting);
@@ -51,6 +56,7 @@ export function createPaperRoom(host:HTMLElement,state:()=>State,hover:(id:strin
  box(0,0,.061,1.68,1.68,.025,paintingMaterial,painting);
  for(const x of [-.91,.91])box(x,0,.07,.10,1.92,.12,wood,painting);
  for(const y of [-.91,.91])box(0,y,.07,1.92,.10,.12,wood,painting);
+ painting.userData.id='skyblock';items.set('skyblock',painting);base.set('skyblock',painting.position.clone());
  // Shelf bays reserve their entire interior for the featured object.
  const shelfX=-2.6,shelfZ=-4.55,shelfW=7.2;
  box(shelfX,2.65,shelfZ-.2,shelfW,5.1,.2,edge);
@@ -68,7 +74,9 @@ export function createPaperRoom(host:HTMLElement,state:()=>State,hover:(id:strin
  const graphLayer=new T.Group();graphLayer.name='raised-ledger-graphs';graphLayer.position.z=.025;board.add(graphLayer);
  const graphInk=new T.MeshBasicMaterial({color:'#385347'}),exportInk=new T.MeshBasicMaterial({color:'#90724a'});
  materials.push(graphInk,exportInk);
+ let boardStats:Stats|undefined;
  const renderBoard=(stats?:Stats)=>{
+  boardStats=stats;
   const data=roomLedger(stats);
   for(const child of [...graphLayer.children]){const geometry=(child as T.Mesh).geometry;geometry.dispose();const index=geometries.indexOf(geometry);if(index>=0)geometries.splice(index,1);graphLayer.remove(child);}
   const strokes=(points:T.Vector3[],color:T.Material)=>{if(points.length<2)return;const path=new T.CurvePath<T.Vector3>();for(let i=1;i<points.length;i++)path.add(new T.LineCurve3(points[i-1],points[i]));const geometry=new T.TubeGeometry(path,Math.max(2,points.length*2),.009,5,false);geometries.push(geometry);graphLayer.add(new T.Mesh(geometry,color));};
@@ -87,11 +95,50 @@ export function createPaperRoom(host:HTMLElement,state:()=>State,hover:(id:strin
   if(old){old.dispose();const index=textures.indexOf(old);if(index>=0)textures.splice(index,1);}boardMaterial.needsUpdate=true;
  };
  renderBoard();
+ const refreshRatingPreference=()=>{if(!disposed)renderBoard(boardStats);};
+ window.addEventListener(followerRatingsPreferenceEvent,refreshRatingPreference);
  const updateBoard=async()=>{try{const stats=await loadStats();if(!disposed)renderBoard(stats);}catch{/* Keep the dated graphs visible when the live source is unavailable. */}};
  const refreshBoard=()=>{if(!document.hidden)void updateBoard();};window.addEventListener('focus',refreshBoard);document.addEventListener('visibilitychange',refreshBoard);queueMicrotask(refreshBoard);const statsTimer=setInterval(refreshBoard,60000);
- // Books live only in the bottom row, never behind the objects.
- const bookRow=new T.Group();bookRow.userData.id='shelf-books';scene.add(bookRow);items.set('shelf-books',bookRow);base.set('shelf-books',bookRow.position.clone());
- for(let bay=1;bay<3;bay++)for(let j=0;j<7;j++){const x=-5.93+bay*2.43+j*.28;const h=.7+(j%3)*.15;box(x,.43+h/2,-4.36,.21,h,.4,[ink,rug,paper][j%3],bookRow);box(x,.63,-4.145,.17,.025,.015,paper,bookRow);}
+ // Record sleeves occupy the lower bays; art is shown only from verified sources.
+ const records=new T.Group();records.userData.id='music';scene.add(records);items.set('music',records);base.set('music',records.position.clone());
+ const recordFaces:{face:T.Mesh;fallback:T.Group;material:T.MeshLambertMaterial;source?:string;version:number}[]=[];
+ for(let bay=0;bay<2;bay++){
+  const center=-2.6+bay*2.43;
+  for(let j=0;j<9;j++){const sleeve=box(center-.88+j*.085,.96,-4.25,.055,1.04,.68,[ink,rug,paper][j%3],records);sleeve.rotation.z=-.08;}
+  const front=box(center+.35,1,-4.04,1.03,1.03,.055,edge,records);
+  const faceMaterial=new T.MeshLambertMaterial({color:'#ffffff'});materials.push(faceMaterial);
+  const face=box(0,0,.037,.94,.94,.015,faceMaterial,front);face.visible=false;
+  const fallback=new T.Group();records.add(fallback);
+  box(center+.35,1,-4.002,.94,.94,.015,paper,fallback);
+  const vinylGeo=new T.CylinderGeometry(.34,.34,.018,48);geometries.push(vinylGeo);const vinyl=new T.Mesh(vinylGeo,ink);vinyl.rotation.x=Math.PI/2;vinyl.position.set(center+.35,1,-3.98);fallback.add(vinyl);
+  const labelGeo=new T.CylinderGeometry(.105,.105,.02,32);geometries.push(labelGeo);const label=new T.Mesh(labelGeo,rug);label.rotation.x=Math.PI/2;label.position.set(center+.35,1,-3.96);fallback.add(label);
+  recordFaces.push({face,fallback,material:faceMaterial,version:0});
+ }
+ const releaseRecordTexture=(map:T.Texture|null)=>{if(map){map.dispose();const index=textures.indexOf(map);if(index>=0)textures.splice(index,1);}};
+ const updateRecords=()=>recordFaces.forEach((slot,index)=>{
+  const source=musicAlbums[index]?.cover;if(slot.source===source)return;
+  slot.source=source;const version=++slot.version;slot.face.visible=false;slot.fallback.visible=true;
+  releaseRecordTexture(slot.material.map);slot.material.map=null;slot.material.needsUpdate=true;
+  if(!source)return;
+  new T.TextureLoader().load(source,art=>{
+   if(disposed||slot.version!==version){art.dispose();return;}
+   art.colorSpace=T.SRGBColorSpace;textures.push(art);slot.material.map=art;slot.material.needsUpdate=true;slot.face.visible=true;slot.fallback.visible=false;
+  },undefined,()=>{/* Keep the record sleeve visible if artwork fails. */});
+ });
+ const unsubscribeRecords=subscribeMusicAlbums(updateRecords);
+ let musicRequest:AbortController|undefined;
+ const refreshRecords=async()=>{
+  if(document.hidden||document.querySelector('.section-music'))return;
+  musicRequest?.abort();const operation=new AbortController();musicRequest=operation;
+  const timeout=setTimeout(()=>operation.abort(),12000);
+  try{const feed=await fetchMusicFeed(operation.signal);if(!disposed&&musicRequest===operation)publishMusicAlbums(feed.albums);}
+  catch{if(!disposed&&musicRequest===operation)publishMusicAlbums([]);}
+  finally{clearTimeout(timeout);}
+ };
+ queueMicrotask(()=>{if(!disposed){updateRecords();void refreshRecords();}});
+ const refreshRecordVisibility=()=>{if(!document.hidden)void refreshRecords();};
+ window.addEventListener('focus',refreshRecordVisibility);document.addEventListener('visibilitychange',refreshRecordVisibility);
+ const musicTimer=setInterval(()=>void refreshRecords(),60000);
  // The desk is a single grouping: butler behind it, phone and lamp on top.
  const deskY=1.16;box(3.8,deskY,-2.2,3.7,.16,1.5,wood);box(3.8,.85,-2.2,3.4,.5,1.3,edge);for(const x of [2.2,5.4])for(const z of [-2.8,-1.6])box(x,.55,z,.13,1.1,.13,wood);
  // A dedicated record player bay, bottom left.
@@ -120,7 +167,7 @@ export function createPaperRoom(host:HTMLElement,state:()=>State,hover:(id:strin
  function photoInFrame(id:string,src:string,x:number,_y:number,w:number,h:number,_angle:number){
   const canvas=document.createElement('canvas');canvas.width=1024;canvas.height=Math.round(1024*h/w);const context=canvas.getContext('2d')!;context.fillStyle='#30251f';context.fillRect(0,0,canvas.width,canvas.height);
   const tex=new T.CanvasTexture(canvas);tex.colorSpace=T.SRGBColorSpace;tex.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());textures.push(tex);
-  const m=new T.MeshBasicMaterial({map:tex,side:T.DoubleSide});materials.push(m);const geometry=new T.PlaneGeometry(w,h);geometries.push(geometry);const photo=new T.Mesh(geometry,m);photo.position.set(0,0,.097);const mounts=items.get(id)?.userData.photoMounts as T.Group[]|undefined;const mount=mounts?.[id==='favorites'&&x>0?1:0];(mount??items.get(id))?.add(photo);
+  const m=new T.MeshBasicMaterial({map:tex,side:T.DoubleSide});materials.push(m);const geometry=new T.PlaneGeometry(w,h);geometries.push(geometry);const photo=new T.Mesh(geometry,m);photo.position.set(0,0,.097);const mounts=items.get(id)?.userData.photoMounts as T.Group[]|undefined;const mount=mounts?.[id==='favorites'&&x>0?1:0];if(mount)photo.scale.setScalar(mount.userData.photoScale??1);(mount??items.get(id))?.add(photo);
   const image=new Image();image.onload=()=>{if(disposed)return;const scale=Math.max(canvas.width/image.width,canvas.height/image.height),iw=image.width*scale,ih=image.height*scale;context.drawImage(image,(canvas.width-iw)/2,(canvas.height-ih)/2,iw,ih);tex.userData.hitPixels=context.getImageData(0,0,canvas.width,canvas.height).data;tex.needsUpdate=true;};image.src=src;
  }
  loadInstagramSnapshot().then(snapshot=>{if(disposed)return;const source=(id:string)=>snapshot.posts.find(p=>p.id===id)?.image.src;const first=source('18151133245558753'),second=source('18117687656072162');if(first)photoInFrame('favorites',first,-.386,-.006,.601,.7,Math.PI/45);if(second)photoInFrame('favorites',second,.4,-.177,.538,.49,-Math.PI/45);}).catch(()=>{});
@@ -139,7 +186,7 @@ export function createPaperRoom(host:HTMLElement,state:()=>State,hover:(id:strin
  const blendColor=(out:T.Color,colors:readonly T.Color[],weights:LightingWeights)=>out.setRGB(blendLight(weights,colors[0].r,colors[1].r,colors[2].r),blendLight(weights,colors[0].g,colors[1].g,colors[2].g),blendLight(weights,colors[0].b,colors[1].b,colors[2].b));
  // The phone remains scenery and an animation prop; only the butler is interactive.
  const contactTargets=new Map([...items].filter(([id])=>id!=='contact'&&id!=='receiver'));
- const aliases=(id:string)=>id==='butler'?'contact':id==='device'?'engineering':id==='vinyl'?'record':id==='shelf-books'?'about':id;
+ const aliases=(id:string)=>id==='butler'?'contact':id==='device'?'engineering':id==='vinyl'?'record':id==='shelf-books'?'music':id;
  scene.updateMatrixWorld(true);
  let lastPointer:{clientX:number;clientY:number}|null=null;
  function pick(e:{clientX:number;clientY:number}){
@@ -149,17 +196,18 @@ export function createPaperRoom(host:HTMLElement,state:()=>State,hover:(id:strin
   camera.updateMatrixWorld();scene.updateMatrixWorld(true);ray.setFromCamera(pointer,camera);
   return pickRoomItem(ray,scene,contactTargets);
  }
- const setHover=(id:string|null)=>{if(id===over)return;over=id;hover(over?aliases(over):null);renderer.domElement.style.cursor=over?'pointer':'grab';};
- const shelfItems=new Set(['photography','about','favorites','published','engineering','stats','shelf-books']);
+ const setHover=(id:string|null)=>{if(id===over)return;over=id;if(id==='butler'&&state().motion&&!reduced.matches)sound('ring');hover(over?aliases(over):null);renderer.domElement.style.cursor=over?'pointer':'grab';};
+ const shelfItems=new Set(['photography','about','favorites','published','engineering','stats','music','shelf-books']);
  function action(raw:string,hitX?:number){
   const id=aliases(raw),motion=state().motion&&!reduced.matches;
-  if(raw==='ladder'){ladderRight=!ladderRight;shelfLadder.move(null,ladderRight?.72:-6.02,performance.now(),motion);return;}
+  if(id==='fireplace'){const lit=fireplace.toggle();host.dataset.fireplace=lit?'lit':'out';announce(lit?'Fire lit.':'Fire extinguished.');activate('fireplace');return;}
+  if(raw==='ladder'){if(motion)sound('whoosh');ladderRight=!ladderRight;host.removeAttribute('aria-busy');shelfLadder.move(null,ladderRight?shelfLadderBounds.max:shelfLadderBounds.min,performance.now(),motion);return;}
   if(shelfItems.has(raw)){
-   const x=raw==='shelf-books'?(hitX??-2.6):(base.get(raw)?.x??-2.6);let target=T.MathUtils.clamp(x-.85,-6.02,.72);
-   if(Math.abs(target-shelfLadder.x)<.2)target=T.MathUtils.clamp(x+.65,-6.02,.72);
-   host.setAttribute('aria-busy','true');announce('The ladder is moving to your selection.');shelfLadder.move(id,target,performance.now(),motion);return;
+   const x=(raw==='music'||raw==='shelf-books')?(hitX??-2.6):(base.get(raw)?.x??-2.6);let target=T.MathUtils.clamp(x-.85,shelfLadderBounds.min,shelfLadderBounds.max);
+   if(Math.abs(target-shelfLadder.x)<.2)target=T.MathUtils.clamp(x+.65,shelfLadderBounds.min,shelfLadderBounds.max);
+   if(motion)sound('whoosh');host.setAttribute('aria-busy','true');announce('The ladder is moving to your selection.');shelfLadder.move(id,target,performance.now(),motion);return;
   }
-  if(id==='contact'&&motion){if(!pickup)pickup=performance.now();return;}activate(id);
+  if(id==='contact'){if(pickup)return;sound('ring');sound('pickup');if(motion){pickup=performance.now();return;}}activate(id);
  }
  const press=(e:PointerEvent)=>{if(e.button!==0)return;down={x:e.clientX,y:e.clientY,yaw,pitch};moved=false;renderer.domElement.setPointerCapture(e.pointerId);};
  const move=(e:PointerEvent)=>{lastPointer=e.pointerType==='touch'?null:{clientX:e.clientX,clientY:e.clientY};if(down){const dx=e.clientX-down.x,dy=e.clientY-down.y;if(Math.abs(dx)+Math.abs(dy)>6){moved=true;setHover(null);renderer.domElement.style.cursor='grabbing';}yaw=T.MathUtils.clamp(down.yaw-dx*.0018,-.46,.46);pitch=T.MathUtils.clamp(down.pitch+dy*.0015,-.18,.3);}else{focus=null;setHover(pick(e)?.id||null);}};
@@ -169,9 +217,10 @@ export function createPaperRoom(host:HTMLElement,state:()=>State,hover:(id:strin
  const resize=()=>{const w=host.clientWidth,h=host.clientHeight;renderer.setPixelRatio(Math.min(devicePixelRatio,2.5));renderer.setSize(w,h);composer.setPixelRatio(renderer.getPixelRatio());composer.setSize(w,h);camera.aspect=w/h;const portrait=w/h<.85;camera.fov=portrait?62:57;camera.position.z=portrait?Math.max(7.8,9.5/(2*Math.tan(T.MathUtils.degToRad(31))*(w/h))-5):6.8;seated.position.z=camera.position.z;seated.position.y=.12;seated.scale.x=w/h<.85?.65:1;camera.updateProjectionMatrix();};const observer=new ResizeObserver(resize);observer.observe(host);resize();
  renderer.setAnimationLoop(time=>{if(disposed||document.hidden)return;const s=state(),motion=s.motion&&!reduced.matches,t=time/1000;camera.lookAt(camera.position.x+Math.sin(yaw)*10,camera.position.y+Math.sin(pitch+(host.clientWidth/host.clientHeight<.85?.10:0))*10,camera.position.z-Math.cos(yaw)*10);
   if(lastPointer&&!down){focus=null;setHover(pick(lastPointer)?.id||null);}
-  const active=over||focus;const selected=active?items.get(active):undefined;outline.selectedObjects=selected?[selected]:[];host.dataset.highlighted=active||'';
-  items.forEach((g,id)=>{g.position.copy(base.get(id)!);g.rotation.set(0,0,0);});
+  const active=over||focus;const selected=active?items.get(active):undefined;outline.selectedObjects=selected?(selected.userData.highlightObjects??[selected]):[];host.dataset.highlighted=active||'';
+  items.forEach((g,id)=>{g.position.copy(base.get(id)!);g.rotation.set(0,id==='skyblock'?-Math.PI/2:id==='fireplace'?Math.PI/2:0,0);});
   shelfLadder.update(performance.now(),motion);ladder.position.x=shelfLadder.x;host.dataset.ladderState=shelfLadder.moving?'moving':'idle';host.dataset.ladderX=shelfLadder.x.toFixed(3);
+  fireplace.update(time,motion);
   turntable.update(time,s.playing,motion);
   modeled.get('engineering')?.userData.updateScreen?.(time,motion);
   notes.visible=s.playing;notes.position.y=1.2+(motion?(t%2)*.15:0);
@@ -181,5 +230,5 @@ export function createPaperRoom(host:HTMLElement,state:()=>State,hover:(id:strin
   // Tint only the illustrated cards; actual photographs retain their source colors.
   blendColor(paperColor,paperColors,light);paperTints.forEach(material=>material.color.copy(paperColor));renderer.setClearColor(blendColor(backgroundColor,backgroundColors,light));luxury.update(light);lampLight.intensity=blendLight(light,.4,3,0);if(bulb)bulb.emissiveIntensity=blendLight(light,.4,1.5,0);if(selected)composer.render();else renderer.render(scene,camera);
  });
- return{activate:action,focus:(id:string|null)=>{focus=id==='contact'?'butler':id;lastPointer=null;over=null;hover(id);},look:(delta:number)=>{yaw=T.MathUtils.clamp(yaw+delta,-.46,.46);},reset:()=>{yaw=0;pitch=-.095;},dispose:()=>{disposed=true;clearInterval(statsTimer);window.removeEventListener('focus',refreshBoard);document.removeEventListener('visibilitychange',refreshBoard);renderer.setAnimationLoop(null);observer.disconnect();renderer.domElement.removeEventListener('pointerdown',press);renderer.domElement.removeEventListener('pointermove',move);renderer.domElement.removeEventListener('pointerup',release);renderer.domElement.removeEventListener('pointerleave',leave);renderer.domElement.removeEventListener('pointercancel',cancel);textures.forEach(t=>t.dispose());materials.forEach(m=>m.dispose());geometries.forEach(g=>g.dispose());outline.dispose();composer.dispose();renderer.dispose();renderer.domElement.remove();}};
+ return{activate:action,focus:(id:string|null)=>{if(id==='contact'&&state().motion&&!reduced.matches)sound('ring');focus=id==='contact'?'butler':id;lastPointer=null;over=null;hover(id);},look:(delta:number)=>{yaw=T.MathUtils.clamp(yaw+delta,-.46,.46);},reset:()=>{yaw=0;pitch=-.095;},dispose:()=>{disposed=true;unsubscribeRecords();musicRequest?.abort();clearInterval(musicTimer);window.removeEventListener('focus',refreshRecordVisibility);document.removeEventListener('visibilitychange',refreshRecordVisibility);clearInterval(statsTimer);window.removeEventListener(followerRatingsPreferenceEvent,refreshRatingPreference);window.removeEventListener('focus',refreshBoard);document.removeEventListener('visibilitychange',refreshBoard);renderer.setAnimationLoop(null);observer.disconnect();renderer.domElement.removeEventListener('pointerdown',press);renderer.domElement.removeEventListener('pointermove',move);renderer.domElement.removeEventListener('pointerup',release);renderer.domElement.removeEventListener('pointerleave',leave);renderer.domElement.removeEventListener('pointercancel',cancel);textures.forEach(t=>t.dispose());materials.forEach(m=>m.dispose());geometries.forEach(g=>g.dispose());outline.dispose();composer.dispose();renderer.dispose();renderer.domElement.remove();}};
 }

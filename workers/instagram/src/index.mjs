@@ -3,7 +3,8 @@ import { Buffer } from 'node:buffer';
 
 const ACCOUNT = 'mcgowen_media';
 const ACCOUNT_ID = '17841467441753084';
-const ORIGINS = new Set(['https://mcgowen.works', 'https://www.mcgowen.works', 'https://odaboss99999.github.io']);
+// Keep the local preview range aligned with the statistics endpoint.
+const ORIGINS = new Set(['https://mcgowen.works', 'https://www.mcgowen.works', 'https://odaboss99999.github.io', ...Array.from({length:27},(_,i)=>5173+i).flatMap(port=>[`http://127.0.0.1:${port}`,`http://localhost:${port}`])]);
 const FIELDS = 'media_id,media_caption,media_permalink,media_type,media_url,media_thumbnail_url,timestamp';
 
 function safeUrl(value, permalink = false) {
@@ -58,7 +59,7 @@ async function boundedFetch(url, fetchImpl, maxBytes, image = false) {
 
 // The rate cap is local to one isolate. Every accepted opening queries Windsor;
 // Windsor/Instagram may impose their own refresh latency. No completed cache.
-export function createLatestWorker({ fetchImpl = fetch, now = () => new Date() } = {}) {
+export function createLatestWorker({ fetchImpl = fetch, now = () => new Date(), loadPosts } = {}) {
   let windowStart;
   let requests = 0;
   return { async fetch(request, env = {}) {
@@ -75,10 +76,10 @@ export function createLatestWorker({ fetchImpl = fetch, now = () => new Date() }
       if (!Number.isFinite(time)) throw new Error();
       if (windowStart === undefined || time - windowStart >= 60000 || time < windowStart) { windowStart = time; requests = 0; }
       if (++requests > 30) { headers['Retry-After'] = String(Math.max(1, Math.ceil((windowStart + 60000 - time) / 1000))); return send(429, { error: 'Please try again shortly' }); }
-      if (!env.WINDSOR_API_KEY) throw new Error();
+      if (!env.WINDSOR_API_KEY && !loadPosts) throw new Error();
       const url = new URL('https://connectors.windsor.ai/instagram');
       url.search = new URLSearchParams({ api_key: env.WINDSOR_API_KEY, fields: FIELDS, date_preset: 'last_30dT', select_accounts: ACCOUNT_ID }).toString();
-      const payload = JSON.parse((await boundedFetch(url, fetchImpl, 5 * 1024 * 1024)).bytes.toString('utf8'));
+      const payload = loadPosts ? await loadPosts() : JSON.parse((await boundedFetch(url, fetchImpl, 5 * 1024 * 1024)).bytes.toString('utf8'));
       const [newest] = normalize(payload, date);
       const { bytes, mime } = await boundedFetch(newest.previewUrl, fetchImpl, 2 * 1024 * 1024, true);
       const size = imageSize(bytes);

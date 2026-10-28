@@ -9,6 +9,13 @@ const fresh = { ...old, media_id: '12346', timestamp: '2026-10-16T12:00:00Z' };
 const jpeg = await sharp({ create: { width: 1080, height: 720, channels: 3, background: '#123456' } }).jpeg().toBuffer();
 const env = { WINDSOR_API_KEY: 'PRIVATE_SECRET' };
 const req = (options = {}) => new Request(options.url ?? 'https://example.workers.dev/api/instagram/feed', { method: options.method ?? 'GET', headers: { Origin: options.origin ?? 'https://mcgowen.works' } });
+
+test('preview ports retain CORS headers while lookalike and nonlocal origins are denied',async()=>{
+ for(const origin of ['http://127.0.0.1:5175','http://localhost:5199']){
+  const response=await createLatestWorker().fetch(req({origin,method:'HEAD'}));assert.equal(response.status,405);assert.equal(response.headers.get('access-control-allow-origin'),origin);
+ }
+ for(const origin of ['http://localhost:5200','http://localhost.evil.example:5175','http://192.168.1.1:5175'])assert.equal((await createLatestWorker().fetch(req({origin}))).status,403);
+});
 function fixture(payloads) {
   const urls = [];
   const options = [];
@@ -31,6 +38,16 @@ test('every opening fetches upstream again and uses actual image dimensions', as
   const image = body.posts[0].image;
   const actual = await sharp(Buffer.from(image.src.split(',')[1], 'base64')).metadata();
   assert.equal(image.width, actual.width); assert.equal(image.height, actual.height); assert.equal(image.width, 1080);
+});
+
+test('direct Instagram loader checks again on every opening without a Windsor credential', async () => {
+  const f = fixture([]);
+  let calls = 0;
+  const worker = createLatestWorker({ fetchImpl: f.fetchImpl, now: () => date, loadPosts: async () => ({ account: 'mcgowen_media', data: ++calls === 1 ? [old] : [old, fresh] }) });
+  assert.equal((await (await worker.fetch(req())).json()).posts[0].id, old.media_id);
+  assert.equal((await (await worker.fetch(req())).json()).posts[0].id, fresh.media_id);
+  assert.equal(calls, 2);
+  assert.equal(f.urls.some(url => url.includes('connectors.windsor.ai')), false);
 });
 
 test('newest video fetches its cover, including when older photo is first', async () => {

@@ -1,3 +1,4 @@
+import { shelfLadderBounds } from './ShelfLadder';
 import * as T from 'three';
 
 type Resources={geometries:T.BufferGeometry[];materials:T.Material[];textures:T.Texture[]};
@@ -17,12 +18,26 @@ export function createRoomObjects(scene:T.Scene,resources:Resources){
  function group(id:string,x:number,y:number,z:number){const g=new T.Group();g.userData.id=id;g.position.set(x,y,z);scene.add(g);items.set(id,g);return g;}
  function rounded(g:T.Object3D,x:number,y:number,z:number,w:number,h:number,d:number,m:T.Material,r=.055){const s=new T.Shape();s.moveTo(-w/2+r,-h/2);s.lineTo(w/2-r,-h/2);s.quadraticCurveTo(w/2,-h/2,w/2,-h/2+r);s.lineTo(w/2,h/2-r);s.quadraticCurveTo(w/2,h/2,w/2-r,h/2);s.lineTo(-w/2+r,h/2);s.quadraticCurveTo(-w/2,h/2,-w/2,h/2-r);s.lineTo(-w/2,-h/2+r);s.quadraticCurveTo(-w/2,-h/2,-w/2+r,-h/2);return mesh(g,new T.ExtrudeGeometry(s,{depth:d,bevelEnabled:true,bevelSegments:2,steps:1,bevelSize:.015,bevelThickness:.015,curveSegments:5}),m,x,y,z-d/2);}
  function frame(g:T.Object3D,x:number,bottom:number,w:number,h:number,yaw:number){
-  // Bottom edge sits on the furniture; the top leans back on a hinged easel.
+  // Square, sixteen-pixel wooden rim and recessed leather backing.
+  const size=Math.max(w,h)+.14,pixel=size/16;
+  const oak=mat('#a77b43'),edge=mat('#614323'),lightOak=mat('#c49a5e'),grain=mat('#896033'),leather=mat('#79452f');
   const pivot=new T.Group();pivot.position.set(x,bottom,.12);pivot.rotation.y=yaw;g.add(pivot);
-  const f=new T.Group();f.rotation.x=-.16;pivot.add(f);f.position.y=(h+.14)/2;
-  box(f,0,0,-.045,w+.14,h+.14,.09,walnut);
-  for(const side of [-1,1]){box(f,side*(w/2+.035),0,.025,.07,h+.14,.12,brass);box(f,0,side*(h/2+.035),.025,w,.07,.12,brass);box(f,side*(w/2+.003),0,.089,.012,h,.012,ivory);box(f,0,side*(h/2+.003),.089,w,.012,.012,ivory);}
-  const hinge=v(0,h*.25,-.08),foot=v(0,-(h+.14)/2,-.36);
+  const f=new T.Group();f.rotation.x=-.16;pivot.add(f);f.position.y=size/2;
+  box(f,0,0,-.045,size,size,.09,edge);
+  box(f,0,0,.008,size-2*pixel,size-2*pixel,.025,leather);
+  for(const side of [-1,1]){
+   box(f,side*(size-pixel)/2,0,.035,pixel,size,.10,oak);
+   box(f,0,side*(size-pixel)/2,.035,size-2*pixel,pixel,.10,oak);
+   box(f,side*(size/2-pixel*1.15),0,.087,pixel*.3,size-2*pixel,.008,side<0?lightOak:edge);
+   box(f,0,side*(size/2-pixel*1.15),.087,size-2*pixel,pixel*.3,.008,side>0?lightOak:edge);
+   for(let i=0;i<8;i++){
+    const along=(-6.5+i*1.8)*pixel;
+    box(f,along,side*(size-pixel)/2,.089,pixel*(i%3===0?1.4:.7),pixel*.4,.008,i%2?grain:lightOak);
+    box(f,side*(size-pixel)/2,along,.089,pixel*.4,pixel*(i%3===0?1.4:.7),.008,i%2?lightOak:grain);
+   }
+  }
+  f.userData.photoScale=(size-5*pixel)/Math.max(w,h);
+  const hinge=v(0,h*.25,-.08),foot=v(0,-size/2,-.36);
   const support=box(f,0,0,0,w*.32,hinge.distanceTo(foot),.035,walnut);
   support.position.copy(hinge).add(foot).multiplyScalar(.5);support.quaternion.setFromUnitVectors(v(0,1,0),hinge.clone().sub(foot).normalize());
   rod(f,v(-.09,h*.25,-.085),v(.09,h*.25,-.085),.02,brass);
@@ -94,6 +109,7 @@ export function createRoomObjects(scene:T.Scene,resources:Resources){
  standingLens(.78,0,.43,.17);
  standingLens(.28,.78,.34,.16);
  standingLens(.76,.78,.51,.18);
+ camera.userData.highlightObjects=camera.children.filter(child=>child instanceof T.Group);
  const books=group('about',-2.6,3.62,-4.1);
  frame(books,0,0,.93,.93,-.07);
  const favorites=group('favorites',-.17,2.02,-4.1);
@@ -154,7 +170,7 @@ export function createRoomObjects(scene:T.Scene,resources:Resources){
  const lamp=group('lamp',6.05,1.8,-1.4);cyl(lamp,0,-.49,0,.27,.32,.065,brass);cyl(lamp,0,-.14,0,.027,.04,.7,brass);const shadeMaterial=mat('#d6c49a');shadeMaterial.side=T.DoubleSide;mesh(lamp,new T.CylinderGeometry(.27,.49,.52,40,1,true),shadeMaterial,0,.37,0);for(const y of [.11,.63]){const rim=mesh(lamp,new T.TorusGeometry(y===.11?.49:.27,.015,8,40),brass,0,y,0);rim.rotation.x=Math.PI/2;}const glow=mat('#fff0c4');glow.emissive=new T.Color('#ffc679');glow.emissiveIntensity=1.5;ball(lamp,0,.29,0,.095,glow);rod(lamp,v(.13,.2,0),v(.13,-.03,0),.008,brass);ball(lamp,.13,-.045,0,.024,brass);lamp.userData.switchPosition=v(.13,-.045,0);lamp.userData.bulb=glow;
  // The table stays in place when the lamp reacts to hover or selection.
  const table=new T.Group();scene.add(table);table.position.set(6.05,0,-1.4);cyl(table,0,1.22,0,.39,.39,.12,walnut,40);cyl(table,0,1.285,0,.38,.38,.015,brass,40);cyl(table,0,.67,0,.075,.12,1.05,walnut);for(let i=0;i<3;i++){const a=i*Math.PI*2/3;rod(table,v(0,.29,0),v(Math.cos(a)*.33,.08,Math.sin(a)*.33),.06,walnut);}
- const ladder=group('ladder',-6.02,2.48,-3.28);for(const x of [-.33,.33]){const rail=box(ladder,x,0,0,.065,4.65,.12,walnut);rail.rotation.x=-.085;box(ladder,x,0,.07,.018,4.65,.012,brass);const wheel=cyl(ladder,x,-2.35,.19,.105,.105,.07,black,20);wheel.rotation.z=Math.PI/2;const hub=cyl(ladder,x,-2.35,.19,.035,.035,.08,brass);hub.rotation.z=Math.PI/2;rod(ladder,v(x,2.22,-.18),v(x,2.43,-.23),.035,brass);}
+ const ladder=group('ladder',shelfLadderBounds.min,2.48,-3.28);for(const x of [-.33,.33]){const rail=box(ladder,x,0,0,.065,4.65,.12,walnut);rail.rotation.x=-.085;box(ladder,x,0,.07,.018,4.65,.012,brass);const wheel=cyl(ladder,x,-2.35,.19,.105,.105,.07,black,20);wheel.rotation.z=Math.PI/2;const hub=cyl(ladder,x,-2.35,.19,.035,.035,.08,brass);hub.rotation.z=Math.PI/2;rod(ladder,v(x,2.22,-.18),v(x,2.43,-.23),.035,brass);}
  for(let i=0;i<10;i++){const y=-2.1+i*.45;box(ladder,0,y,-y*.085,.64,.065,.21,walnut);box(ladder,0,y+.037,-y*.085+.06,.58,.009,.055,brass);}
  return items;
 }

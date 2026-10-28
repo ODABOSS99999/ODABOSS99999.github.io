@@ -1,12 +1,13 @@
 import {useEffect,useRef,useState} from 'react';
 import {useInstagramSnapshot,instagramPhoto} from './instagramMedia';
+import type { InstagramSnapshot } from './instagram';
 import ExitSign from './ExitSign';
 import PostDetails from './PostDetails';
 import './darkroom.css';
 
-export default function Darkroom({onClose}:{onClose?:()=>void}){
+export default function Darkroom({onClose,liveRefresh}:{onClose?:()=>void;liveRefresh?:Promise<InstagramSnapshot|null>}){
  const panel=useRef<HTMLDialogElement>(null),gesture=useRef<{x:number;y:number}|null>(null),suppressClickUntil=useRef(0);
- const {snapshot,loading,error}=useInstagramSnapshot({refreshOnMount:true});
+ const {snapshot,loading,error}=useInstagramSnapshot({refreshOnMount:true,liveRefresh});
  const [loadedCount,setLoadedCount]=useState(5);
  const [index,setIndex]=useState(0),[scan,setScan]=useState(0),[direction,setDirection]=useState(1);
  const posts=[...(snapshot?.posts||[])].sort((a,b)=>Date.parse(b.timestamp)-Date.parse(a.timestamp));

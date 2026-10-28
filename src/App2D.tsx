@@ -1,6 +1,6 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import Scene from './SeatedRoom';
-import Sections from './Sections';
+import { refreshRecentPosts } from './instagramMedia';
 import { destinations } from './content';
 import type { SectionId } from './content';
 import { readPreferences, savePreferences, routeFromPath } from './preferences';
@@ -9,11 +9,13 @@ import { useRoomSound } from './useRoomSound';
 import { ContentBoundary } from './ContentBoundary';
 
 const Darkroom=lazy(()=>import('./Darkroom'));
+const Sections=lazy(()=>import('./Sections'));
 export default function App(){
   const [route,setRoute]=useState(()=>routeFromPath(location.pathname));
   const [prefs,setPrefs]=useState(readPreferences);
-  const {playing,error:audioError,toggle:toggleAudio}=useRoomSound(prefs.muted,prefs.volume,muted=>setPrefs(p=>({...p,muted})));
+  const {playing,error:audioError,toggle:toggleAudio,effect}=useRoomSound(prefs.muted,prefs.volume,muted=>setPrefs(p=>({...p,muted})));
   const [scannerOpen,setScannerOpen]=useState(false);
+  const [liveRefresh,setLiveRefresh]=useState<ReturnType<typeof refreshRecentPosts>>();
   useEffect(()=>{
     setScannerOpen(false);
     if(route!=='library'||prefs.lighting!=='darkroom')return;
@@ -53,8 +55,8 @@ export default function App(){
     <a className="skip-link" href="#main">Skip to content</a>
     <main id="main" tabIndex={-1}><>
       <h1 className="sr-only">Explore the library</h1>
-      {route==='library'&&prefs.lighting==='darkroom'&&scannerOpen&&<ContentBoundary onHome={()=>lighting('lamplight')}><Suspense fallback={<p role="status">Opening the darkroom…</p>}><Darkroom onClose={()=>{lighting('lamplight');window.scrollTo(0,0);}}/></Suspense></ContentBoundary>}
-      <Scene openIndex={()=>{}} navigate={navigate} toggleLamp={()=>lighting(prefs.lighting==='darkroom'?'lamplight':'darkroom')} toggleAudio={()=>void toggleAudio()} playing={playing} soundEnabled={!prefs.muted} motion={prefs.motion} lighting={prefs.lighting}/>
+      {route==='library'&&prefs.lighting==='darkroom'&&scannerOpen&&<ContentBoundary onHome={()=>lighting('lamplight')}><Suspense fallback={<p role="status">Opening the darkroom…</p>}><Darkroom liveRefresh={liveRefresh} onClose={()=>{lighting('lamplight');window.scrollTo(0,0);}}/></Suspense></ContentBoundary>}
+      <Scene soundEffect={effect} openIndex={()=>{}} navigate={navigate} toggleLamp={()=>{setLiveRefresh(refreshRecentPosts());lighting(prefs.lighting==='darkroom'?'lamplight':'darkroom');}} toggleAudio={()=>void toggleAudio()} playing={playing} soundEnabled={!prefs.muted} motion={prefs.motion} lighting={prefs.lighting}/>
     </>{route==='library'?null:known?<ContentBoundary key={route} onHome={()=>navigate('library')}><Suspense fallback={<div className="section-loading" role="status">Opening the collection…</div>}><SectionFocus onReady={restorePosition}/><Sections key={route} section={route as SectionId} navigate={navigate}/></Suspense></ContentBoundary>:<MissingCollection onHome={()=>navigate('library')}/>}</main>
     {audioError&&<p className="audio-error" role="status">{audioError}</p>}
   </div>;

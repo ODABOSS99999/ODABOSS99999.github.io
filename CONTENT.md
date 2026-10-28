@@ -40,7 +40,7 @@ Verified October 16, 2026 in a browser: https://utdmercury.com/staff_name/owen-m
 
 `publications` is a `Publication[]`. Required fields: `title`, `publication`, `role`, `url`. Optional: `date` and `thumbnail` (a URL such as `/images/credit.webp`). Describe the actual role, for example photography versus writing; verify credit and the linked source before adding it. Use complete HTTPS source URLs. Dates are display strings, so format them consistently.
 
-## Engineering projects
+## Other projects
 
 `projects` is a `Project[]`. Required fields: unique stable `id`, `title`, `overview`. Optional: `role`, `process`, `tools` (array of strings), `challenges`, `outcomes`, and `images` (array of `Photo`, using the exact structure above). Describe what you actually did. Outcomes need evidence; do not invent numbers or achievements. Videos and 3D model embeds are not part of this content schema.
 
@@ -61,3 +61,12 @@ The owner has no logo. Use the supplied name as plain text only. Do not invent l
 Source: user-supplied `C:/Users/owenm/Downloads/OwenMcGowan_Resume.pdf.pdf` (two pages, text extracted locally), and public LinkedIn profile https://www.linkedin.com/in/mcgowens/ (retrieved October 16, 2026).
 
 LinkedIn lists Captured, 3D printing service, ALTF4 rocketry, Gameboy Remake, and Giveaway finder + applier. Resume supplies teaching, hardware, printing-business, rocketry, robotics, PET-filament, and automation descriptions/outcomes. Captured is linked without unsupported implementation details. Resume metrics are historical self-reported project outcomes, not live Instagram statistics. Home address is not published.
+
+## 2026-10-22: Other Projects expansion
+
+Renamed the collection while preserving `/engineering` links. Added resume-backed Destination Imagination, VEX Robotics, and LearnToBot robotics instruction. The McGowen Library entry describes the working repository itself. Retained all five LinkedIn project names documented above; a live LinkedIn refresh returned HTTP 999, so no new profile claims were inferred.
+
+
+## Mercury update (October 28, 2026)
+
+Added the October 27 article "Ella Boh rocks in Dallas, talks mental health" from https://utdmercury.com/35930/life-arts/ella-boh-rocks-in-dallas-talks-mental-health/, also listed first in the owner's Mercury staff archive. All three article photographs credit Owen McGowan. `public/publications/mercury-ella-boh-{1,2,3}.webp` are sRGB web copies of the credited CMYK TIFFs, resized proportionally to at most 2000 pixels; downloaded source copies remain in ignored `output/`. The lead cutline is preserved; inline images use descriptive alt text without invented cutlines. No new license is applied.

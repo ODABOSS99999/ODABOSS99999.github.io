@@ -7,6 +7,19 @@ const profile={username:'mcgowen_media',followers_count:42,media_count:1,data_fe
 function fixture(options={}){const calls=[];return {calls,handler:createEdgeHandler({key:'test-secret',now:()=>time,fetchImpl:async(url,init)=>{calls.push({url:new URL(url),signal:init.signal});return new Response(JSON.stringify({data:new URL(url).searchParams.get('fields').includes('followers_count')?[profile]:[post]}));},...options})};}
 const request=(kind='stats',options={})=>new Request(`https://example.supabase.co/functions/v1/instagram-live/${kind}`,{headers:{origin:'https://mcgowen.works'},...options});
 const source=(archive,profileRow=profile)=>async url=>new Response(JSON.stringify({data:new URL(url).searchParams.get('fields').includes('followers_count')?[profileRow]:archive}));
+
+test('preview ports allow preflight and live reads without allowing lookalike origins',async()=>{
+ for(const origin of ['http://127.0.0.1:5175','http://localhost:5199','https://odaboss99999.github.io']){
+  const {handler}=fixture();
+  const options={headers:{origin}};
+  const preflight=await handler(request('stats',{...options,method:'OPTIONS'}));
+  assert.equal(preflight.status,204);assert.equal(preflight.headers.get('access-control-allow-origin'),origin);
+  const live=await handler(request('stats',options));assert.equal(live.status,200);assert.equal(live.headers.get('access-control-allow-origin'),origin);
+ }
+ for(const origin of ['http://localhost:5200','http://localhost.evil.example:5175','http://192.168.1.1:5175','https://evil.example']){
+  const {handler,calls}=fixture();assert.equal((await handler(request('stats',{method:'OPTIONS',headers:{origin}}))).status,403);assert.equal(calls.length,0);
+ }
+});
 test('fresh stats and full metadata archive, requests are not cached',async()=>{const {calls,handler}=fixture();const a=await handler(request());assert.equal(a.status,200);const data=await a.json();assert.equal(data.followers,42);assert.equal(data.archiveCurrent,true);assert.equal(data.archiveCheckedAt,post.data_fetched_at);assert.equal(data.trackedPosts.length,1);assert.equal(a.headers.get('cache-control'),'no-store');assert.equal(calls[1].url.searchParams.get('date_from'),'2010-01-01');assert.ok(calls[1].url.searchParams.get('fields').includes('data_fetched_at'));await handler(request());assert.equal(calls.length,4);});
 test('simultaneous requests deduplicate and metrics preserve null',async()=>{const {calls,handler}=fixture();await Promise.all([handler(request()),handler(request())]);assert.equal(calls.length,2);const metrics=await (await handler(request('metrics'))).json();assert.equal(metrics.posts[0].comments,null);assert.ok(calls[0].signal instanceof AbortSignal);});
 test('historical metadata never suppresses current profile counts or claims archive is current',async()=>{for(const timestamp of [undefined,'2026-10-17T17:57:59Z','2026-10-17T18:00:31Z']){const {handler}=fixture({fetchImpl:source([{...post,data_fetched_at:timestamp}])});const res=await handler(request());assert.equal(res.status,200);const data=await res.json();assert.equal(data.followers,42);assert.equal(data.archiveCurrent,false);assert.equal(data.trackedPosts.length,1);assert.equal(data.archiveCheckedAt,timestamp?new Date(timestamp).toISOString():null);}});

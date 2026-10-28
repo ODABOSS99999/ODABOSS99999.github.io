@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import App from './App2D';
 import { destinations } from './content';
+import * as instagramMedia from './instagramMedia';
 
 const audio = vi.hoisted(() => ({ start: vi.fn(async () => {}), pause: vi.fn(async () => {}), volume: vi.fn(), dispose: vi.fn(async () => {}) }));
 vi.mock('./audio', () => ({ RoomAudio: class { start = audio.start; pause = audio.pause; volume = audio.volume; dispose = audio.dispose; } }));
@@ -30,10 +31,10 @@ describe('library navigation', () => {
   });
   it('opens a linked collection directly and supports browser Back',async()=>{
     const user=userEvent.setup();history.replaceState({},'', '/engineering');render(<App/>);
-    await screen.findByRole('heading',{name:/^Engineering Projects/,level:1});
+    await screen.findByRole('heading',{name:/^Other Projects/,level:1});
     expect(document.querySelector('#project-rocketry .engineering-mentions')).toBeTruthy();
     expect(document.querySelector('#project-gameboy .engineering-mentions')).toBeTruthy();
-    await user.click(screen.getByRole('button',{name:'Exit Engineering Projects and return to library'}));
+    await user.click(screen.getByRole('button',{name:'Exit Other Projects and return to library'}));
     await act(async()=>history.back());
     await waitFor(()=>expect(location.pathname).toBe('/engineering'));
   });
@@ -45,12 +46,14 @@ describe('physical room controls',()=>{
     await user.click(screen.getByRole('button',{name:'Mute room ambience'}));
     expect(audio.pause).toHaveBeenCalled();
   });
-  it('switches the physical lamp',async()=>{
+  it('switches the physical lamp and immediately refreshes posts on every click',async()=>{
+    const refresh=vi.spyOn(instagramMedia,'refreshRecentPosts').mockResolvedValue(null);
     history.replaceState({},'', '/');const user=userEvent.setup();const {container}=render(<App/>);
     await user.click(screen.getByRole('button',{name:'Lamp switch: toggle Lamplight and Darkroom'}));
     expect(container.firstElementChild?.getAttribute('data-lighting')).toBe('darkroom');
     await user.click(screen.getByRole('button',{name:'Lamp switch: toggle Lamplight and Darkroom'}));
     expect(container.firstElementChild?.getAttribute('data-lighting')).toBe('lamplight');
+    expect(refresh).toHaveBeenCalledTimes(2);refresh.mockRestore();
   });
 });
 

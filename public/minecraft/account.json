@@ -1,0 +1,14 @@
+{
+  "username": "ODABOSS",
+  "uuid": "ca8405042fba4600a8a519d60d5fde42",
+  "checkedAt": "2026-10-28T23:15:48.268Z",
+  "model": "slim",
+  "skin": {
+    "path": "/minecraft/skin-502bd234e80739137058b957f4d1168a21182d3d2b0717bb21659246712a5c59.png",
+    "source": "https://textures.minecraft.net/texture/502bd234e80739137058b957f4d1168a21182d3d2b0717bb21659246712a5c59"
+  },
+  "cape": {
+    "path": "/minecraft/cape-7c418dfbd37412a55e9f1425c9807a591ad10cf71b1edb576a587be9114c277f.png",
+    "source": "https://textures.minecraft.net/texture/7c418dfbd37412a55e9f1425c9807a591ad10cf71b1edb576a587be9114c277f"
+  }
+}

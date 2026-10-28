@@ -1,15 +1,20 @@
 import { useEffect, useState } from 'react';
 import { validateMetrics } from './instagramMetrics';
 import { validateSnapshot } from './instagram';
-import { liveFeedUrl, validateLiveFeed } from './instagramLiveFeed';
+import { liveFeedUrl, liveFeedHeaders, validateLiveFeed } from './instagramLiveFeed';
 import type { InstagramPost, InstagramSnapshot } from './instagram';
 import type { Photo } from './content';
 import type { MetricsSnapshot } from './instagramMetrics';
 let request:Promise<InstagramSnapshot>|null=null,cachedAt=0,snapshotPending=false;
 let liveRequest:Promise<InstagramSnapshot>|null=null;
 function loadLiveSnapshot(url:string){
- if(!liveRequest)liveRequest=fetch(url,{cache:'no-store',signal:AbortSignal.timeout(35000)}).then(response=>{if(!response.ok)throw Error('Latest post unavailable');return response.json();}).then(validateLiveFeed).finally(()=>{liveRequest=null;});
+ if(!liveRequest)liveRequest=fetch(url,{headers:liveFeedHeaders(),cache:'no-store',signal:AbortSignal.timeout(35000)}).then(response=>{if(!response.ok)throw Error('Latest post unavailable');return response.json();}).then(validateLiveFeed).finally(()=>{liveRequest=null;});
  return liveRequest;
+}
+// Start at the lamp click; resolve failures so a closed scanner cannot leave an unhandled rejection.
+export function refreshRecentPosts(){
+ const url=liveFeedUrl();
+ return url?loadLiveSnapshot(url).catch(()=>null):Promise.resolve(null);
 }
 let lastMetrics:MetricsSnapshot|null=null;
 export function loadInstagramSnapshot(force=false){
@@ -20,13 +25,14 @@ export function loadInstagramSnapshot(force=false){
  ]).then(([snapshot,metrics])=>{const byId=new Map(metrics?.posts.map(p=>[p.id,p])||[]);return {...snapshot,posts:snapshot.posts.map(post=>{const m=byId.get(post.id);return {...post,image:{...post.image,src:`${post.image.src}?v=${encodeURIComponent(snapshot.fetchedAt)}`},metrics:m&&m.permalink===post.permalink?m:undefined};})};}).catch(e=>{request=null;throw e;}).finally(()=>{snapshotPending=false;});}
  return request;
 }
-export function useInstagramSnapshot({refreshOnMount=false}:{refreshOnMount?:boolean}={}){
+export function useInstagramSnapshot({refreshOnMount=false,liveRefresh}:{refreshOnMount?:boolean;liveRefresh?:Promise<InstagramSnapshot|null>}={}){
  const [snapshot,setSnapshot]=useState<InstagramSnapshot|null>(null),[loading,setLoading]=useState(true),[error,setError]=useState(false);
  useEffect(()=>{
-  let live=true,sequence=0;
+  let live=true,sequence=0,initial=true;
   const refresh=async(force=false)=>{
    if(document.hidden&&!force)return;
    const attempt=++sequence;
+   const openingRefresh=initial?liveRefresh:undefined;initial=false;
    let saved:InstagramSnapshot|null=null,failed=false;
    try{saved=await loadInstagramSnapshot(force);}catch{failed=true;}
    if(live&&attempt===sequence&&saved){setSnapshot(saved);setLoading(false);}
@@ -34,7 +40,8 @@ export function useInstagramSnapshot({refreshOnMount=false}:{refreshOnMount?:boo
     try{
      const url=liveFeedUrl();
      if(url){
-      const latest=await loadLiveSnapshot(url);
+      const latest=await (openingRefresh??loadLiveSnapshot(url));
+      if(!latest)throw Error('Latest post unavailable');
       const posts=new Map(saved?.posts.map(post=>[post.id,post])||[]);
       latest.posts.forEach(post=>posts.set(post.id,post));
       saved={...latest,posts:[...posts.values()].sort((a,b)=>Date.parse(b.timestamp)-Date.parse(a.timestamp))};
@@ -49,7 +56,7 @@ export function useInstagramSnapshot({refreshOnMount=false}:{refreshOnMount?:boo
   const interval=setInterval(poll,300000);
   document.addEventListener('visibilitychange',poll);
   return()=>{live=false;clearInterval(interval);document.removeEventListener('visibilitychange',poll);};
- },[refreshOnMount]);
+ },[refreshOnMount,liveRefresh]);
  return {snapshot,loading,error};
 }
 export function instagramPhoto(p:InstagramPost):Photo{

@@ -9,13 +9,27 @@
 
 ## Token efficiency and delegation
 
-- Optimize total tokens across the whole team, including agent context, tool output, and repeated work. Use subagents when a bounded task can reduce the primary agent's context or complete useful independent work in parallel; handle trivial edits directly.
-- Give subagents narrow objectives, relevant file paths, constraints, and a concise requested output. Prefer minimal context over copying the entire conversation when the task is self-contained.
-- Assign separate file ownership where practical. Avoid duplicate investigations, overlapping edits, and unnecessary agents. Reuse an existing agent for related follow-up work.
-- Ask agents to return findings, changed files, verification results, and unresolved issues concisely. Inspect the relevant result instead of repeating their whole investigation.
-- Search narrowly with `rg`, read targeted file ranges, batch independent reads, and limit command output. Reuse verified findings until something relevant changes.
-- Run checks proportional to the change. Repeat checks only after new changes, failures, or unresolved concerns. Do not sacrifice correctness, visual quality, or completion merely to save tokens.
-- Keep user updates and final responses concise and focused on outcomes, material limitations, and decisions.
+- Maximize completed, verified work per total team token. Count agent setup, inherited context, tool output, coordination, and rework; more agents do not automatically save tokens.
+- Handle small, tightly coupled changes directly. Delegate bounded independent implementation, investigation, or review when it reduces context or enables useful parallel progress. Start with one helper; add others only for distinct useful work.
+- For self-contained subtasks, use `fork_turns: "none"` when supported. Supply only the objective, relevant paths, essential facts, constraints, file ownership, and acceptance checks; inherit full history only when necessary.
+- Keep delegation one level deep by default. Subagents should not spawn more agents unless the parent assigns that need. Reuse agents for related follow-ups; avoid duplicate investigation and overlapping edits.
+- Require compact handoffs: findings with file references, changed files, checks/results, and blockers. Keep large logs and artifacts in files. Inspect relevant diffs and evidence without repeating the investigation.
+- Continue independent work while helpers run. Wait for completion signals instead of frequent polling; integrate results and run shared checks once after changes converge.
+
+## Efficient execution and delivery
+
+- Start repository work with `docs/agent-workflow.md` for the entry map and check commands; verify only the relevant paths. Consult deeper guides on demand, not all at startup.
+- Use deterministic scripts for bulk edits, calculations, file inventories, and log summaries instead of processing each item through the model. Preview representative results and validate the full batch with programmatic assertions.
+- For a focused fix, run relevant test files first (`npm test -- src/<file>.test.ts`); run broader required checks after integration. Use `node scripts/agent-check.mjs` for compact check output and inspect saved logs when needed.
+- Keep reusable instructions short and link task-specific detail instead of duplicating it. Update the workflow map when changing an entry point or validation command. Do not save task transcripts as permanent instructions.
+- Identify the requested outcome and acceptance checks first. Keep a short checklist for multi-part work; complete every item or report a concrete blocker. Skip elaborate plans for simple tasks.
+- Locate files with scoped `rg` searches; read targeted ranges before whole files. Exclude generated output, dependencies, and large assets unless relevant. Expand searches only when narrower searches fail.
+- Batch independent searches and reads. Prefer structured APIs or local scripts over repeated UI actions. Bound tool output and summarize large datasets locally before returning only useful results.
+- Reuse verified facts, file maps, and successful checks within the task. Re-read only after relevant changes or conflicting evidence. Keep handoff notes short: decisions, paths, checks, and next steps.
+- Make the smallest coherent change that fully solves the request. Avoid unrelated refactors, speculative features, new dependencies, and repeated planning. Make routine reversible decisions autonomously.
+- Verify affected behavior with proportional checks; preserve required build, test, accessibility, and browser QA. Repeat checks only for new changes, failures, or unresolved risks. After repeated identical failures, change strategy instead of rerunning blindly.
+- Keep progress updates brief and meaningful. Deliver artifacts and working changes instead of lengthy narration; final replies state outcome, validation, and material limitations. Provide detail when requested or necessary for use.
+- Never trade correctness, security, visual quality, or requested scope for token savings. Do not claim measured savings without usage evidence.
 
 ## Website design rules
 

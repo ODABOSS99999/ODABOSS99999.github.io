@@ -1,4 +1,5 @@
 import { validateSnapshot, type InstagramSnapshot } from './instagram';
+import { LIVE_INSTAGRAM_URL, LIVE_INSTAGRAM_ANON_KEY } from './instagramLiveConfig';
 
 // Inline raster covers come only from our backend, which validates and checks
 // the Instagram CDN image. No arbitrary remote image origins are accepted.
@@ -14,10 +15,13 @@ export function validateLiveFeed(value: unknown): InstagramSnapshot {
 }
 
 export function liveFeedUrl():string|null {
- const configured=import.meta.env.VITE_INSTAGRAM_FEED_URL;
- if(!configured)return null;
+ const configured=import.meta.env.VITE_INSTAGRAM_FEED_URL || LIVE_INSTAGRAM_URL.replace(/\/instagram-live$/, '/instagram-feed');
  const url=new URL(configured,window.location.origin);
  if(url.protocol!=='https:'&&!(url.protocol==='http:'&&['127.0.0.1','localhost'].includes(url.hostname)))throw Error('Invalid latest post endpoint');
  url.searchParams.set('refresh',String(Date.now()));
  return url.href;
+}
+
+export function liveFeedHeaders():HeadersInit {
+ return import.meta.env.VITE_INSTAGRAM_FEED_URL ? {} : {Authorization:`Bearer ${LIVE_INSTAGRAM_ANON_KEY}`};
 }
