@@ -8,9 +8,9 @@ it('keeps 3D room controls usable without WebGL and restores contact focus',asyn
  const user=userEvent.setup();render(<App/>);
  expect(screen.getByRole('region',{name:'Interactive 3D library'})).toBeTruthy();
  await user.click(screen.getByRole('button',{name:'Contact'}));
- expect(await screen.findByRole('link',{name:'owenmmcgowan@gmail.com'})).toBeTruthy();
- expect(screen.getByRole('link',{name:'(936) 647–5140'}).getAttribute('href')).toBe('tel:+19366475140');
- await user.click(screen.getByRole('link',{name:'Return to library'}));
+ expect(await screen.findByRole('link',{name:'Email owenmmcgowan@gmail.com'})).toBeTruthy();
+ expect(screen.getByRole('link',{name:'Phone (936) 647–5140'}).getAttribute('href')).toBe('tel:+19366475140');
+ await user.click(screen.getByRole('button',{name:'Exit Contact and return to library'}));
  await waitFor(()=>expect(document.activeElement?.id).toBe('object-contact'));
  await user.click(screen.getByRole('button',{name:'Lamp switch: toggle Lamplight and Darkroom'}));
  expect(document.querySelector('.app')?.getAttribute('data-lighting')).toBe('darkroom');

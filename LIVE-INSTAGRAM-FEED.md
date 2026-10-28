@@ -1,5 +1,7 @@
 # Live newest Instagram post
 
+Both the feed and statistics handlers allow the production domains and local Vite previews on `localhost` / `127.0.0.1`, ports 5173–5199. Keep these allowlists aligned when changing preview ports. Regression tests verify preflight/read headers and reject lookalike hosts and nonlocal origins. Supabase gateway JWT verification remains enabled.
+
 The default endpoint is now the existing Supabase project's `instagram-feed` function. It uses the private Instagram Graph connection directly, verifies `mcgowen_media`, selects the newest timestamp (including video covers), and reuses the Worker image validation. Every opening requests it with `no-store` and the project's existing public anonymous authorization. The separate function preserves the statistics endpoint. Source or network failures retain the saved archive with a refresh-unavailable note.
 
 Deploy `supabase/functions/instagram-feed/index.ts` with JWT verification enabled, its `deno.json` import map, and the relative `workers/instagram/src/index.mjs` dependency. Existing project secrets supply the connection; no new account or paid service is needed. Verified October 22, 2026: HTTP 200, `Cache-Control: no-store`, latest permalink `https://www.instagram.com/p/Dey7wb0gcBa/`, published `2026-10-22T12:00:02Z`.
