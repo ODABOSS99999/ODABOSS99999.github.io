@@ -3,7 +3,8 @@ import { Buffer } from 'node:buffer';
 
 const ACCOUNT = 'mcgowen_media';
 const ACCOUNT_ID = '17841467441753084';
-const ORIGINS = new Set(['https://mcgowen.works', 'https://www.mcgowen.works', 'https://odaboss99999.github.io', 'http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:5174', 'http://127.0.0.1:5174']);
+// Keep the local preview range aligned with the statistics endpoint.
+const ORIGINS = new Set(['https://mcgowen.works', 'https://www.mcgowen.works', 'https://odaboss99999.github.io', ...Array.from({length:27},(_,i)=>5173+i).flatMap(port=>[`http://127.0.0.1:${port}`,`http://localhost:${port}`])]);
 const FIELDS = 'media_id,media_caption,media_permalink,media_type,media_url,media_thumbnail_url,timestamp';
 
 function safeUrl(value, permalink = false) {

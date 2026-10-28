@@ -1,3 +1,4 @@
+import {followerRatingsPreferenceEvent} from './instagramLedger';
 import { musicAlbums, subscribeMusicAlbums, fetchMusicFeed, publishMusicAlbums } from './musicData';
 import type { RoomSound } from './audio';
 import {loadStats} from './InstagramStats';
@@ -70,7 +71,9 @@ export function createPaperRoom(host:HTMLElement,state:()=>State,hover:(id:strin
  const graphLayer=new T.Group();graphLayer.name='raised-ledger-graphs';graphLayer.position.z=.025;board.add(graphLayer);
  const graphInk=new T.MeshBasicMaterial({color:'#385347'}),exportInk=new T.MeshBasicMaterial({color:'#90724a'});
  materials.push(graphInk,exportInk);
+ let boardStats:Stats|undefined;
  const renderBoard=(stats?:Stats)=>{
+  boardStats=stats;
   const data=roomLedger(stats);
   for(const child of [...graphLayer.children]){const geometry=(child as T.Mesh).geometry;geometry.dispose();const index=geometries.indexOf(geometry);if(index>=0)geometries.splice(index,1);graphLayer.remove(child);}
   const strokes=(points:T.Vector3[],color:T.Material)=>{if(points.length<2)return;const path=new T.CurvePath<T.Vector3>();for(let i=1;i<points.length;i++)path.add(new T.LineCurve3(points[i-1],points[i]));const geometry=new T.TubeGeometry(path,Math.max(2,points.length*2),.009,5,false);geometries.push(geometry);graphLayer.add(new T.Mesh(geometry,color));};
@@ -89,6 +92,8 @@ export function createPaperRoom(host:HTMLElement,state:()=>State,hover:(id:strin
   if(old){old.dispose();const index=textures.indexOf(old);if(index>=0)textures.splice(index,1);}boardMaterial.needsUpdate=true;
  };
  renderBoard();
+ const refreshRatingPreference=()=>{if(!disposed)renderBoard(boardStats);};
+ window.addEventListener(followerRatingsPreferenceEvent,refreshRatingPreference);
  const updateBoard=async()=>{try{const stats=await loadStats();if(!disposed)renderBoard(stats);}catch{/* Keep the dated graphs visible when the live source is unavailable. */}};
  const refreshBoard=()=>{if(!document.hidden)void updateBoard();};window.addEventListener('focus',refreshBoard);document.addEventListener('visibilitychange',refreshBoard);queueMicrotask(refreshBoard);const statsTimer=setInterval(refreshBoard,60000);
  // Record sleeves occupy the lower bays; art is shown only from verified sources.
@@ -220,5 +225,5 @@ export function createPaperRoom(host:HTMLElement,state:()=>State,hover:(id:strin
   // Tint only the illustrated cards; actual photographs retain their source colors.
   blendColor(paperColor,paperColors,light);paperTints.forEach(material=>material.color.copy(paperColor));renderer.setClearColor(blendColor(backgroundColor,backgroundColors,light));luxury.update(light);lampLight.intensity=blendLight(light,.4,3,0);if(bulb)bulb.emissiveIntensity=blendLight(light,.4,1.5,0);if(selected)composer.render();else renderer.render(scene,camera);
  });
- return{activate:action,focus:(id:string|null)=>{if(id==='contact'&&state().motion&&!reduced.matches)sound('ring');focus=id==='contact'?'butler':id;lastPointer=null;over=null;hover(id);},look:(delta:number)=>{yaw=T.MathUtils.clamp(yaw+delta,-.46,.46);},reset:()=>{yaw=0;pitch=-.095;},dispose:()=>{disposed=true;unsubscribeRecords();musicRequest?.abort();clearInterval(musicTimer);window.removeEventListener('focus',refreshRecordVisibility);document.removeEventListener('visibilitychange',refreshRecordVisibility);clearInterval(statsTimer);window.removeEventListener('focus',refreshBoard);document.removeEventListener('visibilitychange',refreshBoard);renderer.setAnimationLoop(null);observer.disconnect();renderer.domElement.removeEventListener('pointerdown',press);renderer.domElement.removeEventListener('pointermove',move);renderer.domElement.removeEventListener('pointerup',release);renderer.domElement.removeEventListener('pointerleave',leave);renderer.domElement.removeEventListener('pointercancel',cancel);textures.forEach(t=>t.dispose());materials.forEach(m=>m.dispose());geometries.forEach(g=>g.dispose());outline.dispose();composer.dispose();renderer.dispose();renderer.domElement.remove();}};
+ return{activate:action,focus:(id:string|null)=>{if(id==='contact'&&state().motion&&!reduced.matches)sound('ring');focus=id==='contact'?'butler':id;lastPointer=null;over=null;hover(id);},look:(delta:number)=>{yaw=T.MathUtils.clamp(yaw+delta,-.46,.46);},reset:()=>{yaw=0;pitch=-.095;},dispose:()=>{disposed=true;unsubscribeRecords();musicRequest?.abort();clearInterval(musicTimer);window.removeEventListener('focus',refreshRecordVisibility);document.removeEventListener('visibilitychange',refreshRecordVisibility);clearInterval(statsTimer);window.removeEventListener(followerRatingsPreferenceEvent,refreshRatingPreference);window.removeEventListener('focus',refreshBoard);document.removeEventListener('visibilitychange',refreshBoard);renderer.setAnimationLoop(null);observer.disconnect();renderer.domElement.removeEventListener('pointerdown',press);renderer.domElement.removeEventListener('pointermove',move);renderer.domElement.removeEventListener('pointerup',release);renderer.domElement.removeEventListener('pointerleave',leave);renderer.domElement.removeEventListener('pointercancel',cancel);textures.forEach(t=>t.dispose());materials.forEach(m=>m.dispose());geometries.forEach(g=>g.dispose());outline.dispose();composer.dispose();renderer.dispose();renderer.domElement.remove();}};
 }

@@ -1,6 +1,5 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import Scene from './SeatedRoom';
-import Sections from './Sections';
 import { destinations } from './content';
 import type { SectionId } from './content';
 import { readPreferences, savePreferences, routeFromPath } from './preferences';
@@ -9,6 +8,7 @@ import { useRoomSound } from './useRoomSound';
 import { ContentBoundary } from './ContentBoundary';
 
 const Darkroom=lazy(()=>import('./Darkroom'));
+const Sections=lazy(()=>import('./Sections'));
 export default function App(){
   const [route,setRoute]=useState(()=>routeFromPath(location.pathname));
   const [prefs,setPrefs]=useState(readPreferences);

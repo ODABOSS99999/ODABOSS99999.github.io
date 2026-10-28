@@ -3,7 +3,8 @@ import Gallery from './Gallery';
 
 export default function PublishedWork() {
   return <>
-    <div className="published-stories">{publications.map((p, i) => <article className="published-story" key={p.url} aria-labelledby={`publication-${i}`}>
+    {publications.length>1&&<details className="about-topics publication-topics"><summary>Explore all {publications.length} stories</summary><nav className="about-index" aria-label="Published stories">{publications.map((p,i)=><button key={p.url} onClick={()=>{const story=document.getElementById(`published-story-${i}`);story?.focus({preventScroll:true});story?.scrollIntoView({block:'start'});}}>{p.title}</button>)}</nav></details>}
+    <div className="published-stories">{publications.map((p, i) => <article className="published-story" id={`published-story-${i}`} tabIndex={-1} key={p.url} aria-labelledby={`publication-${i}`}>
       <header>
         <p className="published-meta">{p.publication}{p.date && ` · ${p.date}`}</p>
         <h2 id={`publication-${i}`}><a href={p.url} target="_blank" rel="noreferrer">{p.title}</a></h2>

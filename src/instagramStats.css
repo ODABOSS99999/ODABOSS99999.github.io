@@ -7,6 +7,14 @@
 @media(max-width:540px){.instagram-stats{padding-top:0;max-height:92dvh;width:94vw;border-width:5px}.ledger-top{padding-top:8px}.ledger-metrics{gap:6px}.ledger-metrics button{padding:12px 8px;min-height:80px}.ledger-metrics button strong{font-size:29px}.ledger-metrics button span{font-size:10px}.instagram-stats h2{font-size:32px}.instagram-stats h3{font-size:23px}.instagram-stats .ledger-chart svg{min-height:130px}.instagram-stats .ledger-chart svg text{font-size:14px}}
 .ledger-top{flex-wrap:wrap}
 .ledger-top .gui-exit{margin-left:auto}
+.instagram-stats table[aria-label="Counted collaboration posts"] th:last-child{width:55%}
+.ledger-rating-setting{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:48px;margin:16px 0;font-size:12px;cursor:pointer}
+.ledger-rating-setting input{appearance:none;flex:none;width:42px;height:24px;margin:0;border:1px solid #81663d;border-radius:20px;background:#c5b89b;cursor:pointer}
+.ledger-rating-setting input::before{content:'';display:block;width:16px;height:16px;margin:3px;border-radius:50%;background:#fff7e4}
+.ledger-rating-setting input:checked{background:#455b48}
+.ledger-rating-setting input:checked::before{transform:translateX(18px)}
+.ledger-rating-setting input:focus-visible{outline:2px solid #654c2b;outline-offset:4px}
+
 
 .ledger-active-chart [aria-label="Follower history source"]{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
 .ledger-active-chart [aria-label="Follower history source"] button{font:inherit;font-size:12px;min-height:44px;padding:8px 14px;color:inherit;border:1px solid #92734866;border-radius:3px}
@@ -34,3 +42,4 @@
  .instagram-stats .ledger-metrics button:last-child{grid-column:1/-1;flex-direction:row;align-items:center;min-height:58px}
  .instagram-stats .ledger-metrics button:last-child span{max-width:65%}
 }
+@media(max-width:340px){.instagram-stats .ledger-top{flex-wrap:wrap}.instagram-stats .ledger-top>div{flex:1 0 100%}.instagram-stats .ledger-top .gui-exit{margin-left:auto}}

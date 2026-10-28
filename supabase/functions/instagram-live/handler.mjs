@@ -1,6 +1,7 @@
 const ACCOUNT = 'mcgowen_media';
 const ACCOUNT_ID = '17841467441753084';
-const ORIGINS = new Set(['https://mcgowen.works', 'https://www.mcgowen.works', 'http://127.0.0.1:5173', 'http://localhost:5173']);
+// Vite selects the next free port when another preview is already running.
+const ORIGINS = new Set(['https://mcgowen.works', 'https://www.mcgowen.works', 'https://odaboss99999.github.io', ...Array.from({length:27},(_,i)=>5173+i).flatMap(port=>[`http://127.0.0.1:${port}`,`http://localhost:${port}`])]);
 function complete(p) {
   if (!p || p.error || p.errors || (p.status && p.status !== 'done') || p.partial || p.truncated || p.has_more || p.next || p.next_page || p.paging?.next || !Array.isArray(p.data) || p.data.length > 1000) throw Error('Incomplete response');
   return p.data;
