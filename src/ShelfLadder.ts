@@ -1,10 +1,10 @@
 // Keep the left wheel clear of the fireplace hearth, including its outer tread.
-export const shelfLadderBounds={min:-5.35,max:.45} as const;
+export const shelfLadderBounds={min:-5.35,max:1.9} as const;
 
 /** Travel completes before opening the selected shelf item. A newer selection replaces the old one. */
 export class ShelfLadder {
- x:number=shelfLadderBounds.min;
- target:number=shelfLadderBounds.min;
+ x:number=shelfLadderBounds.max;
+ target:number=shelfLadderBounds.max;
  private trip:{from:number;start:number;duration:number;destination:string|null}|null=null;
  constructor(private arrive:(destination:string)=>void){}
  move(destination:string|null,target:number,now:number,motion:boolean){

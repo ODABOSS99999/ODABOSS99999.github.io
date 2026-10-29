@@ -160,8 +160,9 @@ export function createPaperRoom(host:HTMLElement,state:()=>State,hover:(id:strin
   box(side*.93,.48,-1.72,.09,.77,.09,wood,seated);
  }
  // A rolling ladder in front of the shelf rail.
- box(-2.6,4.95,-3.5,7.5,.055,.06,paper);
- const ladder=modeled.get('ladder')!;let ladderRight=false,pickup=0;
+ // Extend the rail into the clear space beside the bookcase for parking.
+ box(-2.025,4.95,-3.5,8.65,.055,.06,paper);
+ const ladder=modeled.get('ladder')!;let ladderRight=true,pickup=0;
  const shelfLadder=new ShelfLadder(id=>{host.removeAttribute('aria-busy');announce('Opening the selected collection.');activate(id);});
 
  function photoInFrame(id:string,src:string,x:number,_y:number,w:number,h:number,_angle:number){
