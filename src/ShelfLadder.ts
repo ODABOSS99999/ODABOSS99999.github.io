@@ -1,4 +1,5 @@
-export const shelfLadderBounds={min:-5.65,max:.45} as const;
+// Keep the left wheel clear of the fireplace hearth, including its outer tread.
+export const shelfLadderBounds={min:-5.35,max:.45} as const;
 
 /** Travel completes before opening the selected shelf item. A newer selection replaces the old one. */
 export class ShelfLadder {
