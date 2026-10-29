@@ -52,7 +52,7 @@ export default function MinecraftPanel({ onClose }: { onClose: () => void }) {
           <div className="mc-skin-toolbar" role="group" aria-label="Skin history">
             <button className="mc-action" aria-label="Previous skin" disabled={skinIndex === skins.length - 1} onClick={() => setSkinIndex(index => Math.min(index + 1, skins.length - 1))}>‹</button><span aria-live="polite">{selectedSkin.label}</span><button className="mc-action" aria-label="Next skin" disabled={skinIndex === 0} onClick={() => setSkinIndex(index => Math.max(index - 1, 0))}>›</button>
           </div>
-          <div className="mc-skin-links"><a href={selectedSkin.path} download="odaboss-skin.png">Download skin</a>{account.cape && <a href={account.cape.path} download="odaboss-cape.png">Download cape</a>}<a href={`https://namemc.com/profile/${account.uuid}#Skins`} target="_blank" rel="noopener noreferrer">NameMC ↗<span className="sr-only"> (opens in a new tab)</span></a></div>
+          <div className="mc-skin-links"><a href={selectedSkin.path} download="odaboss-skin.png">Download skin</a>{skinIndex === 0 && account.cape && <a href={account.cape.path} download="odaboss-cape.png">Download cape</a>}<a href={skinHistory.profile} target="_blank" rel="noopener noreferrer">Laby ↗<span className="sr-only"> (opens in a new tab)</span></a></div>
         </>}
         {view === 'Account & history' && <>
           <p className="mc-kicker">PLAYER RECORD</p><h3>Account & history</h3>

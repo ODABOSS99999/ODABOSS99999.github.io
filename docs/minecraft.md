@@ -24,4 +24,6 @@ The owner confirmed McGowen_ on October 29, 2026. Mojang username lookup verifie
 
 Tabs open on Account & history, followed by Skin and Hypixel. `src/MinecraftSkin.tsx` renders the local Mojang texture and equipped cape with the existing Three.js dependency. Rotation renders only on interaction, with no automatic motion.
 
-`public/minecraft/skins.json` holds verified NameMC history entries (`path`, `model`, `label`), newest first, excluding the current skin. Keep downloaded original textures beside it. The switcher uses this list; previous/next controls disable at the ends. NameMC returned HTTP 403 / an access challenge during the October 29, 2026 update, so the historical list is empty. Do not invent entries or interpret this as having no previous skins. No cape is attached to a historical skin without evidence.
+`public/minecraft/skins.json` holds Laby's recorded skin history, newest first, excluding the current skin (deduplicated by decoded pixels). Refresh with `node scripts/refresh-minecraft-skins.mjs`. The free public texture endpoint is documented at https://laby.net/docs/render; original PNGs are downloaded from Laby and served locally. No API key or runtime third-party requests are needed.
+
+Two historical skins were recovered October 29, 2026. Dates are Laby observation dates, not exact skin-change dates; this archive may be incomplete. No cape is attached to a historical skin without evidence. Previous/next controls disable at either end, and Download skin follows the selected texture.
