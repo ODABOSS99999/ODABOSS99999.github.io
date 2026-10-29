@@ -29,10 +29,10 @@ it('opens on the newest post including videos and reels, and checks again on reo
  expect(screen.getByRole('link',{name:'View frame 2 on Instagram'})).toBeTruthy();
  expect(screen.getByRole('button',{name:'Exit darkroom'}).textContent).toContain('EXIT');
  expect(container.querySelector('dialog')?.hasAttribute('open')).toBe(true);
- expect(screen.getByText('02 / 05')).toBeTruthy();
+ expect(screen.getByText(`02 / ${String(posts.length).padStart(2,'0')}`)).toBeTruthy();
  for(let frame=3;frame<=posts.length;frame++){
   fireEvent.click(screen.getByRole('button',{name:'Scan next frame'}));
-  const loaded=Math.min(Math.ceil(frame/5)*5,posts.length);
+  const loaded=posts.length;
   expect(screen.getByText(`${String(frame).padStart(2,'0')} / ${String(loaded).padStart(2,'0')}`)).toBeTruthy();
   expect(screen.getByRole('link',{name:`View frame ${frame} on Instagram`}).getAttribute('href')).toBe(posts[frame-1].permalink);
  }

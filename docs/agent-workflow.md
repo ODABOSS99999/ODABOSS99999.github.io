@@ -11,6 +11,7 @@ Read only the row relevant to the task; confirm paths when changing architecture
 | Content/order and sections | `src/content.ts`, `src/Sections.tsx` |
 | Contact card / paper-airplane delivery | `src/ContactCard.tsx`, `src/businessCard.css` |
 | Appearance | `src/illustrated.css`, `src/contactAbout.css`; feature styles beside components |
+| Darkroom live recent posts | `src/instagramMedia.ts`, `src/instagramLiveFeed.ts`, `workers/instagram/src/index.mjs`, `supabase/functions/instagram-feed/index.ts`; checks: `npm test -- src/instagramMedia.test.ts src/instagramLiveFeed.test.ts src/Darkroom.test.tsx` and `node --test workers/instagram/src/index.test.mjs` |
 | Instagram | `src/instagramLiveFeed.ts`, `src/InstagramStats.tsx`, `workers/instagram/src/` |
 | Live Instagram CORS / deployment | `supabase/functions/instagram-live/handler.mjs`, `workers/instagram/src/index.mjs`; regression checks: `node --test scripts/instagram-edge.test.mjs workers/instagram/src/index.test.mjs` |
 | Audio/music | `src/audio.ts`, `src/useRoomSound.ts`, `src/MusicShelf.tsx`, `src/musicData.ts`, `workers/music/src/` |

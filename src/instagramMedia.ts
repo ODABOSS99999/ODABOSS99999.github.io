@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { validateMetrics } from './instagramMetrics';
 import { validateSnapshot } from './instagram';
 import { liveFeedUrl, liveFeedHeaders, validateLiveFeed } from './instagramLiveFeed';
@@ -27,38 +27,44 @@ export function loadInstagramSnapshot(force=false){
  return request;
 }
 export function useInstagramSnapshot({refreshOnMount=false,liveRefresh}:{refreshOnMount?:boolean;liveRefresh?:Promise<InstagramSnapshot|null>}={}){
- const [snapshot,setSnapshot]=useState<InstagramSnapshot|null>(null),[loading,setLoading]=useState(true),[error,setError]=useState(false);
+ const [snapshot,setSnapshot]=useState<InstagramSnapshot|null>(null),[loading,setLoading]=useState(true),[error,setError]=useState(false),[refreshing,setRefreshing]=useState(false);
+ const refreshAction=useRef<(()=>void)|null>(null);
+ const lastGood=useRef<InstagramSnapshot|null>(null);
  useEffect(()=>{
   let live=true,sequence=0,initial=true;
   const refresh=async(force=false)=>{
    if(document.hidden&&!force)return;
    const attempt=++sequence;
+   setRefreshing(true);
    const openingRefresh=initial?liveRefresh:undefined;initial=false;
+   const url=refreshOnMount?liveFeedUrl():null;
+   // Start the live fetch alongside the saved feed rather than waiting for it.
+   const latestRequest=url?(openingRefresh??loadLiveSnapshot(url)).catch(()=>null):null;
    let saved:InstagramSnapshot|null=null,failed=false;
    try{saved=await loadInstagramSnapshot(force);}catch{failed=true;}
-   if(live&&attempt===sequence&&saved){setSnapshot(saved);setLoading(false);}
+   if(live&&attempt===sequence&&saved){if(!lastGood.current)setSnapshot(saved);setLoading(false);}
    if(refreshOnMount){
     try{
-     const url=liveFeedUrl();
-     if(url){
-      const latest=await (openingRefresh??loadLiveSnapshot(url));
+     if(latestRequest){
+      const latest=await latestRequest;
       if(!latest)throw Error('Latest post unavailable');
-      const posts=new Map(saved?.posts.map(post=>[post.id,post])||[]);
+      const posts=new Map([...(saved?.posts||[]),...(lastGood.current?.posts||[])].map(post=>[post.id,post]));
       latest.posts.forEach(post=>posts.set(post.id,post));
       saved={...latest,posts:[...posts.values()].sort((a,b)=>Date.parse(b.timestamp)-Date.parse(a.timestamp))};
       failed=false;
      }
     }catch{failed=true;}
    }
-   if(live&&attempt===sequence){if(saved)setSnapshot(saved);setError(failed);setLoading(false);}
+   if(live&&attempt===sequence){if(saved&&!failed){lastGood.current=saved;setSnapshot(saved);}else if(lastGood.current)setSnapshot(lastGood.current);else if(saved)setSnapshot(saved);setError(failed);setLoading(false);setRefreshing(false);}
   };
+  refreshAction.current=()=>{void refresh(true);};
   void refresh(refreshOnMount);
   const poll=()=>{void refresh();};
   const interval=setInterval(poll,300000);
   document.addEventListener('visibilitychange',poll);
-  return()=>{live=false;clearInterval(interval);document.removeEventListener('visibilitychange',poll);};
+  return()=>{live=false;refreshAction.current=null;clearInterval(interval);document.removeEventListener('visibilitychange',poll);};
  },[refreshOnMount,liveRefresh]);
- return {snapshot,loading,error};
+ return {snapshot,loading,error,refreshing,refresh:()=>refreshAction.current?.()};
 }
 export function instagramPhoto(p:InstagramPost):Photo{
  const date=new Date(p.timestamp).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});

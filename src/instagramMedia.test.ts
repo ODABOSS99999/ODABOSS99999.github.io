@@ -68,3 +68,24 @@ it('starts a separate live request for every lamp click while earlier requests a
  refreshRecentPosts();refreshRecentPosts();refreshRecentPosts();
  expect(fetch).toHaveBeenCalledTimes(3);
 });
+
+it('merges multiple live posts and keeps them when a later manual refresh fails',async()=>{
+ vi.stubEnv('VITE_INSTAGRAM_FEED_URL','https://example.workers.dev/api/instagram/feed');
+ let failure=false;
+ const ids=['99999999999999991','99999999999999992'];
+ vi.stubGlobal('fetch',vi.fn(async(url:string)=>{
+  if(url.startsWith('https://example.workers.dev/')){
+   if(failure)throw Error('offline');
+   return {ok:true,json:async()=>({...feed,fetchedAt:new Date().toISOString(),posts:ids.map((id,index)=>({...feed.posts[0],id,timestamp:`2099-01-0${index+1}T00:00:00Z`,image:{src:'https://scontent.cdninstagram.com/photo.jpg',width:32,height:24}}))})};
+  }
+  return {ok:true,json:async()=>url.includes('metrics.json')?metrics:feed};
+ }));
+ const {useInstagramSnapshot}=await import('./instagramMedia');
+ const hook=renderHook(()=>useInstagramSnapshot({refreshOnMount:true}));
+ await vi.waitFor(()=>expect(hook.result.current.snapshot?.posts).toHaveLength(feed.posts.length+2));
+ expect(ids.every(id=>hook.result.current.snapshot!.posts.some(post=>post.id===id))).toBe(true);
+ const previous=hook.result.current.snapshot;failure=true;
+ act(()=>hook.result.current.refresh());
+ await vi.waitFor(()=>expect(hook.result.current.error).toBe(true));
+ expect(hook.result.current.snapshot).toBe(previous);expect(hook.result.current.refreshing).toBe(false);hook.unmount();
+});

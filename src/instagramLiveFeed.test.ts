@@ -15,10 +15,19 @@ it('accepts a validated inline cover but rejects remote URLs, SVG and stale resp
 });
 it('requires HTTPS for production and adds a fresh request URL',()=>{
  vi.stubEnv('VITE_INSTAGRAM_FEED_URL','');
- expect(liveFeedUrl()).toMatch(/^https:\/\/bcbcmjhdlzkaelfwagkv\.supabase\.co\/functions\/v1\/instagram-feed\?refresh=\d+$/);
+ expect(liveFeedUrl()).toMatch(/^https:\/\/bcbcmjhdlzkaelfwagkv\.supabase\.co\/functions\/v1\/instagram-feed\?refresh=\d+&limit=30&covers=url$/);
  expect(liveFeedHeaders()).toHaveProperty('Authorization');
  vi.stubEnv('VITE_INSTAGRAM_FEED_URL','https://example.workers.dev/api/instagram/feed');
- expect(liveFeedUrl()).toMatch(/^https:\/\/example.workers.dev\/api\/instagram\/feed\?refresh=\d+$/);
+ expect(liveFeedUrl()).toMatch(/^https:\/\/example.workers.dev\/api\/instagram\/feed\?refresh=\d+&limit=30&covers=url$/);
  expect(liveFeedHeaders()).toEqual({});
  vi.stubEnv('VITE_INSTAGRAM_FEED_URL','http://example.com/feed');expect(()=>liveFeedUrl()).toThrow();
+});
+
+it('validates every recent cover and rejects duplicate IDs and oversized batches',()=>{
+ const data=latest();data.posts.push({...data.posts[0],id:'9999999'});
+ expect(validateLiveFeed(data).posts).toHaveLength(2);
+ data.posts[1].image={...data.posts[1].image,src:'https://evil.example/photo.jpg'};
+ expect(()=>validateLiveFeed(data)).toThrow();
+ expect(()=>validateLiveFeed({...latest(),posts:Array(31).fill(latest().posts[0])})).toThrow();
+ expect(()=>validateLiveFeed({...latest(),posts:Array(2).fill(latest().posts[0])})).toThrow();
 });

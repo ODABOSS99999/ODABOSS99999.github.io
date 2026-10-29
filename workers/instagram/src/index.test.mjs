@@ -103,3 +103,22 @@ test('isolate-local rate limit caps requests and resets after one minute', async
   current = new Date(date.valueOf() + 60000);
   assert.equal((await worker.fetch(req(), env)).status, 503); assert.equal(calls, 31);
 });
+
+test('recent batch includes every requested post newest first and uses video thumbnails',async()=>{
+ const video={...fresh,media_type:'VIDEO',media_thumbnail_url:'https://scontent.cdninstagram.com/cover.jpg'};
+ const f=fixture([{data:[old,video]}]);
+ const response=await createLatestWorker({fetchImpl:f.fetchImpl,now:()=>date}).fetch(req({url:'https://example.workers.dev/api/instagram/feed?limit=30&covers=url'}),env);
+ assert.equal(response.status,200);
+ const body=await response.json();assert.deepEqual(body.posts.map(post=>post.id),[fresh.media_id,old.media_id]);
+ assert.ok(f.urls.includes(video.media_thumbnail_url));
+ assert.ok(body.posts.every(post=>post.image.width===1080&&post.image.src.startsWith('https://scontent.cdninstagram.com/')));
+});
+
+test('recent CDN covers use bounded header probes and verified dimensions without embedding full images',async()=>{
+ const f=fixture([{data:[old,fresh]}]);
+ const response=await createLatestWorker({fetchImpl:f.fetchImpl,now:()=>date}).fetch(req({url:'https://example.workers.dev/api/instagram/feed?limit=30&covers=url'}),env);
+ assert.equal(response.status,200);const body=await response.json();
+ assert.equal(body.posts.length,2);assert.equal(body.posts[0].image.src,fresh.media_url);assert.equal(body.posts[0].image.width,1080);
+ assert.ok(f.options.slice(1).every(options=>options.headers.Range==='bytes=0-262143'));
+ assert.ok(JSON.stringify(body).length<2000);
+});

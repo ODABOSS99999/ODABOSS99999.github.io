@@ -22,3 +22,5 @@
 @media(max-width:540px){.scanner-caption{margin-top:12px;padding-top:10px}.scanner-caption-text{max-height:76px}.scanner-caption-text p{font-size:12px}.film-scanner:has(.scanner-caption) .scanned-photo img{height:min(36svh,360px)}}
 @media(max-height:550px) and (min-width:541px){.scanner-caption-text{max-height:58px}.scanner-caption{margin-top:8px;padding-top:8px}.film-scanner:has(.scanner-caption) .scanned-photo img{height:33svh}}
 .scanner-sync-note{font:10px/1.6 "DM Sans",sans-serif;color:#cc9f83;margin:12px 0 0;overflow-wrap:anywhere}.scanner-sync-note time{display:inline}
+
+.scanner-header-actions .scanner-refresh{width:auto;border-radius:2px;white-space:nowrap;font:12px var(--sans);min-height:44px;padding:8px 12px;border:1px solid currentColor;background:transparent;color:inherit;font:inherit;cursor:pointer}.scanner-refresh:disabled{opacity:.6;cursor:wait}.scanner-refresh:focus-visible{outline:2px solid currentColor;outline-offset:3px}

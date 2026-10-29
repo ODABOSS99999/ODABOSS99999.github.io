@@ -80,13 +80,43 @@ export function createLatestWorker({ fetchImpl = fetch, now = () => new Date(), 
       const url = new URL('https://connectors.windsor.ai/instagram');
       url.search = new URLSearchParams({ api_key: env.WINDSOR_API_KEY, fields: FIELDS, date_preset: 'last_30dT', select_accounts: ACCOUNT_ID }).toString();
       const payload = loadPosts ? await loadPosts() : JSON.parse((await boundedFetch(url, fetchImpl, 5 * 1024 * 1024)).bytes.toString('utf8'));
-      const [newest] = normalize(payload, date);
-      const { bytes, mime } = await boundedFetch(newest.previewUrl, fetchImpl, 2 * 1024 * 1024, true);
-      const size = imageSize(bytes);
-      const expected = { jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp' }[size.type];
-      if (!expected || expected !== mime || !Number.isInteger(size.width) || !Number.isInteger(size.height) || size.width < 1 || size.height < 1 || size.width * size.height > 60000000) throw new Error();
-      const { previewUrl: _preview, ...post } = newest;
-      return send(200, { version: 1, account: ACCOUNT, fetchedAt: date.toISOString(), posts: [{ ...post, image: { src: `data:${expected};base64,${bytes.toString('base64')}`, width: size.width, height: size.height } }] });
+      // Default preserves older clients; current clients request the latest 30.
+      const requested = new URL(request.url).searchParams.get('limit') ?? '1';
+      if (!/^[1-9]\d?$/.test(requested) || Number(requested) > 30) return send(400, { error: 'Invalid post limit' });
+      const remoteCovers = new URL(request.url).searchParams.get('covers') === 'url';
+      const recent = normalize(payload, date).slice(0, remoteCovers ? Number(requested) : 1);
+      let cursor = 0;
+      const posts = new Array(recent.length);
+      async function loadCover(newest) {
+        const { previewUrl: _preview, ...post } = newest;
+        if (remoteCovers) {
+          // Read only enough of the verified CDN raster to establish real dimensions.
+          const response = await fetchImpl(newest.previewUrl, {redirect:'error',cache:'no-store',signal:AbortSignal.timeout(15000),headers:{Accept:'image/jpeg,image/png,image/webp',Range:'bytes=0-262143'}});
+          const mime=(response.headers.get('content-type')??'').split(';')[0].trim().toLowerCase();
+          if(!response.ok||!response.body||!['image/jpeg','image/png','image/webp'].includes(mime))throw new Error();
+          const reader=response.body.getReader();let bytes=Buffer.alloc(0),size;
+          try {
+            while(bytes.length<262144){
+              const chunk=await reader.read();if(chunk.done)break;
+              bytes=Buffer.concat([bytes,Buffer.from(chunk.value.subarray(0,262144-bytes.length))]);
+              try{size=imageSize(bytes);break;}catch{/* The JPEG header may span chunks. */}
+            }
+          }finally{await reader.cancel().catch(()=>{});}
+          const expected={jpg:'image/jpeg',jpeg:'image/jpeg',png:'image/png',webp:'image/webp'}[size?.type];
+          if(!size||expected!==mime||!Number.isInteger(size.width)||!Number.isInteger(size.height)||size.width<1||size.height<1||size.width*size.height>60000000)throw new Error();
+          return {...post,image:{src:newest.previewUrl,width:size.width,height:size.height}};
+        }
+        const { bytes, mime } = await boundedFetch(newest.previewUrl, fetchImpl, 2 * 1024 * 1024, true);
+        const size = imageSize(bytes);
+        const expected = { jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp' }[size.type];
+        if (!expected || expected !== mime || !Number.isInteger(size.width) || !Number.isInteger(size.height) || size.width < 1 || size.height < 1 || size.width * size.height > 60000000) throw new Error();
+        return { ...post, image: { src: `data:${expected};base64,${bytes.toString('base64')}`, width: size.width, height: size.height } };
+      }
+      // Bound concurrent downloads and the total response; preserve timestamp order.
+      await Promise.all(Array.from({length: Math.min(4, recent.length)}, async () => {
+        while (cursor < recent.length) { const index = cursor++; posts[index] = await loadCover(recent[index]); }
+      }));
+      return send(200, { version: 1, account: ACCOUNT, fetchedAt: now().toISOString(), posts });
     } catch {
       // Do not log or expose exceptions: request URLs contain the private key.
       return send(503, { error: 'Latest Instagram post is temporarily unavailable' });
