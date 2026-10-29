@@ -9,3 +9,13 @@ The panel intentionally has no fabricated SkyBlock totals or history. Net worth,
 Mojang's current public profile includes the current username, UUID, current skin/model and equipped cape. It does not establish previous names/skins, cape ownership inventory, full play history, or Bedrock activity. Populate additional history only from owner-supplied records or an authorized verified source, with source/check dates.
 
 Checks: `npm test -- src/MinecraftPanel.test.tsx`; `node scripts/agent-check.mjs build`. Browser QA: painting click and Objects activation, three tabs including arrow/Home/End keys, front/back preview, downloads, modal focus/Escape/EXIT, desktop/mobile, reduced motion. Screenshots go in `output/playwright/`.
+
+## Playtime snapshot
+
+Account & history displays the server response “You have 420 hours and 43 minutes playtime!” from `2026-09-22-4.log.gz`, at 22:48:49, in the owner’s Lunar `hypixel-skyblock-for-lunar-client/logs` directory. The same session identifies `Setting user: ODABOSS` and Peach profile `6b95faa4-087b-4945-b935-1f864bbc2dad`. Only the aggregate is published; raw chat logs stay private. This is a historical SkyBlock snapshot, not live or lifetime Minecraft playtime. Refresh from a newer owner client log containing the server’s own playtime response; never use another player’s chat message. No API key or hosted service is needed for this route.
+
+## Other server history
+
+Run `node scripts/recover-minecraft-history.mjs` locally to regenerate `public/minecraft/history.json`. Uses dated, archived game logs explicitly identifying ODABOSS or McGowen_; ignores undated latest.log. Deduplicates connection days across profiles, combines Hypixel aliases, and groups private/unknown addresses without publishing them. Connection attempts may fail and are not playtime. McGowen_ sessions and world stats are included following the owner confirmation below. No complete lifetime Minecraft total can be inferred from these partial logs.
+
+The owner confirmed McGowen_ on October 29, 2026. Mojang username lookup verified UUID `4f1bb45cd1ce4773a0b75f798faab183`. Recovery now combines both usernames, deduplicating server connection days. World stats for that UUID are listed individually at 20 ticks/second; potential copied saves are not summed.

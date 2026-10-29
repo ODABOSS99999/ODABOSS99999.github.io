@@ -61,3 +61,10 @@ it('shares concurrent portfolio requests and displays saved photos while the liv
  await act(async()=>{finishLive({ok:true,json:async()=>feed});await pendingLive;});
  hooks.forEach(h=>h.unmount());
 });
+
+it('starts a separate live request for every lamp click while earlier requests are pending',async()=>{
+ vi.stubGlobal('fetch',vi.fn(()=>new Promise(()=>{})));
+ const {refreshRecentPosts}=await import('./instagramMedia');
+ refreshRecentPosts();refreshRecentPosts();refreshRecentPosts();
+ expect(fetch).toHaveBeenCalledTimes(3);
+});

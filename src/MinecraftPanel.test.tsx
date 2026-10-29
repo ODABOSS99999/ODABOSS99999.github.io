@@ -11,12 +11,12 @@ describe('Minecraft profile', () => {
     const navigate = vi.fn();
     render(<SeatedRoom navigate={navigate} toggleLamp={vi.fn()} toggleAudio={vi.fn()} openIndex={vi.fn()} playing={false} motion={false}/>);
     await user.click(screen.getByRole('button', { name: /Minecraft painting/ }));
-    expect(screen.getByRole('dialog', { name: /odaboss/ }).hasAttribute('open')).toBe(true);
+    expect(screen.getByRole('dialog', { name: /ODABOSS/ }).hasAttribute('open')).toBe(true);
     expect(external).not.toHaveBeenCalled();
     expect(navigate).not.toHaveBeenCalled();
-    expect(screen.getByText('Minecraft is the only game I’ve ever really enjoyed. I’ve been playing since I was six, years before I created my Java account.')).toBeTruthy();
+    expect(screen.getByText('Minecraft is the only game I’ve ever really enjoyed. I created my Java account when I was five.')).toBeTruthy();
     await user.click(screen.getByRole('button', { name: 'Close Minecraft profile' }));
-    expect(screen.queryByRole('dialog', { name: /odaboss/ })).toBeNull();
+    expect(screen.queryByRole('dialog', { name: /ODABOSS/ })).toBeNull();
   });
 
   it('supports keyboard tabs, skin rotation and truthful missing history', async () => {
@@ -32,9 +32,10 @@ describe('Minecraft profile', () => {
     expect(screen.getByRole('link', { name: 'Download skin texture' }).getAttribute('href')).toMatch(/^\/minecraft\/skin-/);
     screen.getByRole('tab', { name: 'Skin & cape' }).focus();
     await user.keyboard('{End}');
-    expect(screen.getByText('ODABOSS')).toBeTruthy();
-    await user.click(screen.getByText('Previous names & skins'));
-    expect(screen.getByText(/No verified history has been added/)).toBeTruthy();
+    expect(screen.getAllByText('ODABOSS').length).toBeGreaterThan(0);
+    expect(screen.getByText('ODABOSS999')).toBeTruthy();
+    expect(screen.getByText('R2D2NinjaWarrior')).toBeTruthy();
+    expect(screen.getByRole('link', { name: 'NameMC' }).getAttribute('href')).toContain('ca840504-2fba-4600-a8a5-19d60d5fde42');
     await user.keyboard('{Home}');
   });
 

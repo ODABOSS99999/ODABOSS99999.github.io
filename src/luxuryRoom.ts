@@ -31,9 +31,13 @@ export function addLuxuryDetails(scene:T.Scene,resources:RoomResources){
  for(const x of [-5,-2,1,4])for(const z of [-3,0,3,6,9]){box(x+1.43,5.94,z+1.44,2.65,.025,.025,gold);box(x+.1,5.94,z+1.4,.025,.025,2.65,gold);}
  // Build each wall in local coordinates so rails and closed panel frames share
  // the same heights and profile, including where the walls meet at the corners.
- function wainscot(length:number,x:number,z:number,rotation:number){
+ function wainscot(length:number,x:number,z:number,rotation:number,gap?:readonly [number,number]){
   const wall=new T.Group();wall.position.set(x,0,z);wall.rotation.y=rotation;scene.add(wall);
-  const trim=(u:number,y:number,depth:number,w:number,h:number,d:number,m:T.Material)=>mesh(new T.BoxGeometry(w,h,d),m,u,y,depth,wall);
+  const trim=(u:number,y:number,depth:number,w:number,h:number,d:number,m:T.Material)=>{
+   // Rails terminate at masonry instead of passing through the firebox.
+   const spans=gap?[[u-w/2,Math.min(u+w/2,gap[0])],[Math.max(u-w/2,gap[1]),u+w/2]]:[[u-w/2,u+w/2]];
+   for(const [left,right] of spans)if(right>left)mesh(new T.BoxGeometry(right-left,h,d),m,(left+right)/2,y,depth,wall);
+  };
   // Close the wall-to-floor gap beneath the baseboard.
   trim(0,.145,0,length,.29,.12,walnut);
   trim(0,.35,.015,length,.07,.1,walnut);
@@ -42,12 +46,13 @@ export function addLuxuryDetails(scene:T.Scene,resources:RoomResources){
   const count=Math.round(length/1.15),pitch=length/count;
   for(let i=0;i<count;i++){
    const center=-length/2+(i+.5)*pitch,width=pitch-.18;
+   if(gap&&center+width/2>gap[0]&&center-width/2<gap[1])continue;
    for(const u of [center-width/2,center+width/2])trim(u,.995,.04,.025,1.145,.05,gold);
    for(const y of [.435,1.555])trim(center,y,.04,width,.025,.05,gold);
   }
  }
  wainscot(13.8,0,-4.84,0);
- wainscot(17.84,-6.84,4.08,Math.PI/2);
+ wainscot(17.84,-6.84,4.08,Math.PI/2,[4.8,7.36]);
  wainscot(17.84,6.84,4.08,-Math.PI/2);
  // Minecraft-inspired night sky, built from crisp square geometry.
  const sky=new T.MeshBasicMaterial({color:'#101a39'});materials.push(sky);

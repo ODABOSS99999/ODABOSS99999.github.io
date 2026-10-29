@@ -1,0 +1,58 @@
+{
+  "accounts": [
+    "ODABOSS",
+    "McGowen_"
+  ],
+  "worldRecords": [
+    {
+      "label": "26 - New World",
+      "minutes": 4
+    },
+    {
+      "label": "owen-2 - New World",
+      "minutes": 91
+    },
+    {
+      "label": "owen-2 - New World (1)",
+      "minutes": 1
+    },
+    {
+      "label": "owen2 - New World",
+      "minutes": 3
+    },
+    {
+      "label": "owen2 - New World (1)",
+      "minutes": 60
+    },
+    {
+      "label": "owen2 - New World (2)",
+      "minutes": 45
+    },
+    {
+      "label": "vanilla-1.21 - New World",
+      "minutes": 6
+    }
+  ],
+  "source": "Dated local Java client logs",
+  "scannedLogs": 262,
+  "servers": [
+    {
+      "name": "Hypixel",
+      "firstRecorded": "2026-05-19",
+      "lastRecorded": "2026-10-28",
+      "recordedDays": 48
+    },
+    {
+      "name": "DonutSMP",
+      "firstRecorded": "2026-05-19",
+      "lastRecorded": "2026-10-26",
+      "recordedDays": 15
+    },
+    {
+      "name": "Other servers",
+      "firstRecorded": "2026-05-27",
+      "lastRecorded": "2026-10-04",
+      "recordedDays": 47
+    }
+  ]
+}

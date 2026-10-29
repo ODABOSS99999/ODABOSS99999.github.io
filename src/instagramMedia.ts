@@ -7,14 +7,15 @@ import type { Photo } from './content';
 import type { MetricsSnapshot } from './instagramMetrics';
 let request:Promise<InstagramSnapshot>|null=null,cachedAt=0,snapshotPending=false;
 let liveRequest:Promise<InstagramSnapshot>|null=null;
-function loadLiveSnapshot(url:string){
+function loadLiveSnapshot(url:string,force=false){
+ if(force)return fetch(url,{headers:liveFeedHeaders(),cache:'no-store',signal:AbortSignal.timeout(35000)}).then(response=>{if(!response.ok)throw Error('Latest post unavailable');return response.json();}).then(validateLiveFeed);
  if(!liveRequest)liveRequest=fetch(url,{headers:liveFeedHeaders(),cache:'no-store',signal:AbortSignal.timeout(35000)}).then(response=>{if(!response.ok)throw Error('Latest post unavailable');return response.json();}).then(validateLiveFeed).finally(()=>{liveRequest=null;});
  return liveRequest;
 }
 // Start at the lamp click; resolve failures so a closed scanner cannot leave an unhandled rejection.
 export function refreshRecentPosts(){
  const url=liveFeedUrl();
- return url?loadLiveSnapshot(url).catch(()=>null):Promise.resolve(null);
+ return url?loadLiveSnapshot(url,true).catch(()=>null):Promise.resolve(null);
 }
 let lastMetrics:MetricsSnapshot|null=null;
 export function loadInstagramSnapshot(force=false){
