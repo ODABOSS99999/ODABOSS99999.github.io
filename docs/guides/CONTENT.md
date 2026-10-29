@@ -50,7 +50,7 @@ Verified October 16, 2026 in a browser: https://utdmercury.com/staff_name/owen-m
 
 “UTD PO BOX andromeda #106” was supplied but is incomplete as a postal address. It is deliberately not published. Supply the exact official mailing address before adding postal correspondence. Check the public contact details when approving publication.
 
-After changes run `npm test` and `npm run build`, then `npm run dev`. Review phone and desktop layouts and open each new image in the viewer, including keyboard controls and missing-file handling. Update `ASSETS.md` for any third-party material and preserve permission/license evidence. Publication is a separate manual action described in `DEPLOYMENT.md`.
+After changes run `npm test` and `npm run build`, then `npm run dev`. Review phone and desktop layouts and open each new image in the viewer, including keyboard controls and missing-file handling. Update `docs/guides/ASSETS.md` for any third-party material and preserve permission/license evidence. Publication is a separate manual action described in `docs/deployment/DEPLOYMENT.md`.
 
 ## Identity
 

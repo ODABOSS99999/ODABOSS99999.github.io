@@ -12,7 +12,7 @@ export const destinations: { id: SectionId; title: string; subtitle: string; num
   { id: 'contact', title: 'Contact', subtitle: '', number: '06' },
   { id: 'music', title: 'Music', subtitle: '', number: '07' },
 ];
-// Supplied personal content only. See CONTENT.md before adding assets.
+// Supplied personal content only. See docs/guides/CONTENT.md before adding assets.
 export const owner = {
   brand: 'McGowen Media', email: 'owenmmcgowan@gmail.com', phone: '+19366475140', phoneDisplay: '(936) 647–5140',
   social: [{ label: 'LinkedIn', handle: 'Owen McGowan', url: 'https://www.linkedin.com/in/mcgowens/' }, { label: 'Instagram', handle: '@mcgowen_media', url: 'https://www.instagram.com/mcgowen_media/' }],

@@ -12,7 +12,7 @@ The development client reads `http://127.0.0.1:8765/music`. Each shelf opening, 
 
 ## Public endpoint
 
-`workers/music` contains the hosting adapter and its Node tests. A production build needs a public HTTPS `VITE_MUSIC_FEED_URL`; it never falls back to the visitor's localhost. Before deploying, verify that the Cloudflare account is on the free Workers plan with no paid usage. Worker secrets must be transferred privately from the local connection, never through chat or frontend build variables. See [the worker README](workers/music/README.md) for token rotation and deployment limitations.
+`workers/music` contains the hosting adapter and its Node tests. A production build needs a public HTTPS `VITE_MUSIC_FEED_URL`; it never falls back to the visitor's localhost. Before deploying, verify that the Cloudflare account is on the free Workers plan with no paid usage. Worker secrets must be transferred privately from the local connection, never through chat or frontend build variables. See [the worker README](../../workers/music/README.md) for token rotation and deployment limitations.
 
 ## Checks
 

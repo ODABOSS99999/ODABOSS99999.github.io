@@ -2,6 +2,8 @@
 
 Read only the row relevant to the task; confirm paths when changing architecture.
 
+See `docs/README.md` for the documentation index. Maintained guides live in `docs/guides/`, deployment records in `docs/deployment/`, and dated audits in `docs/history/`. Store generated QA evidence in ignored `output/`.
+
 | Task | Start here |
 | --- | --- |
 | Live entry | `index.html` → `src/main-illustrated.tsx` → `src/App2D.tsx` → `src/SeatedRoom.tsx` |
@@ -15,7 +17,7 @@ Read only the row relevant to the task; confirm paths when changing architecture
 | Instagram | `src/instagramLiveFeed.ts`, `src/InstagramStats.tsx`, `workers/instagram/src/` |
 | Live Instagram CORS / deployment | `supabase/functions/instagram-live/handler.mjs`, `workers/instagram/src/index.mjs`; regression checks: `node --test scripts/instagram-edge.test.mjs workers/instagram/src/index.test.mjs` |
 | Audio/music | `src/audio.ts`, `src/useRoomSound.ts`, `src/MusicShelf.tsx`, `src/musicData.ts`, `workers/music/src/` |
-| Content/assets guidance | `CONTENT.md`, `ASSETS.md`, `INSTAGRAM.md` on demand |
+| Content/assets guidance | `docs/guides/CONTENT.md`, `docs/guides/ASSETS.md`, `docs/guides/INSTAGRAM.md` on demand |
 
 `src/main.tsx` / `src/App.tsx` is an alternate entry. Trace the live HTML before editing older room implementations.
 

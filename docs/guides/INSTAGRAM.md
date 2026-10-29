@@ -53,7 +53,7 @@ node scripts/instagram-sync.mjs --input "C:\private\windsor-response.json"
 
 The Node tests use mocked network responses and tiny generated image fixtures; they verify host/URL guards, bounded streaming, local image conversion, archive merging, no full-video downloads, and retention after errors. A passing fixture test proves importer behavior, not that account authorization or the GitHub schedule is active.
 
-Instagram content remains owner material; this pipeline does not create a new license or authorize reuse of others' work. Record media provenance in `ASSETS.md` and remove a post from curated public selections if reuse rights are uncertain.
+Instagram content remains owner material; this pipeline does not create a new license or authorize reuse of others' work. Record media provenance in `docs/guides/ASSETS.md` and remove a post from curated public selections if reuse rights are uncertain.
 
 ## Engagement freshness (implemented October 15, 2026)
 
