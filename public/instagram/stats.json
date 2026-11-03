@@ -1,7 +1,7 @@
 {
   "version": 2,
   "account": "mcgowen_media",
-  "checkedAt": "2026-11-03T17:53:54.000Z",
+  "checkedAt": "2026-11-03T23:29:06.000Z",
   "followers": 4790,
   "posts": 482,
   "followerGains": [
@@ -191,7 +191,7 @@
     },
     {
       "date": "2026-11-02",
-      "count": 0
+      "count": 16
     }
   ],
   "followerHistory": [
@@ -389,6 +389,10 @@
     },
     {
       "date": "2026-11-03T17:53:54.000Z",
+      "count": 4790
+    },
+    {
+      "date": "2026-11-03T23:29:06.000Z",
       "count": 4790
     }
   ],
@@ -4136,6 +4140,12 @@
       "timestamp": "2026-11-02T13:17:23.000Z",
       "caption": "🐿️",
       "permalink": "https://www.instagram.com/p/DfPZQOxvUQd/"
+    },
+    {
+      "id": "18610666507066166",
+      "timestamp": "2026-11-03T16:01:36.000Z",
+      "caption": "Don’t give it wings 🪽 \n\n#utdsquirrel #squirrel #squirrelphotography #utd #nature",
+      "permalink": "https://www.instagram.com/p/DfSQ3Ucm_Pn/"
     }
   ]
 }
