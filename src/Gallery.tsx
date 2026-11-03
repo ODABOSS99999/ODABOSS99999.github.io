@@ -7,7 +7,9 @@ export function Image({ photo, ...props }: { photo: Photo; className?: string; l
   useEffect(()=>setFailed(false),[photo.src]);
   return failed ? <div className="image-missing" role="img" aria-label={`${photo.alt} — image unavailable`}>Image unavailable</div> : <img {...props} src={photo.src} width={photo.width} height={photo.height} alt={photo.alt} onError={()=>setFailed(true)}/>;
 }
-export default function Gallery({ items, intimate = false, captionOnly = false }: { items: Photo[]; intimate?: boolean; captionOnly?: boolean }) {
+export default function Gallery({ items, intimate = false, captionOnly = false, previewLimit }: { items: Photo[]; intimate?: boolean; captionOnly?: boolean; previewLimit?: number }) {
+  const [expanded,setExpanded] = useState(false);
+  const visibleItems = previewLimit && !expanded ? items.slice(0,previewLimit) : items;
   const [active,setActive] = useState<number|null>(null);
   const dialog = useRef<HTMLDialogElement>(null);
   const origin = useRef<HTMLButtonElement|null>(null);
@@ -25,10 +27,11 @@ export default function Gallery({ items, intimate = false, captionOnly = false }
     const preload = [-1,1].map(delta=>{const img=new window.Image();img.src=items[(active+delta+items.length)%items.length].src;return img;});
     return ()=>{preload.forEach(img=>{img.src='';});};
   },[active,items]);
-  return <><div className={`gallery ${intimate?'intimate':''}`}>{items.map((photo,i)=><figure key={photo.id}>
+  return <><div className={`gallery ${intimate?'intimate':''}`}>{visibleItems.map((photo,i)=><figure key={photo.id}>
     {photo.sourceUrl?.startsWith("https://www.instagram.com/") ? <a className="photo-image-link" href={photo.sourceUrl} target="_blank" rel="noreferrer" aria-label={`View ${photo.alt} on Instagram (opens in a new tab)`}><Image photo={photo} loading="lazy"/></a> : <button aria-label={`View ${photo.alt}`} onClick={e=>{origin.current=e.currentTarget;setActive(i);}}><Image photo={photo} loading="lazy"/></button>}
     {(photo.caption||photo.credit||photo.note||photo.sourceUrl||photo.metrics)&&<figcaption>{captionOnly ? <p className="publication-cutline">{photo.caption}{photo.credit&&<small>{photo.credit}</small>}</p> : <PostDetails photo={photo} hideSource={photo.sourceUrl?.startsWith('https://www.instagram.com/')}/>}{intimate&&photo.note&&<p>{photo.note}</p>}</figcaption>}
   </figure>)}</div>
+  {previewLimit && items.length>previewLimit && <button className="text-link project-gallery-toggle" aria-expanded={expanded} onClick={()=>setExpanded(value=>!value)}>{expanded ? 'Show fewer photos ↑' : `Show all ${items.length} photos ↓`}</button>}
   <dialog className="image-viewer" ref={dialog} aria-label="Photograph viewer" onCancel={e=>{e.preventDefault();e.stopPropagation();setActive(null);}} onClick={e=>{if(e.target===e.currentTarget)setActive(null);}} onKeyDown={e=>{if(e.key==='Tab'){const controls=[...e.currentTarget.querySelectorAll<HTMLElement>('button:not([disabled]),a[href]')];const first=controls[0],last=controls[controls.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last?.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first?.focus();}}if(e.key==='ArrowRight'){e.preventDefault();change(1);}if(e.key==='ArrowLeft'){e.preventDefault();change(-1);}}}>
     {active!==null&&<><div className="viewer-top"><span aria-live="polite">{active+1} / {items.length}</span><ExitSign autoFocus onExit={()=>setActive(null)} label="Close photograph viewer"/></div>
     <figure className="viewer-image" onTouchStart={e=>{start.current={x:e.touches[0].clientX,y:e.touches[0].clientY};}} onTouchEnd={e=>{const p=start.current;start.current=null;if(!p)return;const dx=e.changedTouches[0].clientX-p.x,dy=e.changedTouches[0].clientY-p.y;if(Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.5)change(dx<0?1:-1);}}>

@@ -23,7 +23,8 @@ describe('library navigation', () => {
     expect(screen.queryByRole('banner')).toBeNull();
     await user.click(screen.getByRole('button',{name:destination.title}));
     await waitFor(()=>expect(location.pathname).toBe(`/${destination.id}`));
-    const heading=await screen.findByRole('heading',{name:new RegExp(`^${destination.title}`),level:1});
+    // The first collection is loaded on demand and may need time to compile in tests.
+    const heading=await screen.findByRole('heading',{name:new RegExp(`^${destination.title}`),level:1},{timeout:5000});
     await waitFor(()=>expect(document.activeElement).toBe(heading));
     await user.click(screen.getByRole('button',{name:`Exit ${destination.title} and return to library`}));
     await waitFor(()=>expect(location.pathname).toBe('/'));

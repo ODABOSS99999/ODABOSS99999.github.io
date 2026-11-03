@@ -334,3 +334,9 @@ html,body,#root{width:100%;height:100%;overflow:hidden}
 .project-topics{margin-top:20px}.section-engineering .project{scroll-margin-block:80px 24px}.section-engineering .project:focus{outline:2px solid #927348;outline-offset:4px}
 
 .project-heading{display:flex;align-items:center;gap:24px;flex-wrap:wrap;margin-bottom:24px}.project-heading h2{margin:0}.project-logo{display:flex;align-items:center;justify-content:center;min-height:88px;max-width:100%;border-radius:4px}.project-logo img{display:block;width:auto;max-width:min(280px,100%);height:auto;max-height:100px;object-fit:contain}.project-logo:focus-visible{outline:3px solid var(--brass);outline-offset:6px}.project .gallery{max-width:560px;margin-top:32px}
+.collection-panel .project .gallery{max-width:none;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin-bottom:16px}
+.collection-panel .project .gallery figure:nth-child(3n+1){grid-column:auto}
+.collection-panel .project .gallery img{width:100%;height:240px;object-fit:contain;background:#d8ceb4}
+.project-gallery-toggle{margin:0 0 32px;min-height:44px}
+@media(max-width:700px){.collection-panel .project .gallery{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.collection-panel .project .gallery img{height:190px}}
+@media(max-width:400px){.collection-panel .project .gallery{grid-template-columns:1fr}.collection-panel .project .gallery img{height:auto;max-height:330px}}

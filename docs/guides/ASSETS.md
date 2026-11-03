@@ -38,3 +38,7 @@ Game Boy build image: official LearnToBot reel https://www.instagram.com/reel/DL
 ## Mercury update (October 28, 2026)
 
 Added the October 27 article "Ella Boh rocks in Dallas, talks mental health" from https://utdmercury.com/35930/life-arts/ella-boh-rocks-in-dallas-talks-mental-health/, also listed first in the owner's Mercury staff archive. All three article photographs credit Owen McGowan. `public/publications/mercury-ella-boh-{1,2,3}.webp` are sRGB web copies of the credited CMYK TIFFs, resized proportionally to at most 2000 pixels; downloaded source copies remain in ignored `output/`. The lead cutline is preserved; inline images use descriptive alt text without invented cutlines. No new license is applied.
+
+## Engineering galleries (November 3, 2026)
+
+`public/projects/rocketry/` contains owner photographs from eight rocketry posts in the owner's October 18 Instagram export. Canonical post links are recorded in `public/projects/photo-sources.json`; gallery dimensions and captions live in `src/projectImages.json`. Originals remain in the Downloads export ZIPs. Web copies strip metadata, preserve composition, and fit within 1600 pixels. These show team activity without claiming individual design ownership or new engineering results.
