@@ -1,0 +1,59 @@
+{
+  "username": "ODABOSS",
+  "uuid": "ca840504-2fba-4600-a8a5-19d60d5fde42",
+  "profile": "Peach",
+  "profileId": "6b95faa4-087b-4945-b935-1f864bbc2dad",
+  "sources": {
+    "progress": "2026-11-03T04:44:01.327Z",
+    "currency": "2026-11-03T02:35:13.189Z",
+    "pet": "2026-11-03T02:27:06.077Z"
+  },
+  "level": 130.69,
+  "purse": 282339677,
+  "personalBank": 0,
+  "coopBank": 1,
+  "skills": [
+    {
+      "name": "Combat",
+      "level": 40
+    },
+    {
+      "name": "Farming",
+      "level": 32
+    },
+    {
+      "name": "Fishing",
+      "level": 19
+    },
+    {
+      "name": "Mining",
+      "level": 50
+    },
+    {
+      "name": "Foraging",
+      "level": 18
+    },
+    {
+      "name": "Enchanting",
+      "level": 46
+    },
+    {
+      "name": "Alchemy",
+      "level": 14
+    },
+    {
+      "name": "Carpentry",
+      "level": 24
+    },
+    {
+      "name": "Taming",
+      "level": 39
+    },
+    {
+      "name": "Hunting",
+      "level": 17
+    }
+  ],
+  "floor7Completions": 101,
+  "cachedPet": "[Lvl 100] Rabbit"
+}
