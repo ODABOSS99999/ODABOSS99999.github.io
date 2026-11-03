@@ -1,4 +1,6 @@
 // Caption decisions cover the saved archive through October 28, 2026.
+// Eight newer coauthor headers verified in signed-in Instagram on November 3, 2026.
+// Pending invitations are not accepted coauthor evidence.
 // All 60 saved covers were visually inspected; live coauthor headers override caption-only decisions.
 // Live comments and image descriptions were available for only part of the archive.
 // Uncertain cases count by owner instruction; no payment or formal partnership is implied.
@@ -54,5 +56,11 @@ const groups:[PartnershipReview['kind'],string,string[]][]=[
  ["partnership","Glaive concert coverage: artist named in caption and performer shown on stage in the reviewed cover (2026-10-26)",["18167362216421122"]],
  ["partnership","Concert cover shows a performer on stage under illuminated crosses; the live post tags glaive and Live Nation.",["18109472219184318"]],
  ["partnership","Coauthored with @utdsquirrels_; Instagram header confirms the external collaboration.",["18027964538698670"]],
+ ["partnership","Coauthored with @utdsquirrels_; accepted Instagram header verified November 3, 2026.",["18171098911482450"]],
+ ["partnership","Coauthored with @glaive_updates, @churchofglaive and @glaivecontent; accepted collaborator list verified November 3, 2026. Other pending invitations are excluded.",["18082820339355653"]],
+ ["partnership","Coauthored with @glaivecontent; accepted Instagram header verified November 3, 2026.",["17888025993687613"]],
+ ["partnership","Coauthored with @glaivecontent and @glaive_updates; accepted collaborator list verified November 3, 2026.",["17896580949426847"]],
+ ["partnership","Coauthored with @churchofglaive; accepted Instagram header verified November 3, 2026.",["18445901032130297","18107241104632880"]],
+ ["partnership","Coauthored with @glaive_updates; accepted Instagram header verified November 3, 2026.",["18133838842775938","18119416481089473"]],
 ];
 export const partnershipReviews:Record<string,PartnershipReview>=Object.fromEntries(groups.flatMap(([kind,reason,ids])=>ids.map(id=>[id,{kind,reason}])));
