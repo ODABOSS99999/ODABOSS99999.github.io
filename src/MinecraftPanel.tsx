@@ -5,6 +5,10 @@ import account from '../public/minecraft/account.json';
 import './minecraft.css';
 import history from '../public/minecraft/history.json';
 import skinHistory from '../public/minecraft/skins.json';
+import skyblock from '../public/minecraft/skyblock.json';
+
+const coins = (value: number) => `${value.toLocaleString('en-US')} ${value === 1 ? 'coin' : 'coins'}`;
+const savedDate = (value: string) => new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'America/Chicago' });
 
 type SkinRecord = { path: string; model: string; label: string };
 const skins: SkinRecord[] = [{ path: account.skin.path, model: account.model, label: 'Current skin' }, ...skinHistory.skins];
@@ -43,9 +47,17 @@ export default function MinecraftPanel({ onClose }: { onClose: () => void }) {
       <section className="mc-view" role="tabpanel" id={`mc-view-${views.indexOf(view)}`} aria-labelledby={`mc-tab-${views.indexOf(view)}`} tabIndex={0}>
         {view === 'Hypixel' && <>
           <p className="mc-kicker">HYPIXEL SKYBLOCK</p><h3>SkyBlock stats</h3>
-          <div className="mc-networth"><span>Net worth</span><strong>Unavailable</strong><span>No verified valuation connected yet.</span></div>
-          <dl className="mc-stats">{['Purse & bank', 'SkyBlock level', 'Skill average', 'Catacombs', 'Slayers', 'Pets & gear'].map(label => <div key={label}><dt>{label}</dt><dd>Unavailable</dd></div>)}</dl>
-          <p className="mc-note">SkyBlock statistics need an authorized Hypixel data source. Values will appear here when connected.</p>
+          <div className="mc-networth"><span>{skyblock.profile} profile · saved snapshot</span><strong>Level {skyblock.level.toFixed(2)}</strong><span>Progress cache saved {savedDate(skyblock.sources.progress)}</span></div>
+          <dl className="mc-stats">
+            <div><dt>Purse</dt><dd>{coins(skyblock.purse)}</dd></div>
+            <div><dt>Personal bank</dt><dd>{coins(skyblock.personalBank)}</dd></div>
+            <div><dt>Co-op bank</dt><dd>{coins(skyblock.coopBank)}</dd></div>
+            <div><dt>Floor 7 completions</dt><dd>{skyblock.floor7Completions.toLocaleString('en-US')}</dd></div>
+            <div><dt>Last cached pet</dt><dd>{skyblock.cachedPet ?? 'Not recorded'}</dd></div>
+          </dl>
+          <details><summary>Skill levels</summary><dl className="mc-stats">{skyblock.skills.map(skill => <div key={skill.name}><dt>{skill.name}</dt><dd>{skill.level}</dd></div>)}</dl></details>
+          <p className="mc-note">Saved by SkyHanni, SkyBlock API and Skyblocker on my own client. These caches can be incomplete or older than their save dates. Balances saved {savedDate(skyblock.sources.currency)}; pet saved {savedDate(skyblock.sources.pet)}. This is not live data.</p>
+          <p className="mc-note">Net worth, Catacombs level, slayers and a complete gear inventory are not verified in this snapshot. <a href={`https://sky.shiiyu.moe/stats/${skyblock.uuid.replaceAll('-', '')}/${skyblock.profile}`} target="_blank" rel="noopener noreferrer">View ODABOSS on SkyCrypt ↗<span className="sr-only"> (opens in a new tab)</span></a></p>
         </>}
         {view === 'Skin' && <>
           <MinecraftSkin skin={selectedSkin.path} slim={selectedSkin.model === 'slim'} cape={skinIndex === 0 ? account.cape?.path : undefined} />

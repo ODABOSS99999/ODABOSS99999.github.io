@@ -3,6 +3,10 @@ import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import MinecraftPanel from './MinecraftPanel';
 import SeatedRoom from './SeatedRoom';
+vi.mock('../public/minecraft/skyblock.json', async importOriginal => {
+  const actual = await importOriginal<{ default: Record<string, unknown> }>();
+  return { default: { ...actual.default, level: 130.66, purse: 283064892, personalBank: 0, coopBank: 1, floor7Completions: 101 } };
+});
 vi.mock('./MinecraftSkin', () => ({ default: () => <div role="img" aria-label="ODABOSS’s 3D skin" /> }));
 
 describe('Minecraft profile', () => {
@@ -50,6 +54,25 @@ describe('Minecraft profile', () => {
     expect(screen.getByText('SkyBlock stats')).toBeTruthy();
     await user.keyboard('{Home}');
     expect(document.activeElement).toBe(tabs[0]);
+  });
+
+  it('shows dated Peach stats, preserves zero balances and reveals individual skills', async () => {
+    const user = userEvent.setup();
+    render(<MinecraftPanel onClose={vi.fn()}/>);
+    await user.click(screen.getByRole('tab', { name: 'Hypixel' }));
+    expect(screen.getByText('Peach profile · saved snapshot')).toBeTruthy();
+    expect(screen.getByText('Level 130.66')).toBeTruthy();
+    expect(screen.getByText('283,064,892 coins')).toBeTruthy();
+    expect(screen.getByText('0 coins')).toBeTruthy();
+    expect(screen.getByText('1 coin')).toBeTruthy();
+    expect(screen.getByText('101')).toBeTruthy();
+    expect(screen.getByText(/This is not live data/)).toBeTruthy();
+    expect(screen.queryByText('Unavailable')).toBeNull();
+    const skills = screen.getByText('Skill levels');
+    await user.click(skills);
+    expect(skills.parentElement?.hasAttribute('open')).toBe(true);
+    expect(screen.getByText('Mining')).toBeTruthy();
+    expect(screen.getByRole('link', { name: /View ODABOSS on SkyCrypt/ }).getAttribute('href')).toBe('https://sky.shiiyu.moe/stats/ca8405042fba4600a8a519d60d5fde42/Peach');
   });
 
   it('closes on Escape cancellation and restores scroll and focus on unmount', () => {
