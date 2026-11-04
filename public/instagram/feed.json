@@ -1,8 +1,20 @@
 {
   "version": 1,
   "account": "mcgowen_media",
-  "fetchedAt": "2026-11-04T15:29:41.602Z",
+  "fetchedAt": "2026-11-04T21:56:13.469Z",
   "posts": [
+    {
+      "id": "18083308724343615",
+      "caption": "A stop-motion for the desk setup.\nFeaturing the Royal Kludge S98 Winter Limited Edition. Thanks to @royal_kludge for gifting me this keyboard!\nUse my code MCGOWEN and check out RK’s Black Friday deals through my affiliate link:\nhttps://rkgamingstore.com/discount/mcgowen?redirect=/pages/black-friday-deals-2026&aff=1177\nI earn a commission on purchases made through my link.\n#RoyalKludge #RKS98 #StopMotion #MechanicalKeyboard #DeskSetup",
+      "permalink": "https://www.instagram.com/reel/DfVKHuIhq_s/",
+      "timestamp": "2026-11-04T19:01:01.000Z",
+      "mediaType": "VIDEO",
+      "image": {
+        "src": "/instagram/media/18083308724343615.webp",
+        "width": 720,
+        "height": 1280
+      }
+    },
     {
       "id": "18115317065156127",
       "caption": "🐿️",
