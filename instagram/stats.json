@@ -1,7 +1,7 @@
 {
   "version": 2,
   "account": "mcgowen_media",
-  "checkedAt": "2026-11-05T02:32:37.000Z",
+  "checkedAt": "2026-11-05T11:04:41.000Z",
   "followers": 4792,
   "posts": 483,
   "followerGains": [
@@ -417,6 +417,10 @@
     },
     {
       "date": "2026-11-05T02:32:37.000Z",
+      "count": 4792
+    },
+    {
+      "date": "2026-11-05T11:04:41.000Z",
       "count": 4792
     }
   ],
@@ -4188,6 +4192,12 @@
       "timestamp": "2026-11-04T19:01:01.000Z",
       "caption": "A stop-motion for the desk setup.\nFeaturing the Royal Kludge S98 Winter Limited Edition. Thanks to @royal_kludge for gifting me this keyboard!\nUse my code MCGOWEN and check out RK’s Black Friday deals through my affiliate link:\nhttps://rkgamingstore.com/discount/mcgowen?redirect=/pages/black-friday-deals-2026&aff=1177\nI earn a commission on purchases made through my link.\n#RoyalKludge #RKS98 #StopMotion #MechanicalKeyboard #DeskSetup",
       "permalink": "https://www.instagram.com/reel/DfVKHuIhq_s/"
+    },
+    {
+      "id": "17966730267238442",
+      "timestamp": "2026-11-04T22:34:27.000Z",
+      "caption": "A stop-motion for the desk setup.\nFeaturing the Royal Kludge S98 Winter Limited Edition. Thanks to @royal_kludge for gifting me this keyboard!\nUse my code MCGOWEN and check out RK’s Black Friday deals through my affiliate link:\nhttps://rkgamingstore.com/discount/mcgowen?redirect=/pages/black-friday-deals-2026&aff=1177\nI earn a commission on purchases made through my link.\n#RoyalKludge #RKS98 #StopMotion #MechanicalKeyboard #DeskSetup",
+      "permalink": "https://www.instagram.com/reel/DfVihC1BOPE/"
     }
   ]
 }
