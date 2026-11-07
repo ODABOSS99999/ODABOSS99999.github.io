@@ -1,9 +1,9 @@
 {
   "version": 2,
   "account": "mcgowen_media",
-  "checkedAt": "2026-11-07T14:07:58.000Z",
-  "followers": 4854,
-  "posts": 485,
+  "checkedAt": "2026-11-07T22:49:18.000Z",
+  "followers": 4851,
+  "posts": 486,
   "followerGains": [
     {
       "date": "2026-09-17",
@@ -207,7 +207,7 @@
     },
     {
       "date": "2026-11-06",
-      "count": 0
+      "count": 39
     }
   ],
   "followerHistory": [
@@ -454,6 +454,10 @@
     {
       "date": "2026-11-07T14:07:58.000Z",
       "count": 4854
+    },
+    {
+      "date": "2026-11-07T22:49:18.000Z",
+      "count": 4851
     }
   ],
   "trackedPosts": [
@@ -4236,6 +4240,12 @@
       "timestamp": "2026-11-06T12:49:17.000Z",
       "caption": "I think this is the last squirrel post for a bit (i finally will have time to take more pics!!)",
       "permalink": "https://www.instagram.com/p/DfZpPV3mwUa/"
+    },
+    {
+      "id": "17958481002311925",
+      "timestamp": "2026-11-07T17:01:02.000Z",
+      "caption": "YOUR CAR MIGHT BE NEXT.\n\nJust a sneak peek from CARS & COMETS at UT Dallas!\n\nGot a TON of clean shots today, and I’m dropping DAILY CAR POSTS starting TOMORROW!\n\nSee a car you recognize? Tag the owner in the comments!\n\nShoutout to @dallasformularacing !\n\n#CarsAndComets #DallasCars #CarPhotography #DFWCarScene #CarsAndCoffee",
+      "permalink": "https://www.instagram.com/p/Dfcqtl8BMjH/"
     }
   ]
 }
