@@ -1,9 +1,9 @@
 {
   "version": 2,
   "account": "mcgowen_media",
-  "checkedAt": "2026-11-08T10:30:21.000Z",
-  "followers": 4850,
-  "posts": 486,
+  "checkedAt": "2026-11-08T17:06:57.000Z",
+  "followers": 4849,
+  "posts": 487,
   "followerGains": [
     {
       "date": "2026-09-17",
@@ -466,6 +466,10 @@
     {
       "date": "2026-11-08T10:30:21.000Z",
       "count": 4850
+    },
+    {
+      "date": "2026-11-08T17:06:57.000Z",
+      "count": 4849
     }
   ],
   "trackedPosts": [
@@ -4254,6 +4258,12 @@
       "timestamp": "2026-11-07T17:01:02.000Z",
       "caption": "YOUR CAR MIGHT BE NEXT.\n\nJust a sneak peek from CARS & COMETS at UT Dallas!\n\nGot a TON of clean shots today, and I’m dropping DAILY CAR POSTS starting TOMORROW!\n\nSee a car you recognize? Tag the owner in the comments!\n\nShoutout to @dallasformularacing !\n\n#CarsAndComets #DallasCars #CarPhotography #DFWCarScene #CarsAndCoffee",
       "permalink": "https://www.instagram.com/p/Dfcqtl8BMjH/"
+    },
+    {
+      "id": "18101611850432884",
+      "timestamp": "2026-11-08T13:42:50.000Z",
+      "caption": "DAY 1 — CARS & COMETS\n\nThe ultimate grocery getter?\n\nOwner: @roktshp \nEvent: @dallasformularacing\n\nMore clean builds dropping DAILY! Follow @mcgowen_media so you don’t miss yours.\n\n#AudiRS6 #RS6Avant #AudiSport #CarsAndComets #CarPhotography",
+      "permalink": "https://www.instagram.com/p/Dfe49SiG3Kt/"
     }
   ]
 }
