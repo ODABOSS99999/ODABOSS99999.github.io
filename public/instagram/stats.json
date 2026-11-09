@@ -1,9 +1,9 @@
 {
   "version": 2,
   "account": "mcgowen_media",
-  "checkedAt": "2026-11-09T08:03:07.000Z",
+  "checkedAt": "2026-11-09T18:53:52.000Z",
   "followers": 4845,
-  "posts": 487,
+  "posts": 488,
   "followerGains": [
     {
       "date": "2026-09-17",
@@ -481,6 +481,10 @@
     },
     {
       "date": "2026-11-09T08:03:07.000Z",
+      "count": 4845
+    },
+    {
+      "date": "2026-11-09T18:53:52.000Z",
       "count": 4845
     }
   ],
@@ -4276,6 +4280,12 @@
       "timestamp": "2026-11-08T13:42:50.000Z",
       "caption": "DAY 1 — CARS & COMETS\n\nThe ultimate grocery getter?\n\nOwner: @roktshp \nEvent: @dallasformularacing\n\nMore clean builds dropping DAILY! Follow @mcgowen_media so you don’t miss yours.\n\n#AudiRS6 #RS6Avant #AudiSport #CarsAndComets #CarPhotography",
       "permalink": "https://www.instagram.com/p/Dfe49SiG3Kt/"
+    },
+    {
+      "id": "17910161163332682",
+      "timestamp": "2026-11-09T12:42:19.000Z",
+      "caption": "This red Porsche 911 (996) was looking clean at Cars & Comets.\n\nOwner: @thegoldenjew95\n\nMore builds coming daily. Follow for the next feature.\n\n#Porsche911 #Porsche996 #CarsAndCoffee #CarPhotography #CarsAndComet",
+      "permalink": "https://www.instagram.com/p/DfhW04bm_DE/"
     }
   ]
 }
