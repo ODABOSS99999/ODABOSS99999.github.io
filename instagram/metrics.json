@@ -3,7 +3,7 @@
   "account": "mcgowen_media",
   "source": "Windsor.ai / Instagram",
   "scope": "instagram-organic-media",
-  "fetchedAt": "2026-11-10T09:57:55.998Z",
+  "fetchedAt": "2026-11-10T17:55:44.786Z",
   "posts": [
     {
       "id": "17948663019273239",
@@ -4992,18 +4992,18 @@
     {
       "id": "18171098911482450",
       "permalink": "https://www.instagram.com/p/DfPZQOxvUQd/",
-      "likes": 63,
+      "likes": 64,
       "comments": 8,
-      "views": 1269,
-      "checkedAt": "2026-11-09T18:53:47.000Z"
+      "views": 1297,
+      "checkedAt": "2026-11-10T17:55:45.000Z"
     },
     {
       "id": "18610666507066166",
       "permalink": "https://www.instagram.com/p/DfSQ3Ucm_Pn/",
-      "likes": 72,
+      "likes": 73,
       "comments": 8,
-      "views": 2020,
-      "checkedAt": "2026-11-09T18:53:47.000Z"
+      "views": 2048,
+      "checkedAt": "2026-11-10T17:55:45.000Z"
     },
     {
       "id": "18115317065156127",
@@ -5048,26 +5048,34 @@
     {
       "id": "17958481002311925",
       "permalink": "https://www.instagram.com/p/Dfcqtl8BMjH/",
-      "likes": 207,
+      "likes": 208,
       "comments": 4,
-      "views": 6346,
-      "checkedAt": "2026-11-10T09:57:56.000Z"
+      "views": 6376,
+      "checkedAt": "2026-11-10T17:55:45.000Z"
     },
     {
       "id": "18101611850432884",
       "permalink": "https://www.instagram.com/p/Dfe49SiG3Kt/",
-      "likes": 76,
+      "likes": 81,
       "comments": 8,
-      "views": 1912,
-      "checkedAt": "2026-11-10T09:57:56.000Z"
+      "views": 1944,
+      "checkedAt": "2026-11-10T17:55:45.000Z"
     },
     {
       "id": "17910161163332682",
       "permalink": "https://www.instagram.com/p/DfhW04bm_DE/",
       "likes": 44,
       "comments": 6,
-      "views": 1256,
-      "checkedAt": "2026-11-10T09:57:56.000Z"
+      "views": 1281,
+      "checkedAt": "2026-11-10T17:55:45.000Z"
+    },
+    {
+      "id": "18156322615517054",
+      "permalink": "https://www.instagram.com/p/DfkJIhzFjP8/",
+      "likes": 15,
+      "comments": 1,
+      "views": 591,
+      "checkedAt": "2026-11-10T17:55:45.000Z"
     }
   ]
 }

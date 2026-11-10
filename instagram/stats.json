@@ -1,9 +1,9 @@
 {
   "version": 2,
   "account": "mcgowen_media",
-  "checkedAt": "2026-11-10T09:58:01.000Z",
-  "followers": 4844,
-  "posts": 488,
+  "checkedAt": "2026-11-10T17:55:48.000Z",
+  "followers": 4839,
+  "posts": 489,
   "followerGains": [
     {
       "date": "2026-09-17",
@@ -219,7 +219,7 @@
     },
     {
       "date": "2026-11-09",
-      "count": 0
+      "count": 2
     }
   ],
   "followerHistory": [
@@ -498,6 +498,10 @@
     {
       "date": "2026-11-10T09:58:01.000Z",
       "count": 4844
+    },
+    {
+      "date": "2026-11-10T17:55:48.000Z",
+      "count": 4839
     }
   ],
   "trackedPosts": [
@@ -4298,6 +4302,12 @@
       "timestamp": "2026-11-09T12:42:19.000Z",
       "caption": "This red Porsche 911 (996) was looking clean at Cars & Comets.\n\nOwner: @thegoldenjew95\n\nMore builds coming daily. Follow for the next feature.\n\n#Porsche911 #Porsche996 #CarsAndCoffee #CarPhotography #CarsAndComet",
       "permalink": "https://www.instagram.com/p/DfhW04bm_DE/"
+    },
+    {
+      "id": "18156322615517054",
+      "timestamp": "2026-11-10T14:40:01.000Z",
+      "caption": "“Take off, hit that runway.” — THEKIDSZN, IMPULSIVE\n\nFour wheels are cool, but this Kawasaki Vulcan 900 Custom had other plans.\n\n@dallasformularacing \n\nMore from Cars & Comets dropping daily. Follow for the next feature. Please tag/share with owner aswell!\n\n#CarsAndComets #KawasakiVulcan #MotorcyclePhotography #DallasCarScene #UTDallas",
+      "permalink": "https://www.instagram.com/p/DfkJIhzFjP8/"
     }
   ]
 }
