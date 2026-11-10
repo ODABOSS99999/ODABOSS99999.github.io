@@ -1,0 +1,11 @@
+.brand-collaborations{margin:24px 0 36px;padding-block:20px;border-block:1px solid #82765755}
+.brand-collaborations h2{margin:0 0 18px;font:500 clamp(25px,4vw,34px)/1.15 var(--serif)}
+.brand-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 28px;list-style:none;margin:0;padding:0}
+.brand-list li{min-width:0}
+.brand-list a,.brand-name{display:flex;justify-content:space-between;gap:12px;align-items:center;min-height:44px;font:500 18px/1.25 var(--serif);text-decoration:none}
+.brand-list a:hover{text-decoration:underline;text-underline-offset:4px}
+.brand-list a:focus-visible,.brand-collaborations summary:focus-visible{outline:2px solid currentColor;outline-offset:4px}
+.brand-list small{display:block;font:400 11px/1.5 'DM Sans',sans-serif;opacity:.8}
+.brand-collaborations summary{cursor:pointer;min-height:44px;align-content:center;font:500 12px/1.5 'DM Sans',sans-serif;margin-top:18px}
+.brand-collaborations details[open] summary{margin-bottom:16px}
+@media(max-width:420px){.brand-list{gap:14px 18px}.brand-list a,.brand-name{font-size:17px}}

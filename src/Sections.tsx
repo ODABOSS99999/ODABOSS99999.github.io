@@ -8,6 +8,7 @@ import InstagramFeed from './InstagramFeed';
 import EngineeringMentions from './EngineeringMentions';
 import MusicShelf from './MusicShelf';
 import ContactCard from './ContactCard';
+import BrandCollaborations from './BrandCollaborations';
 export default function Sections({ section, navigate }: { section: SectionId; navigate: (id: SectionId|'library')=>void }) {
   const panel=useRef<HTMLDialogElement>(null);
   useEffect(()=>{const el=panel.current;el?.showModal();const before=document.body.style.overflow;document.body.style.overflow='hidden';return()=>{el?.close();document.body.style.overflow=before;};},[]);
@@ -16,7 +17,7 @@ export default function Sections({ section, navigate }: { section: SectionId; na
 
   return <dialog ref={panel} className={`collection-panel${section==='contact' ? ' contact-card-panel' : ''}`} aria-labelledby="section-title" onCancel={e=>{e.preventDefault();navigate('library');}}><article className={`section-page section-${section}`}><div className="section-exit-rail">{section==='contact'?<button className="contact-card-close" aria-label="Exit Contact and return to library" onClick={()=>navigate('library')}>×</button>:<ExitSign className="section-exit" label={`Exit ${meta.title} and return to library`} onExit={()=>navigate('library')}/> }</div><div className="section-heading"><h1 tabIndex={-1} id="section-title">{section==='contact' ? 'Contact card' : meta.title}<span className="serif-dot">.</span></h1></div>
 
-    {section==='photography'&&<><InstagramFeed mode="portfolio"/><section id="favorite-posts" className="portfolio-favorites"><h2>Personal Favorites</h2><InstagramFeed mode="favorites"/></section><InstagramFeed mode="latest"/></>}
+    {section==='photography'&&<><BrandCollaborations/><InstagramFeed mode="portfolio"/><section id="favorite-posts" className="portfolio-favorites"><h2>Personal Favorites</h2><InstagramFeed mode="favorites"/></section><InstagramFeed mode="latest"/></>}
     {section==='favorites'&&<InstagramFeed mode="favorites"/>}
     {section==='about'&&owner.biography.length>0&&<div className="about-layout">
       <details className="about-topics"><summary>Jump to a topic</summary>
@@ -25,6 +26,7 @@ export default function Sections({ section, navigate }: { section: SectionId; na
       <div className="biography">{owner.biography.map((p,i)=><section key={p.heading} id={`about-topic-${i}`} tabIndex={-1} aria-labelledby={`about-heading-${i}`}>
         {i===0&&<figure className="about-profile-frame"><img src="/instagram/profile.jpg" width="150" height="150" alt="Owen McGowan"/></figure>}
         {p.heading&&<h2 id={`about-heading-${i}`}>{p.heading}</h2>}<p>{p.text}</p>
+        {p.heading==='McGowen Media'&&<BrandCollaborations/>}
         {p.heading==='At UT Dallas'&&<a className="mercury-profile" href="https://utdmercury.com/staff_name/owen-mcgowan/" target="_blank" rel="noreferrer"><span className="eyebrow">THE UTD MERCURY · STAFF PROFILE</span><span className="mercury-profile-title">Owen McGowan, Photographer <span aria-hidden="true">↗</span></span><span className="mercury-profile-excerpt">“Owen McGowan is a freshman at UTD from The Woodlands, Texas.”</span></a>}
         {p.items&&<ul className="about-clubs">{p.items.map(item=><li key={item.name}><h3>{item.name}</h3><p>{item.detail}</p></li>)}</ul>}
       </section>)}</div>
