@@ -18,6 +18,7 @@ export default function RecommendationLetter({ onClose }: { onClose: () => void 
     <header><p>MCGOWEN MEDIA</p><ExitSign onExit={onClose} label="Close recommendation letter" autoFocus /></header>
     <article><h2 id="recommendation-title">Letters of recommendation</h2>
       {recommendations.map(item => <figure key={item.name}>
+        {item.rating && <p className="recommendation-rating" aria-label="Rated 5 out of 5">{item.rating}</p>}
         {item.quote ? <blockquote>“{item.text}”</blockquote> : <p className="recommendation-summary">{item.text}</p>}
         <figcaption><strong>{item.name}</strong><span>{item.brand}</span></figcaption>
       </figure>)}

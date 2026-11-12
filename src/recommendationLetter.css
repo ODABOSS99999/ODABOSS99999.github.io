@@ -8,4 +8,6 @@
 .recommendation-letter blockquote,.recommendation-summary{font:24px/1.45 var(--serif);margin:0 0 18px}.recommendation-letter blockquote{font-style:italic}
 .recommendation-letter figcaption{font:12px/1.7 var(--sans)}.recommendation-letter figcaption span{display:block;color:#526050}
 .recommendation-letter button:focus-visible{outline:3px solid #365a43;outline-offset:4px}
+.recommendation-letter blockquote{white-space:pre-line}.recommendation-rating{font:600 13px/1.5 var(--sans);margin:0 0 12px}
+.recommendation-letter header{position:sticky;top:0;background:#eee5cf;z-index:1}
 @media(max-width:540px){.recommendation-letter{border-width:6px}.recommendation-letter header{padding:14px 18px}.recommendation-letter article{padding:24px 22px}.recommendation-letter h2{font-size:32px}.recommendation-letter blockquote,.recommendation-summary{font-size:22px}}

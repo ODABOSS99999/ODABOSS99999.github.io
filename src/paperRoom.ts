@@ -47,12 +47,16 @@ export function createPaperRoom(host:HTMLElement,state:()=>State,hover:(id:strin
  pen.font='italic 46px Georgia';pen.fillText('Letters of',80,186);pen.fillText('recommendation',80,242);
  let lineY=320;
  for(const item of recommendations){
-  pen.font='28px Georgia';
-  const words=(item.quote?'“'+item.text+'”':item.text).split(' ');let line='';
-  for(const word of words){const next=line?line+' '+word:word;if(pen.measureText(next).width>740){pen.fillText(line,80,lineY);lineY+=39;line=word;}else line=next;}
-  pen.fillText(line,80,lineY);lineY+=54;
-  pen.font='bold 24px Georgia';pen.fillText(item.name,80,lineY);lineY+=34;
-  pen.font='22px Georgia';pen.fillText(item.brand,80,lineY);lineY+=70;
+  pen.font='20px Georgia';
+  if(item.rating){pen.fillText(item.rating,80,lineY);lineY+=28;}
+  const paragraphs=(item.quote?'“'+item.text+'”':item.text).split('\n\n');
+  for(const paragraph of paragraphs){
+   let line='';
+   for(const word of paragraph.split(' ')){const next=line?line+' '+word:word;if(pen.measureText(next).width>740){pen.fillText(line,80,lineY);lineY+=28;line=word;}else line=next;}
+   pen.fillText(line,80,lineY);lineY+=40;
+  }
+  pen.font='bold 20px Georgia';pen.fillText(item.name,80,lineY);lineY+=26;
+  pen.font='18px Georgia';pen.fillText(item.brand,80,lineY);lineY+=50;
  }
  const letterTexture=new T.CanvasTexture(letterCanvas);letterTexture.colorSpace=T.SRGBColorSpace;letterTexture.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());textures.push(letterTexture);
  const letterMaterial=new T.MeshLambertMaterial({map:letterTexture});materials.push(letterMaterial);
