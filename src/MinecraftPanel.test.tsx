@@ -15,13 +15,14 @@ describe('Minecraft profile', () => {
     const external = vi.spyOn(window, 'open').mockImplementation(() => null);
     const navigate = vi.fn();
     render(<SeatedRoom navigate={navigate} toggleLamp={vi.fn()} toggleAudio={vi.fn()} openIndex={vi.fn()} playing={false} motion={false}/>);
-    await user.click(screen.getByRole('button', { name: /Minecraft painting/ }));
-    expect(screen.getByRole('dialog', { name: /ODABOSS/ }).hasAttribute('open')).toBe(true);
+    await user.click(screen.getByRole('button', { name: /Framed recommendation letter/ }));
+    expect(screen.getByRole('dialog', { name: /Letters of recommendation/ }).hasAttribute('open')).toBe(true);
     expect(external).not.toHaveBeenCalled();
     expect(navigate).not.toHaveBeenCalled();
-    expect(screen.getByText('Minecraft is the only game I’ve ever really enjoyed. I created my Java account when I was five.')).toBeTruthy();
-    await user.click(screen.getByRole('button', { name: 'Close Minecraft profile' }));
-    expect(screen.queryByRole('dialog', { name: /ODABOSS/ })).toBeNull();
+    expect(screen.getByText('Jacob Harris')).toBeTruthy();
+    expect(screen.getByText('Gema Caballero')).toBeTruthy();
+    await user.click(screen.getByRole('button', { name: 'Close recommendation letter' }));
+    expect(screen.queryByRole('dialog', { name: /Letters of recommendation/ })).toBeNull();
   });
 
   it('opens account history first and supports the ordered keyboard tabs', async () => {

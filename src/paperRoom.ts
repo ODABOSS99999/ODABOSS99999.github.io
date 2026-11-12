@@ -1,3 +1,4 @@
+import { recommendations } from './recommendations';
 import {followerRatingsPreferenceEvent} from './instagramLedger';
 import { musicAlbums, subscribeMusicAlbums, fetchMusicFeed, publishMusicAlbums } from './musicData';
 import type { RoomSound } from './audio';
@@ -36,27 +37,30 @@ export function createPaperRoom(host:HTMLElement,state:()=>State,hover:(id:strin
  for(const z of [-1.3,9.3])box(0,.025,z,6.6,.012,.045,paper);
  const fireplace=createFireplace(scene,{geometries,materials});items.set('fireplace',fireplace.body);base.set('fireplace',fireplace.body.position.clone());host.dataset.fireplace='lit';
  const luxury=addLuxuryDetails(scene,{geometries,materials});
- // A little Minecraft landscape, mounted flush to the right wall.
- const painting=new T.Group();painting.name='Minecraft painting';painting.position.set(6.84,3.65,-2.6);painting.rotation.y=-Math.PI/2;scene.add(painting);
- const pixelCanvas=document.createElement('canvas');pixelCanvas.width=32;pixelCanvas.height=32;
- const pixels=pixelCanvas.getContext('2d')!;
- pixels.fillStyle='#8faeb5';pixels.fillRect(0,0,32,32);
- pixels.fillStyle='#e8d8a0';pixels.fillRect(5,4,6,6);
- pixels.fillStyle='#d8dfce';pixels.fillRect(19,5,9,2);pixels.fillRect(23,4,5,1);
- pixels.fillStyle='#536d62';pixels.fillRect(0,15,8,17);pixels.fillRect(8,19,9,13);pixels.fillRect(24,13,8,19);
- pixels.fillStyle='#79904e';pixels.fillRect(0,24,32,8);
- pixels.fillStyle='#65503b';pixels.fillRect(0,27,32,5);
- for(let row=27;row<32;row++)for(let col=0;col<32;col++){pixels.fillStyle=['#796044','#514334','#92754d'][(col*7+row*11)%3];pixels.fillRect(col,row,1,1);}
- pixels.fillStyle='#5d963e';pixels.fillRect(16,14,8,8);pixels.fillRect(17,22,6,5);pixels.fillRect(16,26,3,3);pixels.fillRect(21,26,3,3);
- pixels.fillStyle='#80ad50';pixels.fillRect(17,14,2,2);pixels.fillRect(22,18,2,2);pixels.fillRect(19,23,2,3);
- pixels.fillStyle='#263328';pixels.fillRect(17,16,2,2);pixels.fillRect(21,16,2,2);pixels.fillRect(19,18,2,1);pixels.fillRect(18,19,4,2);pixels.fillRect(18,21,1,1);pixels.fillRect(21,21,1,1);
- const pixelTexture=new T.CanvasTexture(pixelCanvas);pixelTexture.colorSpace=T.SRGBColorSpace;pixelTexture.magFilter=T.NearestFilter;pixelTexture.minFilter=T.NearestFilter;textures.push(pixelTexture);
- const paintingMaterial=new T.MeshLambertMaterial({map:pixelTexture});materials.push(paintingMaterial);
- box(0,0,0,1.9,1.9,.10,edge,painting);
- box(0,0,.061,1.68,1.68,.025,paintingMaterial,painting);
- for(const x of [-.91,.91])box(x,0,.07,.10,1.92,.12,wood,painting);
- for(const y of [-.91,.91])box(0,y,.07,1.92,.10,.12,wood,painting);
- painting.userData.id='skyblock';items.set('skyblock',painting);base.set('skyblock',painting.position.clone());
+ // A framed recommendation letter mounted flush to the right wall.
+ const letter=new T.Group();letter.name='Framed recommendation letter';letter.position.set(6.84,3.65,-2.6);letter.rotation.y=-Math.PI/2;scene.add(letter);
+ const letterCanvas=document.createElement('canvas');letterCanvas.width=900;letterCanvas.height=1200;
+ const pen=letterCanvas.getContext('2d')!;
+ pen.fillStyle='#eee5cf';pen.fillRect(0,0,900,1200);
+ pen.strokeStyle='#b79a67';pen.lineWidth=2;pen.strokeRect(38,38,824,1124);
+ pen.fillStyle='#303e36';pen.font='20px serif';pen.fillText('MCGOWEN MEDIA',80,105);
+ pen.font='italic 46px Georgia';pen.fillText('Letters of',80,186);pen.fillText('recommendation',80,242);
+ let lineY=320;
+ for(const item of recommendations){
+  pen.font='28px Georgia';
+  const words=(item.quote?'“'+item.text+'”':item.text).split(' ');let line='';
+  for(const word of words){const next=line?line+' '+word:word;if(pen.measureText(next).width>740){pen.fillText(line,80,lineY);lineY+=39;line=word;}else line=next;}
+  pen.fillText(line,80,lineY);lineY+=54;
+  pen.font='bold 24px Georgia';pen.fillText(item.name,80,lineY);lineY+=34;
+  pen.font='22px Georgia';pen.fillText(item.brand,80,lineY);lineY+=70;
+ }
+ const letterTexture=new T.CanvasTexture(letterCanvas);letterTexture.colorSpace=T.SRGBColorSpace;letterTexture.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());textures.push(letterTexture);
+ const letterMaterial=new T.MeshLambertMaterial({map:letterTexture});materials.push(letterMaterial);
+ box(0,0,0,1.85,2.45,.10,edge,letter);
+ box(0,0,.061,1.65,2.25,.025,letterMaterial,letter);
+ for(const x of [-.9,.9])box(x,0,.07,.10,2.5,.12,wood,letter);
+ for(const y of [-1.2,1.2])box(0,y,.07,1.9,.10,.12,wood,letter);
+ letter.userData.id='recommendations';items.set('recommendations',letter);base.set('recommendations',letter.position.clone());
  // Shelf bays reserve their entire interior for the featured object.
  const shelfX=-2.6,shelfZ=-4.55,shelfW=7.2;
  box(shelfX,2.65,shelfZ-.2,shelfW,5.1,.2,edge);
@@ -219,7 +223,7 @@ export function createPaperRoom(host:HTMLElement,state:()=>State,hover:(id:strin
  renderer.setAnimationLoop(time=>{if(disposed||document.hidden)return;const s=state(),motion=s.motion&&!reduced.matches,t=time/1000;camera.lookAt(camera.position.x+Math.sin(yaw)*10,camera.position.y+Math.sin(pitch+(host.clientWidth/host.clientHeight<.85?.10:0))*10,camera.position.z-Math.cos(yaw)*10);
   if(lastPointer&&!down){focus=null;setHover(pick(lastPointer)?.id||null);}
   const active=over||focus;const selected=active?items.get(active):undefined;outline.selectedObjects=selected?(selected.userData.highlightObjects??[selected]):[];host.dataset.highlighted=active||'';
-  items.forEach((g,id)=>{g.position.copy(base.get(id)!);g.rotation.set(0,id==='skyblock'?-Math.PI/2:id==='fireplace'?Math.PI/2:0,0);});
+  items.forEach((g,id)=>{g.position.copy(base.get(id)!);g.rotation.set(0,id==='recommendations'?-Math.PI/2:id==='fireplace'?Math.PI/2:0,0);});
   shelfLadder.update(performance.now(),motion);ladder.position.x=shelfLadder.x;host.dataset.ladderState=shelfLadder.moving?'moving':'idle';host.dataset.ladderX=shelfLadder.x.toFixed(3);
   fireplace.update(time,motion);
   turntable.update(time,s.playing,motion);

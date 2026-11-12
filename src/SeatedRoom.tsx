@@ -1,5 +1,5 @@
 import InstagramStats from './InstagramStats';
-import MinecraftPanel from './MinecraftPanel';
+import RecommendationLetter from './RecommendationLetter';
 import { useEffect, useRef, useState } from 'react';
 import { owner, destinations } from './content';
 import type { SectionId } from './content';
@@ -10,12 +10,12 @@ export default function SeatedRoom(props:Props){
  const [ready,setReady]=useState(false),[failed,setFailed]=useState(false),[over,setOver]=useState<string|null>(null),[objectsOpen,setObjectsOpen]=useState(false),[announcement,setAnnouncement]=useState('');
  const [fireLit,setFireLit]=useState(true);
  const [statsOpen,setStatsOpen]=useState(false);
- const [minecraftOpen,setMinecraftOpen]=useState(false);
+ const [letterOpen,setLetterOpen]=useState(false);
  const objectsTrigger=useRef<HTMLButtonElement>(null);
  useEffect(()=>{if(!objectsOpen)return;const close=(e:KeyboardEvent)=>{if(e.key==='Escape'){setObjectsOpen(false);objectsTrigger.current?.focus();}};document.addEventListener('keydown',close);return()=>document.removeEventListener('keydown',close);},[objectsOpen]);
  const objectNames:Record<SectionId,string>={photography:'Camera: portfolio and galleries',about:'Books / portrait: About Me, experience and skills',favorites:'Framed prints: favorite photographs and personal notes',published:'Newspaper: published work and photography credits',engineering:'Other Projects · rocket & Game Boy',contact:'Telephone: contact details',music:'Records: listening activity and album collection'};
- const actions:{id:string;label:string;tip?:string}[]=[...destinations.map(d=>({id:d.id,label:d.title,tip:objectNames[d.id]})),{id:'lamp',label:'Lamp switch: toggle Lamplight and Darkroom'},{id:'record',label:(props.soundEnabled??props.playing)?'Mute room ambience':'Play room ambience'},{id:'stats',label:'Instagram statistics: followers, posts and growth'},{id:'skyblock',label:'Minecraft painting: ODABOSS profile and SkyBlock stats'},{id:'ladder',label:'Roll the library ladder'},{id:'fireplace',label:fireLit?'Extinguish fireplace':'Light fireplace'}];
- function activate(id:string){if(id==='fireplace'){setFireLit(v=>!v);return;}setObjectsOpen(false);if(id==='skyblock'){setMinecraftOpen(true);return;}if(id==='stats'){setStatsOpen(true);return;}if(id==='lamp')latest.current.toggleLamp();else if(id==='record')latest.current.toggleAudio();else if(id!=='ladder')latest.current.navigate(id==='device'?'engineering':id as SectionId);}
+ const actions:{id:string;label:string;tip?:string}[]=[...destinations.map(d=>({id:d.id,label:d.title,tip:objectNames[d.id]})),{id:'lamp',label:'Lamp switch: toggle Lamplight and Darkroom'},{id:'record',label:(props.soundEnabled??props.playing)?'Mute room ambience':'Play room ambience'},{id:'stats',label:'Instagram statistics: followers, posts and growth'},{id:'recommendations',label:'Framed recommendation letter: client testimonials'},{id:'ladder',label:'Roll the library ladder'},{id:'fireplace',label:fireLit?'Extinguish fireplace':'Light fireplace'}];
+ function activate(id:string){if(id==='fireplace'){setFireLit(v=>!v);return;}setObjectsOpen(false);if(id==='recommendations'){setLetterOpen(true);return;}if(id==='stats'){setStatsOpen(true);return;}if(id==='lamp')latest.current.toggleLamp();else if(id==='record')latest.current.toggleAudio();else if(id!=='ladder')latest.current.navigate(id==='device'?'engineering':id as SectionId);}
  useEffect(()=>{
   const container=host.current;let cancelled=false,unavailable=false;
   if(!container)return;
@@ -36,7 +36,7 @@ export default function SeatedRoom(props:Props){
   return()=>{cancelled=true;container.removeEventListener('webglcontextlost',contextLost,true);dispose();};
  },[]);
  return <section className="seated-room" aria-label="Hand illustrated room from a reading chair">
-  {minecraftOpen&&<MinecraftPanel onClose={()=>{setMinecraftOpen(false);requestAnimationFrame(()=>objectsTrigger.current?.focus({preventScroll:true}));}}/>}<InstagramStats open={statsOpen} onClose={()=>setStatsOpen(false)}/><div ref={host} className="seated-canvas"/>
+  {letterOpen&&<RecommendationLetter onClose={()=>{setLetterOpen(false);requestAnimationFrame(()=>objectsTrigger.current?.focus({preventScroll:true}));}}/>}<InstagramStats open={statsOpen} onClose={()=>setStatsOpen(false)}/><div ref={host} className="seated-canvas"/>
   {!ready&&!failed&&<p className="room-loading" role="status">Taking a seat…</p>}
   {failed&&<p className="room-loading" role="status">The illustrated room is unavailable. Use the object list to explore.</p>}
   <span className="sr-only" role="status">{announcement}</span>

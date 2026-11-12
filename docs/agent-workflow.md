@@ -8,7 +8,8 @@ See `docs/README.md` for the documentation index. Maintained guides live in `doc
 | --- | --- |
 | Live entry | `index.html` → `src/main-illustrated.tsx` → `src/App2D.tsx` → `src/SeatedRoom.tsx` |
 | Room composition/interactions | `src/paperRoom.ts`, `src/roomObjects3D.ts` |
-| Minecraft painting/profile | `src/MinecraftPanel.tsx`, `docs/minecraft.md`; SkyBlock snapshot: `node scripts/refresh-skyblock.mjs`; check: `npm test -- src/MinecraftPanel.test.tsx` |
+| Wall recommendation letter | `src/RecommendationLetter.tsx`, `src/recommendations.ts`, `src/paperRoom.ts`; check: `npm test -- src/MinecraftPanel.test.tsx src/SeatedRoom.test.tsx` |
+| Archived Minecraft profile | `src/MinecraftPanel.tsx`, `docs/minecraft.md`; SkyBlock snapshot: `node scripts/refresh-skyblock.mjs`; check: `npm test -- src/MinecraftPanel.test.tsx` |
 | Routing, preferences, navigation/focus | `src/App2D.tsx` |
 | Content/order and sections | `src/content.ts`, `src/Sections.tsx` |
 | Contact card / paper-airplane delivery | `src/ContactCard.tsx`, `src/businessCard.css` |
