@@ -11,6 +11,7 @@ See `docs/README.md` for the documentation index. Maintained guides live in `doc
 | Wall recommendation letter | `src/RecommendationLetter.tsx`, `src/recommendations.ts`, `src/paperRoom.ts`; check: `npm test -- src/MinecraftPanel.test.tsx src/SeatedRoom.test.tsx` |
 | Archived Minecraft profile | `src/MinecraftPanel.tsx`, `docs/minecraft.md`; SkyBlock snapshot: `node scripts/refresh-skyblock.mjs`; check: `npm test -- src/MinecraftPanel.test.tsx` |
 | Routing, preferences, navigation/focus | `src/App2D.tsx` |
+| Private daily Doc launcher | `public/today/`, `scripts/today-launcher.py`, `scripts/install-today-launcher.ps1`; guide: `docs/guides/TODAY-LAUNCHER.md`; checks: `node --test scripts/today-launcher.test.mjs` and `python -m unittest discover -s scripts -p test_today_launcher.py` |
 | Content/order and sections | `src/content.ts`, `src/Sections.tsx` |
 | Contact card / paper-airplane delivery | `src/ContactCard.tsx`, `src/businessCard.css` |
 | Appearance | `src/illustrated.css`, `src/contactAbout.css`; feature styles beside components |
