@@ -1,9 +1,9 @@
 {
   "version": 2,
   "account": "mcgowen_media",
-  "checkedAt": "2026-11-13T08:08:35.000Z",
-  "followers": 4845,
-  "posts": 491,
+  "checkedAt": "2026-11-13T16:30:59.000Z",
+  "followers": 4842,
+  "posts": 492,
   "followerGains": [
     {
       "date": "2026-09-17",
@@ -546,6 +546,10 @@
     {
       "date": "2026-11-13T08:08:35.000Z",
       "count": 4845
+    },
+    {
+      "date": "2026-11-13T16:30:59.000Z",
+      "count": 4842
     }
   ],
   "trackedPosts": [
@@ -4364,6 +4368,12 @@
       "timestamp": "2026-11-12T14:42:12.000Z",
       "caption": "not your average pink hat.\n\nA little chrome with a whole lot of personality.\n\nHad a great time shooting this collection for @brain.frog! Huge thanks to the Brainfrog team for trusting me with the creative side of this collaboration.\n\nWhich detail is your favorite?\n\n#Brainfrog #ProductPhotography #Streetwear #StreetwearFashion",
       "permalink": "https://www.instagram.com/p/DfpS7m9oM8U/"
+    },
+    {
+      "id": "17984232897067956",
+      "timestamp": "2026-11-13T13:30:57.000Z",
+      "caption": "“In all things of nature there is something of the marvelous.” — Aristotle\n\n#UTDallas #CampusLife #NaturePhotography #CollegeLife #McGowenMedia",
+      "permalink": "https://www.instagram.com/p/Dfrvgy9hQ2a/"
     }
   ]
 }
