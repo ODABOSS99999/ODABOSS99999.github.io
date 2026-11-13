@@ -71,10 +71,7 @@ def resolve_target(day, manifest_path, db_path):
     doc_id = entry.get("id") if isinstance(entry, dict) else None
     if isinstance(doc_id, str) and ID.fullmatch(doc_id):
         return f"https://docs.google.com/document/d/{doc_id}/edit"
-    folder = manifest.get("folder_id", DEFAULT_FOLDER)
-    if not isinstance(folder, str) or not ID.fullmatch(folder):
-        folder = DEFAULT_FOLDER
-    return f"https://drive.google.com/drive/folders/{folder}"
+    return "https://docs.google.com/document/"
 
 
 def launcher_url(day, target, base="https://mcgowen.works/today/"):
@@ -161,7 +158,7 @@ class SingleInstance:
 
 
 def open_chrome(executable, url):
-    subprocess.Popen([executable, "--new-tab", url], close_fds=True,
+    subprocess.Popen([executable, "--profile-directory=Default", "--new-tab", url], close_fds=True,
                      creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
 
 
@@ -181,7 +178,16 @@ class Watcher:
         target = resolve_target(day, self.manifest, self.db)
         if self.was_open and self.opened_day == day and self.opened_target == target:
             return None
-        url = launcher_url(day, target, self.base)
+        marker = Path(self.manifest).parent / "today-opened.json"
+        try:
+            recent = json.loads(marker.read_text(encoding="utf-8"))
+            if (recent.get("day") == day and recent.get("target") == target
+                    and 0 <= time.time() - recent.get("time", 0) < 30):
+                self.was_open, self.opened_day, self.opened_target = True, day, target
+                return None
+        except (OSError, ValueError, TypeError, AttributeError):
+            pass
+        url = target
         if not dry_run:
             self.opening(executable, url)
         self.was_open, self.opened_day = True, day
@@ -199,6 +205,8 @@ def main(argv=None):
     parser.add_argument("--base-url", default="https://mcgowen.works/today/")
     parser.add_argument("--interval", type=float, default=7)
     parser.add_argument("--once", action="store_true")
+    parser.add_argument("--open", action="store_true", help="Open today directly from a shortcut")
+    parser.add_argument("--chrome", default=r"C:\Program Files\Google\Chrome\Application\chrome.exe")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--day", type=lambda value: date.fromisoformat(value).isoformat())
     args = parser.parse_args(argv)
@@ -213,6 +221,16 @@ def main(argv=None):
     LOG.setLevel(logging.INFO)
     watcher = Watcher(args.manifest or private / "today-documents.json",
                       args.db or private / "state.sqlite3", args.base_url)
+    if args.open:
+        day = args.day or chicago_day()
+        target = resolve_target(day, watcher.manifest, watcher.db)
+        if args.dry_run:
+            print(target)
+        else:
+            open_chrome(args.chrome, target)
+            marker = Path(watcher.manifest).parent / "today-opened.json"
+            marker.write_text(json.dumps({"day": day, "target": target, "time": time.time()}), encoding="utf-8")
+        return 0
     with SingleInstance() as instance:
         if instance is None:
             return 0

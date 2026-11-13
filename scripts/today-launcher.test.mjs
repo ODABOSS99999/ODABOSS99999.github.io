@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { chicagoDate, validDestination, selectDestination, launch, FOLDER_URL, STORAGE_KEY } from '../public/today/launcher.mjs';
+import { chicagoDate, validDestination, selectDestination, launch, DOCS_HOME, STORAGE_KEY } from '../public/today/launcher.mjs';
 
 const doc = 'https://docs.google.com/document/d/test_document_12345/edit';
 const hash = value => '#' + encodeURIComponent(JSON.stringify(value));
@@ -11,25 +11,25 @@ test('Chicago date handles UTC midnight and daylight saving boundaries', () => {
   assert.equal(chicagoDate(new Date('2026-07-14T05:00:00Z')), '2026-07-14');
 });
 
-test('only canonical Docs edit links and the configured folder are allowed', () => {
+test('only canonical Docs edit links and the Docs home are allowed', () => {
   assert.ok(validDestination(doc));
-  assert.ok(validDestination(FOLDER_URL));
+  assert.ok(validDestination(DOCS_HOME));
   for (const value of ['javascript:alert(1)', 'https://example.com', doc + '?next=evil', doc + '#x', 'https://docs.google.com.evil/document/d/test_document_12345/edit', null]) assert.equal(validDestination(value), false);
 });
 
 test('current fragment wins, expires on the next Chicago day, and cannot redirect elsewhere', () => {
   assert.equal(selectDestination(hash({ date: '2026-11-13', url: doc }), {}, '2026-11-13').url, doc);
-  assert.equal(selectDestination(hash({ date: '2026-11-13', url: doc }), {}, '2026-11-14').url, FOLDER_URL);
-  assert.equal(selectDestination(hash({ date: '2026-11-13', url: 'https://evil.example' }), {}, '2026-11-13').url, FOLDER_URL);
-  assert.equal(selectDestination('#%broken', {}, '2026-11-13').url, FOLDER_URL);
+  assert.equal(selectDestination(hash({ date: '2026-11-13', url: doc }), {}, '2026-11-14').url, DOCS_HOME);
+  assert.equal(selectDestination(hash({ date: '2026-11-13', url: 'https://evil.example' }), {}, '2026-11-13').url, DOCS_HOME);
+  assert.equal(selectDestination('#%broken', {}, '2026-11-13').url, DOCS_HOME);
 });
 
 test('a plain revisit uses only that date and bounds the private local cache', () => {
   assert.equal(selectDestination('', { '2026-11-13': doc }, '2026-11-13').url, doc);
-  assert.equal(selectDestination('', { '2026-11-13': doc }, '2026-11-14').url, FOLDER_URL);
+  assert.equal(selectDestination('', { '2026-11-13': doc }, '2026-11-14').url, DOCS_HOME);
   const stored = Object.fromEntries(Array.from({length: 30}, (_, i) => [`2026-11-${String(i+1).padStart(2, '0')}`, doc]));
   assert.equal(Object.keys(selectDestination('', stored, '2026-11-30').cache).length, 21);
-  assert.equal(selectDestination(hash({ date:'2026-11-13', url:FOLDER_URL }), {'2026-11-13':doc}, '2026-11-13').cache['2026-11-13'], undefined);
+  assert.equal(selectDestination(hash({ date:'2026-11-13', url:DOCS_HOME }), {'2026-11-13':doc}, '2026-11-13').cache['2026-11-13'], undefined);
 });
 
 test('redirect is automatic, removes fragment first, and works with storage disabled', () => {

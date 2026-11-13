@@ -41,13 +41,13 @@ class TodayLauncherTests(unittest.TestCase):
     def test_manifest_and_folder_fallback(self):
         self.assertIn("/manifest/edit", launcher.resolve_target("2026-11-13", self.manifest, self.db))
         self.assertEqual(launcher.resolve_target("2026-11-14", self.manifest, self.db),
-                         "https://drive.google.com/drive/folders/folder")
+                         "https://docs.google.com/document/")
 
     def test_corrupt_and_missing_files_and_invalid_ids(self):
         self.manifest.write_text("broken")
         self.db.unlink()
         target = launcher.resolve_target("2026-11-13", self.manifest, self.db)
-        self.assertTrue(target.endswith(launcher.DEFAULT_FOLDER))
+        self.assertEqual(target, "https://docs.google.com/document/")
         self.assertFalse(self.db.exists())
         self.manifest.write_text(json.dumps({"documents": {"2026-11-13": {"id": "bad/evil"}},
                                             "folder_id": "../evil"}))
@@ -66,8 +66,8 @@ class TodayLauncherTests(unittest.TestCase):
         for day in ["2026-11-13"] * 3 + ["2026-11-14"] * 3:
             watcher.poll(day)
         self.assertEqual(opening.call_count, 3)
-        payload = json.loads(unquote(urlsplit(opening.call_args_list[0].args[1]).fragment))
-        self.assertEqual(payload, {"date": "2026-11-13", "url": "https://docs.google.com/document/d/manifest/edit"})
+        self.assertEqual(opening.call_args_list[0].args[1],
+                         "https://docs.google.com/document/d/manifest/edit")
 
     def test_failed_launch_is_retried_and_dry_run_never_opens(self):
         opening = Mock(side_effect=OSError("failed"))
@@ -90,6 +90,17 @@ class TodayLauncherTests(unittest.TestCase):
         watcher.poll("2026-11-14")
         self.assertEqual(opening.call_count, 2)
         self.assertIn("new_document", opening.call_args.args[1])
+
+    def test_shortcut_launch_suppresses_delayed_duplicate(self):
+        import time
+        (self.root / "today-opened.json").write_text(json.dumps({
+            "day": "2026-11-13", "target": "https://docs.google.com/document/d/manifest/edit",
+            "time": time.time()}))
+        opening = Mock()
+        watcher = launcher.Watcher(self.manifest, self.db, "", lambda: "chrome.exe", opening)
+        self.assertIsNone(watcher.poll("2026-11-13"))
+        self.assertIsNone(watcher.poll("2026-11-13"))
+        opening.assert_not_called()
 
     def test_chicago_midnight_and_dst_boundaries(self):
         for instant, expected in [("2026-11-13T05:59:00", "2026-11-12"),
