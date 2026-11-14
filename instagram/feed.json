@@ -1,8 +1,20 @@
 {
   "version": 1,
   "account": "mcgowen_media",
-  "fetchedAt": "2026-11-14T10:40:22.588Z",
+  "fetchedAt": "2026-11-14T17:11:39.549Z",
   "posts": [
+    {
+      "id": "18114579875169904",
+      "caption": "“The purpose of life is not to be happy. It is to be useful, to be honorable, to be compassionate, to have it make some difference that you have lived and lived well.” — Ralph Waldo Emerson \n\n#NaturePhotography #NatureLovers #WildlifePhotography #LifeLessons #ExploreMore",
+      "permalink": "https://www.instagram.com/p/DfuOmanNFJp/",
+      "timestamp": "2026-11-14T12:41:53.000Z",
+      "mediaType": "IMAGE",
+      "image": {
+        "src": "/instagram/media/18114579875169904.webp",
+        "width": 1600,
+        "height": 1069
+      }
+    },
     {
       "id": "17984232897067956",
       "caption": "“In all things of nature there is something of the marvelous.” — Aristotle\n\n#UTDallas #CampusLife #NaturePhotography #CollegeLife #McGowenMedia",

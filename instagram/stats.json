@@ -1,9 +1,9 @@
 {
   "version": 2,
   "account": "mcgowen_media",
-  "checkedAt": "2026-11-14T10:40:53.000Z",
-  "followers": 4841,
-  "posts": 492,
+  "checkedAt": "2026-11-14T17:12:14.000Z",
+  "followers": 4838,
+  "posts": 493,
   "followerGains": [
     {
       "date": "2026-09-17",
@@ -566,6 +566,10 @@
     {
       "date": "2026-11-14T10:40:53.000Z",
       "count": 4841
+    },
+    {
+      "date": "2026-11-14T17:12:14.000Z",
+      "count": 4838
     }
   ],
   "trackedPosts": [
@@ -4390,6 +4394,12 @@
       "timestamp": "2026-11-13T13:30:57.000Z",
       "caption": "“In all things of nature there is something of the marvelous.” — Aristotle\n\n#UTDallas #CampusLife #NaturePhotography #CollegeLife #McGowenMedia",
       "permalink": "https://www.instagram.com/p/Dfrvgy9hQ2a/"
+    },
+    {
+      "id": "18114579875169904",
+      "timestamp": "2026-11-14T12:41:53.000Z",
+      "caption": "“The purpose of life is not to be happy. It is to be useful, to be honorable, to be compassionate, to have it make some difference that you have lived and lived well.” — Ralph Waldo Emerson \n\n#NaturePhotography #NatureLovers #WildlifePhotography #LifeLessons #ExploreMore",
+      "permalink": "https://www.instagram.com/p/DfuOmanNFJp/"
     }
   ]
 }
