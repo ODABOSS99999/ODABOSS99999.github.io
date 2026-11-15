@@ -1,8 +1,20 @@
 {
   "version": 1,
   "account": "mcgowen_media",
-  "fetchedAt": "2026-11-15T09:31:56.470Z",
+  "fetchedAt": "2026-11-15T17:14:48.364Z",
   "posts": [
+    {
+      "id": "17994980193052704",
+      "caption": "🍄‍🟫",
+      "permalink": "https://www.instagram.com/p/DfxIFDGGxDa/",
+      "timestamp": "2026-11-15T15:41:18.000Z",
+      "mediaType": "CAROUSEL_ALBUM",
+      "image": {
+        "src": "/instagram/media/17994980193052704.webp",
+        "width": 1200,
+        "height": 1600
+      }
+    },
     {
       "id": "18114579875169904",
       "caption": "“The purpose of life is not to be happy. It is to be useful, to be honorable, to be compassionate, to have it make some difference that you have lived and lived well.” — Ralph Waldo Emerson \n\n#NaturePhotography #NatureLovers #WildlifePhotography #LifeLessons #ExploreMore",
