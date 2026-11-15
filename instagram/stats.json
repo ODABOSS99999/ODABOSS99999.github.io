@@ -1,9 +1,9 @@
 {
   "version": 2,
   "account": "mcgowen_media",
-  "checkedAt": "2026-11-15T09:34:26.000Z",
-  "followers": 4838,
-  "posts": 493,
+  "checkedAt": "2026-11-15T17:15:19.000Z",
+  "followers": 4837,
+  "posts": 494,
   "followerGains": [
     {
       "date": "2026-09-17",
@@ -239,7 +239,7 @@
     },
     {
       "date": "2026-11-14",
-      "count": 0
+      "count": 4
     }
   ],
   "followerHistory": [
@@ -582,6 +582,10 @@
     {
       "date": "2026-11-15T09:34:26.000Z",
       "count": 4838
+    },
+    {
+      "date": "2026-11-15T17:15:19.000Z",
+      "count": 4837
     }
   ],
   "trackedPosts": [
@@ -4412,6 +4416,12 @@
       "timestamp": "2026-11-14T12:41:53.000Z",
       "caption": "“The purpose of life is not to be happy. It is to be useful, to be honorable, to be compassionate, to have it make some difference that you have lived and lived well.” — Ralph Waldo Emerson \n\n#NaturePhotography #NatureLovers #WildlifePhotography #LifeLessons #ExploreMore",
       "permalink": "https://www.instagram.com/p/DfuOmanNFJp/"
+    },
+    {
+      "id": "17994980193052704",
+      "timestamp": "2026-11-15T15:41:18.000Z",
+      "caption": "🍄‍🟫",
+      "permalink": "https://www.instagram.com/p/DfxIFDGGxDa/"
     }
   ]
 }
