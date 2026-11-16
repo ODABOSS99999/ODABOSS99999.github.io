@@ -3,7 +3,7 @@
   "account": "mcgowen_media",
   "source": "Windsor.ai / Instagram",
   "scope": "instagram-organic-media",
-  "fetchedAt": "2026-11-15T21:52:41.359Z",
+  "fetchedAt": "2026-11-16T02:13:26.293Z",
   "posts": [
     {
       "id": "17948663019273239",
@@ -266,16 +266,16 @@
       "permalink": "https://www.instagram.com/p/DeJw8FDG3n0/",
       "likes": 41,
       "comments": 0,
-      "views": 1454,
-      "checkedAt": "2026-11-13T22:42:07.000Z"
+      "views": 1460,
+      "checkedAt": "2026-11-16T02:13:26.000Z"
     },
     {
       "id": "18596618494070583",
       "permalink": "https://www.instagram.com/p/DeLi75sMGff/",
       "likes": 54,
       "comments": 6,
-      "views": 1394,
-      "checkedAt": "2026-11-13T22:42:07.000Z"
+      "views": 1395,
+      "checkedAt": "2026-11-16T02:13:26.000Z"
     },
     {
       "id": "18097719812550566",
@@ -283,7 +283,7 @@
       "likes": 66,
       "comments": 0,
       "views": 1757,
-      "checkedAt": "2026-11-13T22:42:07.000Z"
+      "checkedAt": "2026-11-16T02:13:26.000Z"
     },
     {
       "id": "18110342234221337",
@@ -291,15 +291,15 @@
       "likes": 70,
       "comments": 4,
       "views": 1788,
-      "checkedAt": "2026-11-13T22:42:07.000Z"
+      "checkedAt": "2026-11-16T02:13:26.000Z"
     },
     {
       "id": "18025173884873788",
       "permalink": "https://www.instagram.com/p/DeUaLkKG4kA/",
       "likes": 88,
       "comments": 0,
-      "views": 2860,
-      "checkedAt": "2026-11-13T22:42:07.000Z"
+      "views": 2869,
+      "checkedAt": "2026-11-16T02:13:26.000Z"
     },
     {
       "id": "18151133245558753",
@@ -4824,10 +4824,10 @@
     {
       "id": "17887790223622703",
       "permalink": "https://www.instagram.com/p/DemD-HWm-T-/",
-      "likes": 34,
+      "likes": 35,
       "comments": 0,
-      "views": 1339,
-      "checkedAt": "2026-11-13T22:42:07.000Z"
+      "views": 1340,
+      "checkedAt": "2026-11-16T02:13:26.000Z"
     },
     {
       "id": "18120091819947358",
@@ -4858,8 +4858,8 @@
       "permalink": "https://www.instagram.com/p/Dewi5qmj3Xf/",
       "likes": 40,
       "comments": 0,
-      "views": 1620,
-      "checkedAt": "2026-11-13T22:42:07.000Z"
+      "views": 1621,
+      "checkedAt": "2026-11-16T02:13:26.000Z"
     },
     {
       "id": "18071722394788964",
@@ -5088,34 +5088,34 @@
     {
       "id": "18121931849063063",
       "permalink": "https://www.instagram.com/p/DfpS7m9oM8U/",
-      "likes": 64,
+      "likes": 66,
       "comments": 9,
-      "views": 1814,
-      "checkedAt": "2026-11-15T17:15:09.000Z"
+      "views": 1879,
+      "checkedAt": "2026-11-16T02:13:26.000Z"
     },
     {
       "id": "17984232897067956",
       "permalink": "https://www.instagram.com/p/Dfrvgy9hQ2a/",
       "likes": 19,
       "comments": 0,
-      "views": 752,
-      "checkedAt": "2026-11-15T17:15:09.000Z"
+      "views": 757,
+      "checkedAt": "2026-11-16T02:13:26.000Z"
     },
     {
       "id": "18114579875169904",
       "permalink": "https://www.instagram.com/p/DfuOmanNFJp/",
       "likes": 21,
       "comments": 2,
-      "views": 727,
-      "checkedAt": "2026-11-15T17:15:09.000Z"
+      "views": 761,
+      "checkedAt": "2026-11-16T02:13:26.000Z"
     },
     {
       "id": "17994980193052704",
       "permalink": "https://www.instagram.com/p/DfxIFDGGxDa/",
-      "likes": 11,
+      "likes": 19,
       "comments": 0,
-      "views": 274,
-      "checkedAt": "2026-11-15T17:15:09.000Z"
+      "views": 782,
+      "checkedAt": "2026-11-16T02:13:26.000Z"
     }
   ]
 }
