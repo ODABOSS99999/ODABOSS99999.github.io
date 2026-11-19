@@ -1,9 +1,9 @@
 {
   "version": 2,
   "account": "mcgowen_media",
-  "checkedAt": "2026-11-19T13:24:23.000Z",
+  "checkedAt": "2026-11-19T21:40:55.000Z",
   "followers": 4822,
-  "posts": 497,
+  "posts": 498,
   "followerGains": [
     {
       "date": "2026-09-17",
@@ -255,7 +255,7 @@
     },
     {
       "date": "2026-11-18",
-      "count": 0
+      "count": 5
     }
   ],
   "followerHistory": [
@@ -645,6 +645,10 @@
     },
     {
       "date": "2026-11-19T13:24:23.000Z",
+      "count": 4822
+    },
+    {
+      "date": "2026-11-19T21:40:55.000Z",
       "count": 4822
     }
   ],
@@ -4500,6 +4504,12 @@
       "timestamp": "2026-11-18T15:40:13.000Z",
       "caption": "🦆",
       "permalink": "https://www.instagram.com/p/Df44o04GuJi/"
+    },
+    {
+      "id": "18019620875748217",
+      "timestamp": "2026-11-19T14:04:11.000Z",
+      "caption": "Make sure to touch grass!!!",
+      "permalink": "https://www.instagram.com/p/Df7QHvRh87-/"
     }
   ]
 }
