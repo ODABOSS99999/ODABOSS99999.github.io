@@ -1,8 +1,20 @@
 {
   "version": 1,
   "account": "mcgowen_media",
-  "fetchedAt": "2026-11-20T13:02:11.094Z",
+  "fetchedAt": "2026-11-20T21:13:25.802Z",
   "posts": [
+    {
+      "id": "18078926468762417",
+      "caption": "🦆",
+      "permalink": "https://www.instagram.com/p/Df92jeeBbP4/",
+      "timestamp": "2026-11-20T14:18:26.000Z",
+      "mediaType": "IMAGE",
+      "image": {
+        "src": "/instagram/media/18078926468762417.webp",
+        "width": 1600,
+        "height": 1069
+      }
+    },
     {
       "id": "18019620875748217",
       "caption": "Make sure to touch grass!!!",
