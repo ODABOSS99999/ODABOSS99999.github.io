@@ -1,8 +1,8 @@
 {
   "version": 2,
   "account": "mcgowen_media",
-  "checkedAt": "2026-11-21T18:04:34.000Z",
-  "followers": 4817,
+  "checkedAt": "2026-11-22T07:00:20.000Z",
+  "followers": 4818,
   "posts": 500,
   "followerGains": [
     {
@@ -264,6 +264,10 @@
     {
       "date": "2026-11-20",
       "count": 6
+    },
+    {
+      "date": "2026-11-21",
+      "count": 0
     }
   ],
   "followerHistory": [
@@ -678,6 +682,10 @@
     {
       "date": "2026-11-21T18:04:34.000Z",
       "count": 4817
+    },
+    {
+      "date": "2026-11-22T07:00:20.000Z",
+      "count": 4818
     }
   ],
   "trackedPosts": [
