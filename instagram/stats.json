@@ -1,9 +1,9 @@
 {
   "version": 2,
   "account": "mcgowen_media",
-  "checkedAt": "2026-11-22T07:00:20.000Z",
-  "followers": 4818,
-  "posts": 500,
+  "checkedAt": "2026-11-22T15:26:21.000Z",
+  "followers": 4815,
+  "posts": 501,
   "followerGains": [
     {
       "date": "2026-09-17",
@@ -686,6 +686,10 @@
     {
       "date": "2026-11-22T07:00:20.000Z",
       "count": 4818
+    },
+    {
+      "date": "2026-11-22T15:26:21.000Z",
+      "count": 4815
     }
   ],
   "trackedPosts": [
@@ -4558,6 +4562,12 @@
       "timestamp": "2026-11-21T14:27:39.000Z",
       "caption": "🐢",
       "permalink": "https://www.instagram.com/p/DgAcZgQhLOd/"
+    },
+    {
+      "id": "18120151223139437",
+      "timestamp": "2026-11-22T13:44:38.000Z",
+      "caption": "🐱",
+      "permalink": "https://www.instagram.com/p/DgC8Rzrxyh_/"
     }
   ]
 }
