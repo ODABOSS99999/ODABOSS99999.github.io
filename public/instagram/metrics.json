@@ -3,7 +3,7 @@
   "account": "mcgowen_media",
   "source": "Windsor.ai / Instagram",
   "scope": "instagram-organic-media",
-  "fetchedAt": "2026-11-22T07:00:05.731Z",
+  "fetchedAt": "2026-11-22T15:26:06.725Z",
   "posts": [
     {
       "id": "17948663019273239",
@@ -267,7 +267,7 @@
       "likes": 41,
       "comments": 0,
       "views": 1461,
-      "checkedAt": "2026-11-20T13:02:33.000Z"
+      "checkedAt": "2026-11-22T15:26:07.000Z"
     },
     {
       "id": "18596618494070583",
@@ -275,7 +275,7 @@
       "likes": 54,
       "comments": 6,
       "views": 1396,
-      "checkedAt": "2026-11-20T13:02:33.000Z"
+      "checkedAt": "2026-11-22T15:26:07.000Z"
     },
     {
       "id": "18097719812550566",
@@ -283,7 +283,7 @@
       "likes": 66,
       "comments": 0,
       "views": 1759,
-      "checkedAt": "2026-11-20T13:02:33.000Z"
+      "checkedAt": "2026-11-22T15:26:07.000Z"
     },
     {
       "id": "18110342234221337",
@@ -291,15 +291,15 @@
       "likes": 70,
       "comments": 4,
       "views": 1788,
-      "checkedAt": "2026-11-20T13:02:33.000Z"
+      "checkedAt": "2026-11-22T15:26:07.000Z"
     },
     {
       "id": "18025173884873788",
       "permalink": "https://www.instagram.com/p/DeUaLkKG4kA/",
       "likes": 88,
       "comments": 0,
-      "views": 2891,
-      "checkedAt": "2026-11-20T13:02:33.000Z"
+      "views": 2895,
+      "checkedAt": "2026-11-22T15:26:07.000Z"
     },
     {
       "id": "18151133245558753",
@@ -4827,7 +4827,7 @@
       "likes": 35,
       "comments": 0,
       "views": 1342,
-      "checkedAt": "2026-11-20T13:02:33.000Z"
+      "checkedAt": "2026-11-22T15:26:07.000Z"
     },
     {
       "id": "18120091819947358",
@@ -4858,8 +4858,8 @@
       "permalink": "https://www.instagram.com/p/Dewi5qmj3Xf/",
       "likes": 40,
       "comments": 0,
-      "views": 1624,
-      "checkedAt": "2026-11-20T13:02:33.000Z"
+      "views": 1627,
+      "checkedAt": "2026-11-22T15:26:07.000Z"
     },
     {
       "id": "18071722394788964",
@@ -5088,10 +5088,10 @@
     {
       "id": "18121931849063063",
       "permalink": "https://www.instagram.com/p/DfpS7m9oM8U/",
-      "likes": 62,
+      "likes": 67,
       "comments": 12,
-      "views": 2116,
-      "checkedAt": "2026-11-20T13:02:33.000Z"
+      "views": 2219,
+      "checkedAt": "2026-11-22T15:26:07.000Z"
     },
     {
       "id": "17984232897067956",
@@ -5106,8 +5106,8 @@
       "permalink": "https://www.instagram.com/p/DfuOmanNFJp/",
       "likes": 24,
       "comments": 2,
-      "views": 941,
-      "checkedAt": "2026-11-20T13:02:33.000Z"
+      "views": 983,
+      "checkedAt": "2026-11-22T15:26:07.000Z"
     },
     {
       "id": "17994980193052704",
@@ -5120,10 +5120,10 @@
     {
       "id": "18034702424723225",
       "permalink": "https://www.instagram.com/p/DfzgLkAN7QP/",
-      "likes": 19,
+      "likes": 20,
       "comments": 4,
-      "views": 711,
-      "checkedAt": "2026-11-20T13:02:33.000Z"
+      "views": 743,
+      "checkedAt": "2026-11-22T15:26:07.000Z"
     },
     {
       "id": "17990106599974987",
@@ -5152,26 +5152,34 @@
     {
       "id": "18019620875748217",
       "permalink": "https://www.instagram.com/p/Df7QHvRh87-/",
-      "likes": 21,
+      "likes": 22,
       "comments": 4,
-      "views": 901,
-      "checkedAt": "2026-11-22T07:00:06.000Z"
+      "views": 911,
+      "checkedAt": "2026-11-22T15:26:07.000Z"
     },
     {
       "id": "18078926468762417",
       "permalink": "https://www.instagram.com/p/Df92jeeBbP4/",
       "likes": 21,
       "comments": 6,
-      "views": 795,
-      "checkedAt": "2026-11-22T07:00:06.000Z"
+      "views": 804,
+      "checkedAt": "2026-11-22T15:26:07.000Z"
     },
     {
       "id": "18114596692896159",
       "permalink": "https://www.instagram.com/p/DgAcZgQhLOd/",
-      "likes": 18,
+      "likes": 19,
       "comments": 5,
-      "views": 720,
-      "checkedAt": "2026-11-22T07:00:06.000Z"
+      "views": 755,
+      "checkedAt": "2026-11-22T15:26:07.000Z"
+    },
+    {
+      "id": "18120151223139437",
+      "permalink": "https://www.instagram.com/p/DgC8Rzrxyh_/",
+      "likes": 7,
+      "comments": 0,
+      "views": 163,
+      "checkedAt": "2026-11-22T15:26:07.000Z"
     }
   ]
 }

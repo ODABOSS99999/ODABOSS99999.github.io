@@ -1,8 +1,20 @@
 {
   "version": 1,
   "account": "mcgowen_media",
-  "fetchedAt": "2026-11-22T06:59:28.966Z",
+  "fetchedAt": "2026-11-22T15:25:45.991Z",
   "posts": [
+    {
+      "id": "18120151223139437",
+      "caption": "🐱",
+      "permalink": "https://www.instagram.com/p/DgC8Rzrxyh_/",
+      "timestamp": "2026-11-22T13:44:38.000Z",
+      "mediaType": "IMAGE",
+      "image": {
+        "src": "/instagram/media/18120151223139437.webp",
+        "width": 1600,
+        "height": 1069
+      }
+    },
     {
       "id": "18114596692896159",
       "caption": "🐢",
