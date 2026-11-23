@@ -1,9 +1,9 @@
 {
   "version": 2,
   "account": "mcgowen_media",
-  "checkedAt": "2026-11-22T21:53:17.000Z",
-  "followers": 4815,
-  "posts": 501,
+  "checkedAt": "2026-11-23T13:01:20.000Z",
+  "followers": 4847,
+  "posts": 502,
   "followerGains": [
     {
       "date": "2026-09-17",
@@ -698,6 +698,10 @@
     {
       "date": "2026-11-22T21:53:17.000Z",
       "count": 4815
+    },
+    {
+      "date": "2026-11-23T13:01:20.000Z",
+      "count": 4847
     }
   ],
   "trackedPosts": [
@@ -4576,6 +4580,12 @@
       "timestamp": "2026-11-22T13:44:38.000Z",
       "caption": "🐱",
       "permalink": "https://www.instagram.com/p/DgC8Rzrxyh_/"
+    },
+    {
+      "id": "18460980211132956",
+      "timestamp": "2026-11-23T12:47:57.000Z",
+      "caption": "“I CANT FIND MY PEACE OF MIND” — Mona Vera\n\nMONA VERA | PART 1/2\n\nThe verticals from an incredible night with monavera.\n\nHorizontals coming in Part 2.\n\n#MonaVera #Ramona #ConcertPhotography #IndieRock #LiveMusic",
+      "permalink": "https://www.instagram.com/p/DgFamftm3S7/"
     }
   ]
 }
