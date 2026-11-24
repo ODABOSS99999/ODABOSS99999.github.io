@@ -20,7 +20,7 @@ export default function RecommendationLetter({ onClose }: { onClose: () => void 
       {recommendations.map(item => <figure key={item.name}>
         {item.rating && <p className="recommendation-rating" aria-label="Rated 5 out of 5">{item.rating}</p>}
         {item.quote ? <blockquote>“{item.text}”</blockquote> : <p className="recommendation-summary">{item.text}</p>}
-        <figcaption><strong>{item.name}</strong><span>{item.brand}</span></figcaption>
+        <figcaption><strong>{item.name}</strong><span>{item.brand}</span><span><time dateTime={item.date}>{new Date(`${item.date}T12:00:00Z`).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' })}</time></span></figcaption>
       </figure>)}
     </article>
   </dialog>;
