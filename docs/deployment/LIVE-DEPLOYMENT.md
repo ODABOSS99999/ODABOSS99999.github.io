@@ -49,3 +49,9 @@ Live production recheck passed all six routes at both desktop and mobile sizes, 
 Published source `08f9e32906560f71493a0be12d373924b8e0fd08`. Release workflow https://github.com/ODABOSS99999/ODABOSS99999.github.io/actions/runs/38964173441 and Pages deployment https://github.com/ODABOSS99999/ODABOSS99999.github.io/actions/runs/38964245463 both succeeded. Live HTTPS serves `index-ChKjeJzM.js`; stats version 2 retains two verified follower snapshots, latest total 4,642.
 
 Validation: 86 application tests and 20 pipeline tests passed; production build passed with the existing large room chunk warning. Public desktop (1440px) and mobile (390px) browser checks passed portfolio images/source links, collection EXIT, ledger opening/Escape, and no horizontal overflow or page errors. Local remaining collection routes, reduced motion, keyboard EXIT and ladder activation passed. Initial visits intentionally return to the library; preferences reset per visit. Portfolio covers link directly to Instagram. No paid resources enabled.
+
+## November 25 room and music release
+
+Published source revision `9586d3e85461b1aa2338eedc452c341bca3ea53f`. Release workflow https://github.com/ODABOSS99999/ODABOSS99999.github.io/actions/runs/45699455511 and GitHub Pages deployment https://github.com/ODABOSS99999/ODABOSS99999.github.io/actions/runs/45699599264 succeeded. The live HTTPS entry serves `/assets/index-DeTPNx-0.js`; a cache-busted portrait browser check confirmed the room clock, object guidance, and selectable spiral staircase/elevator.
+
+Validation: full source tests, script tests, media validation, and production build passed. The Posts chart now clearly labels its dated archive series, and its total matches the graph. Background playback is an original locally synthesized lo-fi loop; the public music feed endpoint returned HTTP 200, but the loop is not Minecraft soundtrack music. No paid resources were enabled.
