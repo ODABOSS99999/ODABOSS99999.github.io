@@ -12,6 +12,11 @@ it('returns restored focus to Objects without revealing the closed page list', a
   create.mockReturnValue(room);
   const { container } = render(<SeatedRoom navigate={vi.fn()} toggleLamp={vi.fn()} toggleAudio={vi.fn()} openIndex={vi.fn()} playing={false} motion={true}/>);
   await waitFor(() => expect(screen.getByRole('button', { name: 'Look left' }).hasAttribute('disabled')).toBe(false));
+  expect(screen.getByText('Drag to look · choose an object to explore')).toBeTruthy();
+  expect(screen.getByRole('button', { name: 'Reset room view' }).textContent).toBe('Reset view');
+  const clock=screen.getByRole('time',{name:'Current local time'});
+  expect(clock.textContent).toBe(new Intl.DateTimeFormat(undefined,{hour:'numeric',minute:'2-digit'}).format(new Date()));
+  expect(Number.isNaN(Date.parse(clock.getAttribute('datetime')||''))).toBe(false);
   const trigger = screen.getByRole('button', { name: 'Objects' });
   const contact = container.querySelector<HTMLButtonElement>('#object-contact')!;
   act(() => contact.focus());
@@ -23,6 +28,30 @@ it('returns restored focus to Objects without revealing the closed page list', a
   fireEvent.keyDown(contact, { key: 'Escape' });
   expect(document.activeElement).toBe(trigger);
   expect(trigger.getAttribute('aria-expanded')).toBe('false');
+});
+
+it('closes the object list after focusing the staircase', async () => {
+  vi.stubGlobal('WebGLRenderingContext', class {});
+  create.mockReturnValue(room);
+  room.activate.mockClear();
+  render(<SeatedRoom navigate={vi.fn()} toggleLamp={vi.fn()} toggleAudio={vi.fn()} openIndex={vi.fn()} playing={false} motion={true}/>);
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Look left' }).hasAttribute('disabled')).toBe(false));
+  const trigger=screen.getByRole('button',{name:'Objects'});
+  fireEvent.click(trigger);
+  expect(trigger.getAttribute('aria-expanded')).toBe('true');
+  fireEvent.click(screen.getByRole('button',{name:'Spiral staircase and elevator'}));
+  expect(room.activate).toHaveBeenCalledWith('staircase');
+  expect(trigger.getAttribute('aria-expanded')).toBe('false');
+  expect(document.activeElement).toBe(trigger);
+});
+
+it('marks the room motion preference for accessible UI motion styling', async () => {
+  vi.stubGlobal('WebGLRenderingContext', class {});
+  create.mockReturnValue(room);
+  const {container,rerender}=render(<SeatedRoom navigate={vi.fn()} toggleLamp={vi.fn()} toggleAudio={vi.fn()} openIndex={vi.fn()} playing={false} motion={true}/>);
+  expect(container.querySelector('.seated-room')?.getAttribute('data-motion')).toBe('enabled');
+  rerender(<SeatedRoom navigate={vi.fn()} toggleLamp={vi.fn()} toggleAudio={vi.fn()} openIndex={vi.fn()} playing={false} motion={false}/>);
+  expect(container.querySelector('.seated-room')?.getAttribute('data-motion')).toBe('disabled');
 });
 
 it('recovers from context loss after initialization and cleans up once', async () => {

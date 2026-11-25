@@ -24,12 +24,31 @@ describe('shelf models',()=>{
    }
   }
  });
- it('rests both portrait frames and their easels directly on their shelves',()=>{
+ it('mounts square pixelated item frames flush to the wall without easels',()=>{
   const items=setup();
   for(const [id,height] of [['about',3.62],['favorites',2.02]] as const){
    const group=items.get(id)!;group.updateWorldMatrix(true,true);
-   for(const mount of group.userData.photoMounts as T.Group[])expect(new T.Box3().setFromObject(mount).min.y).toBeCloseTo(height,6);
+   for(const mount of group.userData.photoMounts as T.Group[]){
+    const bounds=new T.Box3().setFromObject(mount),pixels:T.Object3D[]=[];
+    mount.traverse(child=>{if(child.name==='item-frame-pixel')pixels.push(child);});
+    expect(bounds.min.y).toBeCloseTo(height,6);
+    expect(bounds.min.z).toBeCloseTo(-4.91,3);
+    expect(mount.name).toBe('item-frame-face');
+    expect(pixels.length).toBeGreaterThan(32);
+    expect(mount.getObjectByName('easel')).toBeUndefined();
+   }
   }
+ });
+ it('gives the butler a subtle idle pose that settles when motion is disabled',()=>{
+  const butler=setup().get('butler')!,head=butler.getObjectByName('butler-idle-head')!;
+  const update=butler.userData.updateIdle as (time:number,motion:boolean)=>void;
+  update(4000,true);
+  expect(head.rotation.y).not.toBe(0);
+  expect(head.rotation.x).not.toBe(0);
+  update(4000,false);
+  expect(head.rotation.x).toBe(0);
+  expect(head.rotation.y).toBe(0);
+  expect(butler.rotation.z).toBe(0);
  });
  it('shows a lit pixel game and freezes it for reduced motion',()=>{
   const engineering=setup().get('engineering')!,screen=engineering.getObjectByName('handheld-screen') as T.Mesh,player=engineering.getObjectByName('handheld-player')!;

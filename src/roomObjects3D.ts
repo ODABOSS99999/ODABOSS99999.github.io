@@ -17,14 +17,22 @@ export function createRoomObjects(scene:T.Scene,resources:Resources){
  const v=(x:number,y:number,z:number)=>new T.Vector3(x,y,z);
  function group(id:string,x:number,y:number,z:number){const g=new T.Group();g.userData.id=id;g.position.set(x,y,z);scene.add(g);items.set(id,g);return g;}
  function rounded(g:T.Object3D,x:number,y:number,z:number,w:number,h:number,d:number,m:T.Material,r=.055){const s=new T.Shape();s.moveTo(-w/2+r,-h/2);s.lineTo(w/2-r,-h/2);s.quadraticCurveTo(w/2,-h/2,w/2,-h/2+r);s.lineTo(w/2,h/2-r);s.quadraticCurveTo(w/2,h/2,w/2-r,h/2);s.lineTo(-w/2+r,h/2);s.quadraticCurveTo(-w/2,h/2,-w/2,h/2-r);s.lineTo(-w/2,-h/2+r);s.quadraticCurveTo(-w/2,-h/2,-w/2+r,-h/2);return mesh(g,new T.ExtrudeGeometry(s,{depth:d,bevelEnabled:true,bevelSegments:2,steps:1,bevelSize:.015,bevelThickness:.015,curveSegments:5}),m,x,y,z-d/2);}
- function frame(g:T.Object3D,x:number,bottom:number,w:number,h:number,yaw:number){
-  // Square, sixteen-pixel wooden rim and recessed leather backing.
+ function frame(g:T.Object3D,x:number,bottom:number,w:number,h:number){
+  // Square, sixteen-pixel wooden rim and recessed backing, fixed flat to the wall.
   const size=Math.max(w,h)+.14,pixel=size/16;
   const oak=mat('#a77b43'),edge=mat('#614323'),lightOak=mat('#c49a5e'),grain=mat('#896033'),leather=mat('#79452f');
-  const pivot=new T.Group();pivot.position.set(x,bottom,.12);pivot.rotation.y=yaw;g.add(pivot);
-  const f=new T.Group();f.rotation.x=-.16;pivot.add(f);f.position.y=size/2;
+  const pivot=new T.Group();pivot.name='minecraft-item-frame';pivot.position.set(x,bottom,.02);g.add(pivot);
+  const f=new T.Group();f.name='item-frame-face';pivot.add(f);f.position.y=size/2;
   box(f,0,0,-.045,size,size,.09,edge);
   box(f,0,0,.008,size-2*pixel,size-2*pixel,.025,leather);
+  const pixelOak=['#c49a5e','#a77b43','#896033','#b98b50','#c49a5e','#896033','#a77b43','#c49a5e'].map(color=>mat(color));
+  for(let i=0;i<16;i++){
+   const color=pixelOak[i%pixelOak.length];
+   for(const side of [-1,1]){
+    box(f,-size/2+pixel*(i+.5),side*(size/2-pixel/2),.093,pixel*.94,pixel*.94,.012,color).name='item-frame-pixel';
+    box(f,side*(size/2-pixel/2),-size/2+pixel*(i+.5),.093,pixel*.94,pixel*.94,.012,i%3?color:lightOak).name='item-frame-pixel';
+   }
+  }
   for(const side of [-1,1]){
    box(f,side*(size-pixel)/2,0,.035,pixel,size,.10,oak);
    box(f,0,side*(size-pixel)/2,.035,size-2*pixel,pixel,.10,oak);
@@ -37,14 +45,6 @@ export function createRoomObjects(scene:T.Scene,resources:Resources){
    }
   }
   f.userData.photoScale=(size-5*pixel)/Math.max(w,h);
-  const hinge=v(0,h*.25,-.08),foot=v(0,-size/2,-.36);
-  const support=box(f,0,0,0,w*.32,hinge.distanceTo(foot),.035,walnut);
-  support.position.copy(hinge).add(foot).multiplyScalar(.5);support.quaternion.setFromUnitVectors(v(0,1,0),hinge.clone().sub(foot).normalize());
-  rod(f,v(-.09,h*.25,-.085),v(.09,h*.25,-.085),.02,brass);
-  rod(f,v(0,-h*.3,-.08),v(0,-h*.3,-.28),.012,black);
-  // Resolve the actual tilted geometry against the shelf, including the easel foot.
-  pivot.updateWorldMatrix(true,true);const bounds=new T.Box3().setFromObject(f);
-  f.position.y+=g.position.y+bottom-bounds.min.y;
   const mounts=(g.userData.photoMounts??=[]) as T.Group[];mounts.push(f);
  }
  // Mirrorless-camera proportions: wider, but about two thirds the handheld's height.
@@ -110,10 +110,10 @@ export function createRoomObjects(scene:T.Scene,resources:Resources){
  standingLens(.28,.78,.34,.16);
  standingLens(.76,.78,.51,.18);
  camera.userData.highlightObjects=camera.children.filter(child=>child instanceof T.Group);
- const books=group('about',-2.6,3.62,-4.1);
- frame(books,0,0,.93,.93,-.07);
- const favorites=group('favorites',-.17,2.02,-4.1);
- frame(favorites,-.4,0,.601,.7,.09);frame(favorites,.4,0,.538,.49,-.12);
+ const books=group('about',-2.6,3.62,-4.84);
+ frame(books,0,0,.93,.93);
+ const favorites=group('favorites',-.17,2.02,-4.84);
+ frame(favorites,-.4,0,.601,.7);frame(favorites,.4,0,.538,.49);
  // A printed front page: clean column gutters and a quiet center fold.
  const news=group('published',-5.02,2.61,-3.98);news.rotation.set(-.1,0,-.025);
  for(let page=3;page>=0;page--)box(news,page*.007,-.07-page*.005,-page*.009,1.53,1.12,.012,page%2?ivory:paper);
@@ -164,12 +164,15 @@ export function createRoomObjects(scene:T.Scene,resources:Resources){
  for(let i=0;i<3;i++)box(game,.02+i*.038,.235+(i%2)*.018,.147,.018,.018,.004,pixel);
  const power=box(device,-.205,.18,.13,.014,.014,.008,red);power.name='handheld-power';
  engineering.userData.updateScreen=(time:number,motion:boolean)=>{const step=motion?Math.floor(time/350)%8:0;player.position.x=-.08+step*.021;player.position.y=.16+(motion&&step%4===2?.025:0);};
- const phone=group('contact',3.05,1.7,-1.93);rounded(phone,0,-.27,0,1,.29,.63,dark,.12);const dial=cyl(phone,0,-.08,.1,.25,.25,.045,brass,40);dial.rotation.x=.28;for(let i=0;i<10;i++){const a=i*Math.PI/5;cyl(phone,Math.sin(a)*.18,-.047,.1+Math.cos(a)*.18,.038,.038,.013,black,12);}for(const x of [-.37,.37])cyl(phone,x,.02,-.12,.045,.065,.3,brass);
- const receiver=group('receiver',3.05,1.7,-1.93);rod(receiver,v(-.35,.21,-.12),v(.35,.21,-.12),.075,dark);for(const x of [-.4,.4]){const ear=ball(receiver,x,.12,-.12,.145,dark);ear.scale.set(1,1,.9);cyl(receiver,x,.005,-.12,.12,.13,.04,brass);}const cordPoints=Array.from({length:81},(_,i)=>v(.45+.04*Math.sin(i*.9),.1-i*.008,-.1+.04*Math.cos(i*.9)));mesh(phone,new T.TubeGeometry(new T.CatmullRomCurve3(cordPoints),100,.016,6,false),black);
- const butler=group('butler',3.85,2.03,-2.95);const torso=cyl(butler,0,-.35,0,.33,.44,1.22,dark);torso.scale.z=.65;box(butler,0,-.24,.23,.29,.73,.03,ivory);for(const x of [-1,1]){rod(butler,v(x*.31,.1,0),v(x*.49,-.65,.12),.115,dark);ball(butler,x*.49,-.68,.12,.12,ivory);const bow=mesh(butler,new T.ConeGeometry(.1,.15,3),red,x*.073,.02,.28);bow.rotation.z=x*Math.PI/2;}cyl(butler,0,.32,0,.115,.13,.24,skin);const head=ball(butler,0,.66,0,.28,skin);head.scale.y=1.25;const hair=ball(butler,0,.84,-.04,.28,silver);hair.scale.set(1,.65,.85);for(const x of [-.1,.1])ball(butler,x,.68,.252,.025,black);const nose=ball(butler,0,.59,.275,.045,skin);nose.scale.y=1.4;rod(butler,v(-.08,.48,.25),v(.08,.48,.25),.012,dark);
- const lamp=group('lamp',6.05,1.8,-1.4);cyl(lamp,0,-.49,0,.27,.32,.065,brass);cyl(lamp,0,-.14,0,.027,.04,.7,brass);const shadeMaterial=mat('#d6c49a');shadeMaterial.side=T.DoubleSide;mesh(lamp,new T.CylinderGeometry(.27,.49,.52,40,1,true),shadeMaterial,0,.37,0);for(const y of [.11,.63]){const rim=mesh(lamp,new T.TorusGeometry(y===.11?.49:.27,.015,8,40),brass,0,y,0);rim.rotation.x=Math.PI/2;}const glow=mat('#fff0c4');glow.emissive=new T.Color('#ffc679');glow.emissiveIntensity=1.5;ball(lamp,0,.29,0,.095,glow);rod(lamp,v(.13,.2,0),v(.13,-.03,0),.008,brass);ball(lamp,.13,-.045,0,.024,brass);lamp.userData.switchPosition=v(.13,-.045,0);lamp.userData.bulb=glow;
+ const phone=group('contact',5.8,1.7,-3.55);rounded(phone,0,-.27,0,1,.29,.63,dark,.12);const dial=cyl(phone,0,-.08,.1,.25,.25,.045,brass,40);dial.rotation.x=.28;for(let i=0;i<10;i++){const a=i*Math.PI/5;cyl(phone,Math.sin(a)*.18,-.047,.1+Math.cos(a)*.18,.038,.038,.013,black,12);}for(const x of [-.37,.37])cyl(phone,x,.02,-.12,.045,.065,.3,brass);
+ const receiver=group('receiver',5.8,1.7,-3.55);rod(receiver,v(-.35,.21,-.12),v(.35,.21,-.12),.075,dark);for(const x of [-.4,.4]){const ear=ball(receiver,x,.12,-.12,.145,dark);ear.scale.set(1,1,.9);cyl(receiver,x,.005,-.12,.12,.13,.04,brass);}const cordPoints=Array.from({length:81},(_,i)=>v(.45+.04*Math.sin(i*.9),.1-i*.008,-.1+.04*Math.cos(i*.9)));mesh(phone,new T.TubeGeometry(new T.CatmullRomCurve3(cordPoints),100,.016,6,false),black);
+ const butler=group('butler',3.85,2.03,-2.95),torso=cyl(butler,0,-.35,0,.33,.44,1.22,dark);torso.scale.z=.65;box(butler,0,-.24,.23,.29,.73,.03,ivory);for(const x of [-1,1]){rod(butler,v(x*.31,.1,0),v(x*.49,-.65,.12),.115,dark);ball(butler,x*.49,-.68,.12,.12,ivory);const bow=mesh(butler,new T.ConeGeometry(.1,.15,3),red,x*.073,.02,.28);bow.rotation.z=x*Math.PI/2;}cyl(butler,0,.32,0,.115,.13,.24,skin);
+ const butlerHead=new T.Group();butlerHead.position.y=.32;butlerHead.name='butler-idle-head';butler.add(butlerHead);
+ const head=ball(butlerHead,0,.34,0,.28,skin);head.scale.y=1.25;const hair=ball(butlerHead,0,.52,-.04,.28,silver);hair.scale.set(1,.65,.85);for(const x of [-.1,.1])ball(butlerHead,x,.36,.252,.025,black);const nose=ball(butlerHead,0,.27,.275,.045,skin);nose.scale.y=1.4;rod(butlerHead,v(-.08,.16,.25),v(.08,.16,.25),.012,dark);
+ butler.userData.updateIdle=(time:number,motion:boolean)=>{const t=motion?time/1000:0;butlerHead.rotation.y=motion?Math.sin(t*.38)*.035:0;butlerHead.rotation.x=motion?Math.sin(t*.55)*.012:0;torso.rotation.z=motion?Math.sin(t*.42)*.006:0;};
+ const lamp=group('lamp',5.03,1.8,-1.95);cyl(lamp,0,-.49,0,.27,.32,.065,brass);cyl(lamp,0,-.14,0,.027,.04,.7,brass);const shadeMaterial=mat('#d6c49a');shadeMaterial.side=T.DoubleSide;mesh(lamp,new T.CylinderGeometry(.27,.49,.52,40,1,true),shadeMaterial,0,.37,0);for(const y of [.11,.63]){const rim=mesh(lamp,new T.TorusGeometry(y===.11?.49:.27,.015,8,40),brass,0,y,0);rim.rotation.x=Math.PI/2;}const glow=mat('#fff0c4');glow.emissive=new T.Color('#ffc679');glow.emissiveIntensity=1.5;ball(lamp,0,.29,0,.095,glow);rod(lamp,v(.13,.2,0),v(.13,-.03,0),.008,brass);ball(lamp,.13,-.045,0,.024,brass);lamp.userData.switchPosition=v(.13,-.045,0);lamp.userData.bulb=glow;
  // The table stays in place when the lamp reacts to hover or selection.
- const table=new T.Group();scene.add(table);table.position.set(6.05,0,-1.4);cyl(table,0,1.22,0,.39,.39,.12,walnut,40);cyl(table,0,1.285,0,.38,.38,.015,brass,40);cyl(table,0,.67,0,.075,.12,1.05,walnut);for(let i=0;i<3;i++){const a=i*Math.PI*2/3;rod(table,v(0,.29,0),v(Math.cos(a)*.33,.08,Math.sin(a)*.33),.06,walnut);}
+ const table=new T.Group();scene.add(table);table.position.set(5.03,0,-1.95);cyl(table,0,1.22,0,.39,.39,.12,walnut,40);cyl(table,0,1.285,0,.38,.38,.015,brass,40);cyl(table,0,.67,0,.075,.12,1.05,walnut);for(let i=0;i<3;i++){const a=i*Math.PI*2/3;rod(table,v(0,.29,0),v(Math.cos(a)*.33,.08,Math.sin(a)*.33),.06,walnut);}
  const ladder=group('ladder',shelfLadderBounds.max,2.48,-3.28);
  const wheelRadius=.105,wheelY=-.02+wheelRadius-ladder.position.y;
  for(const x of [-.33,.33]){

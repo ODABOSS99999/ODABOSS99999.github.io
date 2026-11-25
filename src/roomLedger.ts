@@ -6,8 +6,9 @@ import {combinedFollowerHistory,mergeFollowerHistory} from './followerHistory';
 import type {Stats} from './InstagramStats';
 
 export function roomLedger(stats?:Stats){
- const current=stats?.archiveCurrent===true&&!!stats.trackedPosts.length;
+ const current=stats?.archiveCurrent===true&&Number.isFinite(Date.parse(stats.archiveCheckedAt??''))&&!!stats.trackedPosts.length;
  const posts=current?stats.trackedPosts:saved.trackedPosts;
+ const postPoints=cumulativePosts(posts);
  const includeFollowerRatings=readFollowerRatingsPreference();
  const collaborations=posts.filter(post=>classifyPartnership(post).kind==='partnership'&&(includeFollowerRatings||!isFollowerRating(post)));
  const checkedAt=stats?.checkedAt??saved.checkedAt;
@@ -15,7 +16,7 @@ export function roomLedger(stats?:Stats){
  return {
   live:!!stats,followers:stats?.followers??saved.followers,posts:stats?.posts??saved.posts,
   rows:[
-   {label:'Posts',count:posts.length,archived:!current,points:cumulativePosts(posts)},
+   {label:'Posts',count:postPoints.at(-1)?.count??0,archived:!current,points:postPoints},
    {label:'Followers',count:stats?.followers??saved.followers,archived:!stats,points:combinedFollowerHistory(new Date().toISOString(),exported.points,followerTotals,stats?.checkedAt)},
    {label:'Partnerships',count:collaborations.length,archived:!current,points:cumulativePosts(collaborations)},
   ],

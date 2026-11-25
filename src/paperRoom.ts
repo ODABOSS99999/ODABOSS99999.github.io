@@ -18,6 +18,7 @@ import { loadInstagramSnapshot } from './instagramMedia';
 import { pickRoomItem } from './roomHitTargets';
 import { blendLight, createLightingTransition } from './roomLighting';
 import type { LightingWeights } from './roomLighting';
+import { advanceRoomView, clampRoomYaw, getRoomCameraFraming, roomMotionEnabled } from './roomCamera';
 type State={motion:boolean;playing:boolean;lighting:string};
 const svg=(body:string,w=320,h=240)=>`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}">${body}</svg>`;
 export function createPaperRoom(host:HTMLElement,state:()=>State,hover:(id:string|null)=>void,activate:(id:string)=>void,announce:(message:string)=>void=()=>{},sound:(effect:RoomSound)=>void=()=>{}){
@@ -31,12 +32,13 @@ export function createPaperRoom(host:HTMLElement,state:()=>State,hover:(id:strin
  const items=new Map<string,T.Group>(),base=new Map<string,T.Vector3>();
  function card(id:string,markup:string,x:number,y:number,z:number,w:number,h:number){const g=new T.Group();g.position.set(x,y,z);g.userData.id=id;g.userData.paper=true;const m=new T.MeshBasicMaterial({map:texture(markup),transparent:true,side:T.DoubleSide,depthWrite:false});materials.push(m);paperTints.push(m);const geo=new T.PlaneGeometry(w,h);geometries.push(geo);const mesh=new T.Mesh(geo,m);g.add(mesh);scene.add(g);items.set(id,g);base.set(id,g.position.clone());return g;}
  // Full room, seen at seated eye height; no orbiting dollhouse camera.
- box(0,-.12,0,14,.2,28,wood);box(0,3,-5,14,6,.18,wall);box(-7,3,4,.18,6,18,wall);box(7,3,4,.18,6,18,wall);
+ box(0,-.12,0,14,.2,28,wood);box(0,4.2,-5,14,8.4,.18,wall);box(-7,4.2,4,.18,8.4,18,wall);box(7,4.2,4,.18,8.4,18,wall);
  for(let x=-7;x<7;x+=.7)box(x,.001,0,.018,.008,27,edge);
  box(0,.012,4,7,.018,11,rug);for(const x of [-3.3,3.3])box(x,.025,4,.045,.012,10.6,paper);
  for(const z of [-1.3,9.3])box(0,.025,z,6.6,.012,.045,paper);
  const fireplace=createFireplace(scene,{geometries,materials});items.set('fireplace',fireplace.body);base.set('fireplace',fireplace.body.position.clone());host.dataset.fireplace='lit';
  const luxury=addLuxuryDetails(scene,{geometries,materials});
+ items.set('staircase',luxury.staircase);base.set('staircase',luxury.staircase.position.clone());
  // A framed recommendation letter mounted flush to the right wall.
  const letter=new T.Group();letter.name='Framed recommendation letter';letter.position.set(6.84,3.65,-2.6);letter.rotation.y=-Math.PI/2;scene.add(letter);
  const letterCanvas=document.createElement('canvas');letterCanvas.width=900;letterCanvas.height=1200;
@@ -66,8 +68,7 @@ export function createPaperRoom(host:HTMLElement,state:()=>State,hover:(id:strin
  for(const y of [-1.2,1.2])box(0,y,.07,1.9,.10,.12,wood,letter);
  letter.userData.id='recommendations';items.set('recommendations',letter);base.set('recommendations',letter.position.clone());
  // Shelf bays reserve their entire interior for the featured object.
- const shelfX=-2.6,shelfZ=-4.55,shelfW=7.2;
- box(shelfX,2.65,shelfZ-.2,shelfW,5.1,.2,edge);
+ const shelfX=-2.6,shelfZ=-4.55;
  for(const x of [-6.25,-3.8,-1.4,1.05])box(x,2.65,shelfZ+.15,.13,5.2,.75,wood);
  const levels=[.35,1.95,3.55,5.15];for(const y of levels){box(shelfX,y,shelfZ+.1,7.4,.14,.85,wood);box(shelfX,y+.055,shelfZ+.54,7.4,.035,.035,paper);}
  const modeled=createRoomObjects(scene,{geometries,materials,textures});
@@ -98,7 +99,7 @@ export function createPaperRoom(host:HTMLElement,state:()=>State,hover:(id:strin
    sample.forEach(point=>{const isExport='source' in point&&point.source==='export';if(previousExport!==undefined&&isExport!==previousExport){strokes(segment,previousExport?exportInk:graphInk);segment=[];}segment.push(new T.Vector3(-.87+(Date.parse(point.date)-first)/span*1.74,floor+point.count/max*.19,0));previousExport=isExport;});
    strokes(segment,previousExport?exportInk:graphInk);
   });
-  const labels=data.rows.map((row,index)=>`<text x="27" y="${64+index*64}" fill="#34443e" font-size="13">${row.label==='Followers'?'Follows':row.label}${!row.archived&&row.label==='Followers'?' · live':''}</text><text x="293" y="${64+index*64}" fill="#34443e" text-anchor="end" font-size="15">${row.count.toLocaleString()}</text>`).join('');
+  const labels=data.rows.map((row,index)=>{const label=row.label==='Followers'?`Follows${row.archived?'':' · live'}`:`${row.label} · ${row.archived?'dated archive':'current archive'}`;return `<text x="27" y="${64+index*64}" fill="#34443e" font-size="13">${label}</text><text x="293" y="${64+index*64}" fill="#34443e" text-anchor="end" font-size="15">${row.count.toLocaleString()}</text>`;}).join('');
   const old=boardMaterial.map;boardMaterial.map=texture(svg(`<rect x="8" y="8" width="304" height="224" fill="#ded3b5" stroke="#8b6945" stroke-width="12"/><text x="27" y="33" fill="#34443e" font-family="serif" font-size="17">THE SOCIAL LEDGER</text>${labels}`));
   if(old){old.dispose();const index=textures.indexOf(old);if(index>=0)textures.splice(index,1);}boardMaterial.needsUpdate=true;
  };
@@ -148,7 +149,12 @@ export function createPaperRoom(host:HTMLElement,state:()=>State,hover:(id:strin
  window.addEventListener('focus',refreshRecordVisibility);document.addEventListener('visibilitychange',refreshRecordVisibility);
  const musicTimer=setInterval(()=>void refreshRecords(),60000);
  // The desk is a single grouping: butler behind it, phone and lamp on top.
- const deskY=1.16;box(3.8,deskY,-2.2,3.7,.16,1.5,wood);box(3.8,.85,-2.2,3.4,.5,1.3,edge);for(const x of [2.2,5.4])for(const z of [-2.8,-1.6])box(x,.55,z,.13,1.1,.13,wood);
+ const deskY=1.16;
+ box(3.8,deskY,-2.2,3.7,.16,1.5,wood);box(3.8,.85,-2.2,3.4,.5,1.3,edge);
+ for(const x of [2.2,5.4])for(const z of [-2.8,-1.6])box(x,.55,z,.13,1.1,.13,wood);
+ // A return against the back wall joins the existing worktop into one corner desk.
+ box(5.9,deskY,-3.55,2,.16,2.4,wood);box(5.9,.85,-3.55,1.85,.5,2.4,edge);
+ for(const x of [5.2,6.6])for(const z of [-4.45,-2.65])box(x,.55,z,.12,1.1,.12,wood);
  // A dedicated record player bay, bottom left.
  const turntable=createTurntable(scene,{geometries,materials});turntable.body.position.set(-5.02,.64,-4.03);turntable.body.scale.setScalar(.9);items.set('record',turntable.body);base.set('record',turntable.body.position.clone());
  const notes=card('notes',svg('<text x="90" y="140" fill="#e4d3a4" font-size="90">&#9834;</text>'),-5.02,1.2,-3.8,1.2,.8);notes.visible=false;
@@ -185,8 +191,8 @@ export function createPaperRoom(host:HTMLElement,state:()=>State,hover:(id:strin
  const composer=new EffectComposer(renderer);composer.renderTarget1.samples=4;composer.renderTarget2.samples=4;composer.addPass(new RenderPass(scene,camera));
  const outline=new OutlinePass(new T.Vector2(host.clientWidth,host.clientHeight),scene,camera);outline.edgeStrength=4;outline.edgeThickness=1.5;outline.edgeGlow=.3;outline.visibleEdgeColor.set('#ffdc98');outline.hiddenEdgeColor.set('#000000');composer.addPass(outline);composer.addPass(new OutputPass());
  const bulb=modeled.get('lamp')?.userData.bulb as T.MeshStandardMaterial|undefined;
- const lampLight=new T.PointLight('#ffd89c',2,7,2);lampLight.position.set(6.05,2.4,-1.4);scene.add(lampLight);
- const ray=new T.Raycaster(),pointer=new T.Vector2();let focus:string|null=null,over:string|null=null,yaw=0,pitch=-.095,down:{x:number;y:number;yaw:number;pitch:number}|null=null,moved=false,disposed=false;
+ const lampLight=new T.PointLight('#ffd89c',2,7,2);lampLight.position.set(5.03,2.4,-1.95);scene.add(lampLight);
+ const ray=new T.Raycaster(),pointer=new T.Vector2();let focus:string|null=null,over:string|null=null,yaw=0,pitch=-.095,targetYaw=0,targetPitch=-.095,defaultCameraZ=6.8,targetCameraZ=6.8,down:{x:number;y:number;yaw:number;pitch:number}|null=null,moved=false,disposed=false,previousFrame:number|null=null,motionTime=0;
  const reduced=matchMedia('(prefers-reduced-motion: reduce)');
  const lighting=createLightingTransition(state().lighting);
  const palette=(day:string,lamp:string,dark:string)=>[new T.Color(day),new T.Color(lamp),new T.Color(dark)] as const;
@@ -208,36 +214,38 @@ export function createPaperRoom(host:HTMLElement,state:()=>State,hover:(id:strin
  const setHover=(id:string|null)=>{if(id===over)return;over=id;if(id==='butler'&&state().motion&&!reduced.matches)sound('ring');hover(over?aliases(over):null);renderer.domElement.style.cursor=over?'pointer':'grab';};
  const shelfItems=new Set(['photography','about','favorites','published','engineering','stats','music','shelf-books']);
  function action(raw:string,hitX?:number){
-  const id=aliases(raw),motion=state().motion&&!reduced.matches;
+  const id=aliases(raw),motion=roomMotionEnabled(state().motion,reduced.matches,!document.hidden);
+  if(raw==='staircase'){const aspect=host.clientWidth/Math.max(host.clientHeight,1);targetCameraZ=defaultCameraZ+3.5;const dx=-5.35,dz=targetCameraZ-4.25;targetYaw=clampRoomYaw(Math.atan2(dx,dz));targetPitch=Math.atan2(4.2-camera.position.y,Math.hypot(dx,dz))-(aspect<.85?.1:0);announce('Looking toward the spiral staircase and elevator.');return;}
   if(id==='fireplace'){const lit=fireplace.toggle();host.dataset.fireplace=lit?'lit':'out';announce(lit?'Fire lit.':'Fire extinguished.');activate('fireplace');return;}
-  if(raw==='ladder'){if(motion)sound('whoosh');ladderRight=!ladderRight;host.removeAttribute('aria-busy');shelfLadder.move(null,ladderRight?shelfLadderBounds.max:shelfLadderBounds.min,performance.now(),motion);return;}
+  if(raw==='ladder'){if(motion)sound('whoosh');ladderRight=!ladderRight;host.removeAttribute('aria-busy');shelfLadder.move(null,ladderRight?shelfLadderBounds.max:shelfLadderBounds.min,motionTime,motion);return;}
   if(shelfItems.has(raw)){
    const x=(raw==='music'||raw==='shelf-books')?(hitX??-2.6):(base.get(raw)?.x??-2.6);let target=T.MathUtils.clamp(x-.85,shelfLadderBounds.min,shelfLadderBounds.max);
    if(Math.abs(target-shelfLadder.x)<.2)target=T.MathUtils.clamp(x+.65,shelfLadderBounds.min,shelfLadderBounds.max);
-   if(motion)sound('whoosh');host.setAttribute('aria-busy','true');announce('The ladder is moving to your selection.');shelfLadder.move(id,target,performance.now(),motion);return;
+   if(motion)sound('whoosh');host.setAttribute('aria-busy','true');announce('The ladder is moving to your selection.');shelfLadder.move(id,target,motionTime,motion);return;
   }
-  if(id==='contact'){if(pickup)return;sound('ring');sound('pickup');if(motion){pickup=performance.now();return;}}activate(id);
+  if(id==='contact'){if(pickup)return;sound('ring');sound('pickup');if(motion){pickup=motionTime;return;}}activate(id);
  }
  const press=(e:PointerEvent)=>{if(e.button!==0)return;down={x:e.clientX,y:e.clientY,yaw,pitch};moved=false;renderer.domElement.setPointerCapture(e.pointerId);};
- const move=(e:PointerEvent)=>{lastPointer=e.pointerType==='touch'?null:{clientX:e.clientX,clientY:e.clientY};if(down){const dx=e.clientX-down.x,dy=e.clientY-down.y;if(Math.abs(dx)+Math.abs(dy)>6){moved=true;setHover(null);renderer.domElement.style.cursor='grabbing';}yaw=T.MathUtils.clamp(down.yaw-dx*.0018,-.46,.46);pitch=T.MathUtils.clamp(down.pitch+dy*.0015,-.18,.3);}else{focus=null;setHover(pick(e)?.id||null);}};
+ const move=(e:PointerEvent)=>{lastPointer=e.pointerType==='touch'?null:{clientX:e.clientX,clientY:e.clientY};if(down){const dx=e.clientX-down.x,dy=e.clientY-down.y;if(Math.abs(dx)+Math.abs(dy)>6){moved=true;setHover(null);renderer.domElement.style.cursor='grabbing';}targetYaw=clampRoomYaw(down.yaw-dx*.0018);targetPitch=T.MathUtils.clamp(down.pitch+dy*.0015,-.18,.3);}else{focus=null;setHover(pick(e)?.id||null);}};
  const release=(e:PointerEvent)=>{if(down&&!moved){const hit=pick(e);if(hit)action(hit.id,hit.x);}down=null;};
  const leave=()=>{lastPointer=null;focus=null;setHover(null);};const cancel=()=>{down=null;leave();};
  renderer.domElement.addEventListener('pointerdown',press);renderer.domElement.addEventListener('pointermove',move);renderer.domElement.addEventListener('pointerup',release);renderer.domElement.addEventListener('pointerleave',leave);renderer.domElement.addEventListener('pointercancel',cancel);
- const resize=()=>{const w=host.clientWidth,h=host.clientHeight;renderer.setPixelRatio(Math.min(devicePixelRatio,2.5));renderer.setSize(w,h);composer.setPixelRatio(renderer.getPixelRatio());composer.setSize(w,h);camera.aspect=w/h;const portrait=w/h<.85;camera.fov=portrait?62:57;camera.position.z=portrait?Math.max(7.8,9.5/(2*Math.tan(T.MathUtils.degToRad(31))*(w/h))-5):6.8;seated.position.z=camera.position.z;seated.position.y=.12;seated.scale.x=w/h<.85?.65:1;camera.updateProjectionMatrix();};const observer=new ResizeObserver(resize);observer.observe(host);resize();
- renderer.setAnimationLoop(time=>{if(disposed||document.hidden)return;const s=state(),motion=s.motion&&!reduced.matches,t=time/1000;camera.lookAt(camera.position.x+Math.sin(yaw)*10,camera.position.y+Math.sin(pitch+(host.clientWidth/host.clientHeight<.85?.10:0))*10,camera.position.z-Math.cos(yaw)*10);
+ const resize=()=>{const w=host.clientWidth,h=Math.max(host.clientHeight,1),aspect=w/h;renderer.setPixelRatio(Math.min(devicePixelRatio,2.5));renderer.setSize(w,h);composer.setPixelRatio(renderer.getPixelRatio());composer.setSize(w,h);camera.aspect=aspect;const framing=getRoomCameraFraming(aspect);camera.fov=framing.fov;defaultCameraZ=framing.z;targetCameraZ=framing.z;camera.position.z=framing.z;seated.position.z=camera.position.z;seated.position.y=.12;seated.scale.x=framing.seatScale;camera.updateProjectionMatrix();};const observer=new ResizeObserver(resize);observer.observe(host);resize();
+ renderer.setAnimationLoop(time=>{if(disposed)return;if(document.hidden){previousFrame=null;return;}const elapsed=previousFrame===null?0:Math.min(Math.max((time-previousFrame)/1000,0),.05);previousFrame=time;const s=state(),motion=roomMotionEnabled(s.motion,reduced.matches,!document.hidden);if(motion)motionTime+=elapsed*1000;const t=motionTime/1000;const view=advanceRoomView({yaw,pitch},{yaw:targetYaw,pitch:targetPitch},elapsed,motion);yaw=view.yaw;pitch=view.pitch;const zoomProgress=motion?1-Math.exp(-12*Math.min(elapsed,.05)):1;camera.position.z+=(targetCameraZ-camera.position.z)*zoomProgress;seated.position.z=camera.position.z;camera.lookAt(camera.position.x+Math.sin(yaw)*10,camera.position.y+Math.sin(pitch+(host.clientWidth/host.clientHeight<.85?.10:0))*10,camera.position.z-Math.cos(yaw)*10);
   if(lastPointer&&!down){focus=null;setHover(pick(lastPointer)?.id||null);}
   const active=over||focus;const selected=active?items.get(active):undefined;outline.selectedObjects=selected?(selected.userData.highlightObjects??[selected]):[];host.dataset.highlighted=active||'';
   items.forEach((g,id)=>{g.position.copy(base.get(id)!);g.rotation.set(0,id==='recommendations'?-Math.PI/2:id==='fireplace'?Math.PI/2:0,0);});
-  shelfLadder.update(performance.now(),motion);ladder.position.x=shelfLadder.x;host.dataset.ladderState=shelfLadder.moving?'moving':'idle';host.dataset.ladderX=shelfLadder.x.toFixed(3);
-  fireplace.update(time,motion);
-  turntable.update(time,s.playing,motion);
-  modeled.get('engineering')?.userData.updateScreen?.(time,motion);
+  shelfLadder.update(motionTime,motion);ladder.position.x=shelfLadder.x;host.dataset.ladderState=shelfLadder.moving?'moving':'idle';host.dataset.ladderX=shelfLadder.x.toFixed(3);
+  fireplace.update(motionTime,motion);
+  turntable.update(motionTime,s.playing,motion);
+  modeled.get('engineering')?.userData.updateScreen?.(motionTime,motion);
+  modeled.get('butler')?.userData.updateIdle?.(motionTime,motion);
   notes.visible=s.playing;notes.position.y=1.2+(motion?(t%2)*.15:0);
-  if(pickup){const p=Math.min((performance.now()-pickup)/650,1);receiver.position.y+=p*.4;receiver.rotation.z=p*.28;if(p===1){pickup=0;activate('contact');}}
+  if(pickup){const p=Math.min((motionTime-pickup)/650,1);receiver.position.y+=p*.4;receiver.rotation.z=p*.28;if(p===1){pickup=0;activate('contact');}}
   else if(motion&&active==='butler')receiver.rotation.z=Math.sin(t*22)*.025;
-  const light=lighting.update(s.lighting,time,motion);blendColor(ambient.color,ambientColors,light);blendColor(sun.color,sunColors,light);ambient.intensity=blendLight(light,2.8,1.8,.7);sun.intensity=blendLight(light,1.6,1,.3);
+  const light=lighting.update(s.lighting,motionTime,motion);blendColor(ambient.color,ambientColors,light);blendColor(sun.color,sunColors,light);ambient.intensity=blendLight(light,2.8,1.8,.7);sun.intensity=blendLight(light,1.6,1,.3);
   // Tint only the illustrated cards; actual photographs retain their source colors.
-  blendColor(paperColor,paperColors,light);paperTints.forEach(material=>material.color.copy(paperColor));renderer.setClearColor(blendColor(backgroundColor,backgroundColors,light));luxury.update(light);lampLight.intensity=blendLight(light,.4,3,0);if(bulb)bulb.emissiveIntensity=blendLight(light,.4,1.5,0);if(selected)composer.render();else renderer.render(scene,camera);
+  blendColor(paperColor,paperColors,light);paperTints.forEach(material=>material.color.copy(paperColor));renderer.setClearColor(blendColor(backgroundColor,backgroundColors,light));luxury.update(light,motionTime,motion);lampLight.intensity=blendLight(light,.4,3,0);if(bulb)bulb.emissiveIntensity=blendLight(light,.4,1.5,0);if(selected)composer.render();else renderer.render(scene,camera);
  });
- return{activate:action,focus:(id:string|null)=>{if(id==='contact'&&state().motion&&!reduced.matches)sound('ring');focus=id==='contact'?'butler':id;lastPointer=null;over=null;hover(id);},look:(delta:number)=>{yaw=T.MathUtils.clamp(yaw+delta,-.46,.46);},reset:()=>{yaw=0;pitch=-.095;},dispose:()=>{disposed=true;unsubscribeRecords();musicRequest?.abort();clearInterval(musicTimer);window.removeEventListener('focus',refreshRecordVisibility);document.removeEventListener('visibilitychange',refreshRecordVisibility);clearInterval(statsTimer);window.removeEventListener(followerRatingsPreferenceEvent,refreshRatingPreference);window.removeEventListener('focus',refreshBoard);document.removeEventListener('visibilitychange',refreshBoard);renderer.setAnimationLoop(null);observer.disconnect();renderer.domElement.removeEventListener('pointerdown',press);renderer.domElement.removeEventListener('pointermove',move);renderer.domElement.removeEventListener('pointerup',release);renderer.domElement.removeEventListener('pointerleave',leave);renderer.domElement.removeEventListener('pointercancel',cancel);textures.forEach(t=>t.dispose());materials.forEach(m=>m.dispose());geometries.forEach(g=>g.dispose());outline.dispose();composer.dispose();renderer.dispose();renderer.domElement.remove();}};
+ return{activate:action,focus:(id:string|null)=>{if(id==='contact'&&roomMotionEnabled(state().motion,reduced.matches,!document.hidden))sound('ring');focus=id==='contact'?'butler':id;lastPointer=null;over=null;hover(id);},look:(delta:number)=>{targetYaw=clampRoomYaw(targetYaw+delta);},reset:()=>{targetYaw=0;targetPitch=-.095;targetCameraZ=defaultCameraZ;},dispose:()=>{disposed=true;unsubscribeRecords();musicRequest?.abort();clearInterval(musicTimer);window.removeEventListener('focus',refreshRecordVisibility);document.removeEventListener('visibilitychange',refreshRecordVisibility);clearInterval(statsTimer);window.removeEventListener(followerRatingsPreferenceEvent,refreshRatingPreference);window.removeEventListener('focus',refreshBoard);document.removeEventListener('visibilitychange',refreshBoard);renderer.setAnimationLoop(null);observer.disconnect();renderer.domElement.removeEventListener('pointerdown',press);renderer.domElement.removeEventListener('pointermove',move);renderer.domElement.removeEventListener('pointerup',release);renderer.domElement.removeEventListener('pointerleave',leave);renderer.domElement.removeEventListener('pointercancel',cancel);textures.forEach(t=>t.dispose());materials.forEach(m=>m.dispose());geometries.forEach(g=>g.dispose());outline.dispose();composer.dispose();renderer.dispose();renderer.domElement.remove();}};
 }

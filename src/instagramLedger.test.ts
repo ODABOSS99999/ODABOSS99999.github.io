@@ -19,5 +19,6 @@ describe('partnership ledger',()=>{
  it('applies owner exclusions before product/organization rules',()=>{for(const caption of ['Waterway car photography','Market Street car photography','Noob vs Pro with friends'])expect(classifyPartnership({caption}).kind).toBe('personal');for(const caption of ['Airforce photos','US Air Force','Concert photography','Product photography'])expect(classifyPartnership({caption}).kind).toBe('partnership');});
  it('includes uncertain posts by owner preference without claiming confirmed partnership',()=>{const result=classifyPartnership({caption:'new post'});expect(result.kind).toBe('partnership');expect(result.reason).toContain('owner preference');});
  it('sorts dated posts, merges days, and ignores duplicates',()=>{expect(cumulativePosts([{id:'2',timestamp:'2026-02-02T00:00:00Z'},{id:'1',timestamp:'2026-02-01T00:00:00Z'},{id:'2',timestamp:'2026-02-02T00:00:00Z'},{id:'3',timestamp:'2026-02-02T12:00:00Z'}])).toEqual([{date:'2026-02-01',count:1},{date:'2026-02-02',count:3}]);});
+ it('excludes unparseable and impossible calendar dates before building cumulative totals',()=>{expect(cumulativePosts([{id:'valid',timestamp:'2026-02-28T12:00:00Z'},{id:'impossible',timestamp:'2026-02-31T12:00:00Z'},{id:'invalid',timestamp:'not-a-date'},{id:'',timestamp:'2026-02-28T12:00:00Z'}])).toEqual([{date:'2026-02-28',count:1}]);});
 });
 

@@ -12,8 +12,8 @@ export function addLuxuryDetails(scene:T.Scene,resources:RoomResources){
  function box(x:number,y:number,z:number,w:number,h:number,d:number,m:T.Material){return mesh(new T.BoxGeometry(w,h,d),m,x,y,z);}
  function ring(x:number,y:number,z:number,r:number,tube:number,m:T.Material,parent:T.Object3D=scene){const o=mesh(new T.TorusGeometry(r,tube,6,64),m,x,y,z,parent);o.rotation.x=Math.PI/2;return o;}
  function rod(a:T.Vector3,b:T.Vector3,r:number,m:T.Material,parent:T.Object3D=scene){const d=b.clone().sub(a),o=mesh(new T.CylinderGeometry(r,r,d.length(),8),m,0,0,0,parent);o.position.copy(a).add(b).multiplyScalar(.5);o.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),d.normalize());return o;}
- // A coffered plaster ceiling, layered crown molding, and brass panel inlays.
- box(0,6.04,4,14,.16,18,ivory);
+ // A taller coffered plaster ceiling opens the room above the gallery walls.
+ box(0,8.42,4,14,.16,18,ivory);
  // One closed profile per band keeps the wall corners joined without exposed
  // rectangular ends or overlapping faces at the ceiling returns.
  function crown(y:number,inset:number,width:number,height:number,m:T.Material){
@@ -24,11 +24,11 @@ export function addLuxuryDetails(scene:T.Scene,resources:RoomResources){
   geometry.rotateX(Math.PI/2);
   return mesh(geometry,m,0,y+height/2,0);
  }
- for(const y of [5.64,5.78,5.91])crown(y,0,.18+(y-5.5)*.78,.09,plaster);
- crown(5.61,.335,.035,.025,gold);
- for(const x of [-5,-2,1,4])box(x,5.91,4,.12,.16,17.5,plaster);
- for(const z of [-3,0,3,6,9,12])box(0,5.91,z,13.5,.16,.12,plaster);
- for(const x of [-5,-2,1,4])for(const z of [-3,0,3,6,9]){box(x+1.43,5.94,z+1.44,2.65,.025,.025,gold);box(x+.1,5.94,z+1.4,.025,.025,2.65,gold);}
+ for(const [y,width] of [[8.02,.2],[8.16,.25],[8.29,.3]] as const)crown(y,0,width,.09,plaster);
+ crown(7.99,.335,.035,.025,gold);
+ for(const x of [-5,-2,1,4])box(x,8.29,4,.12,.16,17.5,plaster);
+ for(const z of [-3,0,3,6,9,12])box(0,8.29,z,13.5,.16,.12,plaster);
+ for(const x of [-5,-2,1,4])for(const z of [-3,0,3,6,9,12]){box(x+1.43,8.32,z+1.44,2.65,.025,.025,gold);box(x+.1,8.32,z+1.4,.025,.025,2.65,gold);}
  // Build each wall in local coordinates so rails and closed panel frames share
  // the same heights and profile, including where the walls meet at the corners.
  function wainscot(length:number,x:number,z:number,rotation:number,gap?:readonly [number,number]){
@@ -81,8 +81,8 @@ export function addLuxuryDetails(scene:T.Scene,resources:RoomResources){
  const medallion=ring(0,.033,4,1,.018,thread);medallion.scale.set(1,1.4,.08);
  for(let i=0;i<12;i++){const a=i*Math.PI/6;const petal=ring(Math.cos(a)*.5,.034,4+Math.sin(a)*.7,.18,.01,thread);petal.scale.set(.8,1.3,.08);}
  // A chandelier with curved brass arms, candle bulbs, and faceted crystal drops.
- const chandelier=new T.Group();chandelier.position.set(.75,0,-1.4);scene.add(chandelier);
- const cx=.75,cz=-1.4;ring(cx,5.92,cz,.65,.055,plaster);ring(cx,5.90,cz,.43,.02,gold);
+ const chandelier=new T.Group();chandelier.position.set(.75,1.2,-1.4);scene.add(chandelier);
+ const cx=.75,cz=-1.4;ring(0,5.92,0,.65,.055,plaster,chandelier);ring(0,5.90,0,.43,.02,gold,chandelier);
  rod(new T.Vector3(0,5.92,0),new T.Vector3(0,5.08,0),.025,gold,chandelier);
  ring(0,4.78,0,.78,.035,gold,chandelier);ring(0,4.49,0,.45,.027,gold,chandelier);
  const glow=new T.MeshStandardMaterial({color:'#fff1c7',emissive:'#ffd691',emissiveIntensity:2.3,roughness:.4});materials.push(glow);
@@ -98,8 +98,51 @@ export function addLuxuryDetails(scene:T.Scene,resources:RoomResources){
   const drop=mesh(new T.OctahedronGeometry(.09),crystal,dx*.76,4.45,dz*.76,chandelier);drop.scale.y=1.8;
  }
  const pendant=mesh(new T.OctahedronGeometry(.16),crystal,0,4.28,0,chandelier);pendant.scale.y=1.8;
- const light=new T.PointLight('#ffdb9a',14,15,2);light.position.set(cx,4.9,cz);scene.add(light);
- return {update:(weights:LightingWeights)=>{sky.color.copy(nightSky).lerp(daySky,weights.daylight);drapes.forEach(g=>{g.scale.x=1+weights.darkroom*2.05;});light.intensity=blendLight(weights,7,14,2);glow.emissiveIntensity=blendLight(weights,1.2,2.3,.35);}};
+ const light=new T.PointLight('#ffdb9a',14,15,2);light.position.set(cx,6.1,cz);scene.add(light);
+ const spiral=createSpiralElevator(scene,resources);
+ return {staircase:spiral.tower,update:(weights:LightingWeights,time=0,motion=true)=>{sky.color.copy(nightSky).lerp(daySky,weights.daylight);drapes.forEach(g=>{g.scale.x=1+weights.darkroom*2.05;});light.intensity=blendLight(weights,7,14,2);glow.emissiveIntensity=blendLight(weights,1.2,2.3,.35);spiral.update(time,motion);}};
+}
+
+export function createSpiralElevator(scene:T.Scene,resources:RoomResources){
+ const {geometries,materials}=resources;
+ const tower=new T.Group();tower.name='spiral-staircase-elevator';tower.userData.id='staircase';tower.position.set(-5.35,0,4.25);scene.add(tower);
+ function mat(color:string,metalness=0,roughness=.65,transparent=false,opacity=1){
+  const m=new T.MeshStandardMaterial({color,metalness,roughness,transparent,opacity,depthWrite:!transparent});materials.push(m);return m;
+ }
+ function mesh(geo:T.BufferGeometry,m:T.Material,name:string,x:number,y:number,z:number,parent:T.Object3D=tower){
+  geometries.push(geo);const o=new T.Mesh(geo,m);o.name=name;o.position.set(x,y,z);parent.add(o);return o;
+ }
+ const stone=mat('#665643'),edge=mat('#342f28'),brass=mat('#b99a58',.72,.28),glass=mat('#a8c0b1',.1,.2,true,.15),warm=mat('#f2d89a',.15,.28);
+ mesh(new T.CylinderGeometry(1.38,1.38,.22,48),edge,'stair-plinth',0,.11,0);
+ const shaft=mesh(new T.CylinderGeometry(.39,.39,7.65,32,1,true),glass,'elevator-shaft',0,3.98,0);
+ shaft.material.side=T.DoubleSide;
+ for(let i=0;i<4;i++){
+  const a=Math.PI/4+i*Math.PI/2,x=Math.cos(a)*.37,z=Math.sin(a)*.37;
+  mesh(new T.CylinderGeometry(.035,.035,7.72,10),brass,'shaft-post',x,3.98,z);
+ }
+ const railPoints:T.Vector3[]=[];
+ const stepCount=38,turns=2.25,radius=.93,stepRise=7.65/stepCount;
+ for(let i=0;i<stepCount;i++){
+  const a=i/stepCount*Math.PI*2*turns,y=.3+i*stepRise;
+  const tread=mesh(new T.BoxGeometry(.78,.13,.43),stone,'spiral-stair-step',Math.cos(a)*radius,y,Math.sin(a)*radius);
+  tread.rotation.y=-a;
+  const cap=mesh(new T.BoxGeometry(.8,.025,.445),brass,'stair-nosing',Math.cos(a)*radius,y+.078,Math.sin(a)*radius);
+  cap.rotation.y=-a;
+  railPoints.push(new T.Vector3(Math.cos(a)*1.32,y+.72,Math.sin(a)*1.32));
+ }
+ railPoints.push(new T.Vector3(Math.cos(Math.PI*2*turns)*1.32,8.14,Math.sin(Math.PI*2*turns)*1.32));
+ mesh(new T.TubeGeometry(new T.CatmullRomCurve3(railPoints),260,.035,8,false),brass,'spiral-banister',0,0,0);
+ const car=new T.Group();car.name='elevator-car';car.position.y=.6;tower.add(car);
+ mesh(new T.BoxGeometry(.7,.12,.7),edge,'elevator-platform',0,0,0,car);
+ for(const [x,z] of [[-.31,-.31],[.31,-.31],[-.31,.31],[.31,.31]] as const){
+  mesh(new T.BoxGeometry(.035,1.22,.035),brass,'elevator-frame',x,.65,z,car);
+ }
+ for(const [x,z,w,d] of [[0,-.34,.62,.018],[0,.34,.62,.018],[-.34,0,.018,.62],[.34,0,.018,.62]] as const)
+  mesh(new T.BoxGeometry(w,1.18,d),glass,'elevator-glass',x,.65,z,car);
+ const lamp=mesh(new T.SphereGeometry(.07,10,8),warm,'elevator-lamp',0,1.2,0,car);
+ (lamp.material as T.MeshStandardMaterial).emissive=new T.Color('#d7a94d');
+ const update=(time:number,motion:boolean)=>{car.position.y=motion ? .6+(Math.sin(time*.00022)+1)*2.65 : .6;};
+ return {tower,car,update};
 }
 
 export function createTurntable(scene:T.Scene,resources:RoomResources){

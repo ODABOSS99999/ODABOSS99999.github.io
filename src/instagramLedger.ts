@@ -25,9 +25,15 @@ export function classifyPartnership(post:Pick<InstagramPost,'caption'> & {id?:st
  if(/wildlife|naturephotography|squirrel|🐿|🐦|🌹|nightphotography|life recently|my camera|studying|meow|first camera|creative shots|noob vs pro/.test(c))return {kind:'personal',reason:'Personal / nature / travel photography'};
  return {kind:'partnership',reason:'Included by owner preference when external collaboration is uncertain; this is not confirmation of a formal partnership.'};
 }
+function datedPostDay(timestamp:string):string|null{
+ const day=timestamp.slice(0,10);
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(day)||!Number.isFinite(Date.parse(timestamp)))return null;
+ const dayStart=Date.parse(`${day}T00:00:00.000Z`);
+ return Number.isFinite(dayStart)&&new Date(dayStart).toISOString().slice(0,10)===day?day:null;
+}
 export function cumulativePosts(posts:Pick<InstagramPost,'id'|'timestamp'>[]):LedgerPoint[]{
  const seen=new Set<string>(),days=new Map<string,number>();
- for(const p of posts){if(seen.has(p.id)||!Number.isFinite(Date.parse(p.timestamp)))continue;seen.add(p.id);const d=p.timestamp.slice(0,10);days.set(d,(days.get(d)||0)+1);}
+ for(const p of posts){const d=datedPostDay(p.timestamp);if(!p.id||seen.has(p.id)||!d)continue;seen.add(p.id);days.set(d,(days.get(d)||0)+1);}
  let total=0;return [...days].sort(([a],[b])=>a.localeCompare(b)).map(([date,n])=>({date,count:total+=n}));
 }
 
