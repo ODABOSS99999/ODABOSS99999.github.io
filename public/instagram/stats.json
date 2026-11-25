@@ -1,7 +1,7 @@
 {
   "version": 2,
   "account": "mcgowen_media",
-  "checkedAt": "2026-11-25T14:31:42.000Z",
+  "checkedAt": "2026-11-25T23:41:05.000Z",
   "followers": 4851,
   "posts": 504,
   "followerGains": [
@@ -279,7 +279,7 @@
     },
     {
       "date": "2026-11-24",
-      "count": 0
+      "count": 2
     }
   ],
   "followerHistory": [
@@ -729,6 +729,10 @@
     },
     {
       "date": "2026-11-25T14:31:42.000Z",
+      "count": 4851
+    },
+    {
+      "date": "2026-11-25T23:41:05.000Z",
       "count": 4851
     }
   ],
@@ -4626,6 +4630,12 @@
       "timestamp": "2026-11-25T11:58:50.000Z",
       "caption": "ARCHER OH | PART 1/2\n\nStarting off with the vertical shots from an incredible night with @archeroh.\n\nMore coming in Part 2 with the landscapes.\n\n#ArcherOh #ConcertPhotography #IndieRock #LiveMusic #MusicPhotography",
       "permalink": "https://www.instagram.com/p/DgKekgFGxDD/"
+    },
+    {
+      "id": "17972956868966230",
+      "timestamp": "2026-11-25T20:48:37.000Z",
+      "caption": "Mona Vera — AM/FM, Dallas, Nov 18.\nWhich frame would you send to a photographer friend?\n#concertphotography #livemusic #photography #dallas #monavera",
+      "permalink": "https://www.instagram.com/reel/DgLVfklNxwv/"
     }
   ]
 }
