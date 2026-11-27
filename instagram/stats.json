@@ -1,9 +1,9 @@
 {
   "version": 2,
   "account": "mcgowen_media",
-  "checkedAt": "2026-11-27T10:58:29.000Z",
-  "followers": 4853,
-  "posts": 505,
+  "checkedAt": "2026-11-27T20:01:14.000Z",
+  "followers": 4854,
+  "posts": 506,
   "followerGains": [
     {
       "date": "2026-09-17",
@@ -287,7 +287,7 @@
     },
     {
       "date": "2026-11-26",
-      "count": 0
+      "count": 6
     }
   ],
   "followerHistory": [
@@ -758,6 +758,10 @@
     {
       "date": "2026-11-27T10:58:29.000Z",
       "count": 4853
+    },
+    {
+      "date": "2026-11-27T20:01:14.000Z",
+      "count": 4854
     }
   ],
   "trackedPosts": [
@@ -4666,6 +4670,12 @@
       "timestamp": "2026-11-26T13:23:23.000Z",
       "caption": "ARCHER OH | PART 2/2\n\nClosing out the night with the landscape shots.\n\nAn incredible performance by @archeroh. Thanks for a night worth capturing.\n\n#ArcherOh #ConcertPhotography #IndieRock #LiveMusic #MusicPhotography",
       "permalink": "https://www.instagram.com/p/DgNNCjeG3QW/"
+    },
+    {
+      "id": "18648843097049041",
+      "timestamp": "2026-11-27T18:15:49.000Z",
+      "caption": "🌹",
+      "permalink": "https://www.instagram.com/p/DgQTRCsPvVk/"
     }
   ]
 }
